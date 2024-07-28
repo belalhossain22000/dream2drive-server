@@ -15,12 +15,11 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const logoutUser = catchAsync(async (req: Request, res: Response) => {
-  
-   // Clear the token cookie
-   res.clearCookie('token', {
+  // Clear the token cookie
+  res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
   });
 
   sendResponse(res, {
@@ -31,6 +30,21 @@ const logoutUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get user profile
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+  const userToken = req.headers.authorization;
 
+  const result = await AuthServices.getMyProfile(userToken as string);
+  sendResponse(res, {
+    success: true,
+    statusCode: 201,
+    message: "User profile retrieved successfully",
+    data: result,
+  });
+});
 
-export const AuthController = { loginUser,logoutUser };
+export const AuthController = {
+  loginUser,
+  logoutUser,
+  getMyProfile,
+};

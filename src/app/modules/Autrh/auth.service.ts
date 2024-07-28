@@ -40,10 +40,32 @@ const loginUser = async (payload: { email: string; password: string }) => {
   return result;
 };
 
+// get user profile
+const getMyProfile = async (userToken: string) => {
+  const decodedToken = jwtHelpers.verifyToken(
+    userToken,
+    config.jwt.jwt_secret!
+  );
 
+  // Getting user data
+  const userProfile = await prisma.user.findUnique({
+    where: {
+      id: decodedToken.id,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
-
+  return userProfile;
+};
 
 export const AuthServices = {
   loginUser,
+  getMyProfile
 };
