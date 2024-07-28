@@ -12,8 +12,6 @@ const CreateUserValidationSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters long")
     .nonempty("Password is required"),
-  role: UserRoleEnum,
-  userStatus: UserStatusEnum,
 });
 
 const UserLoginValidationSchema = z.object({

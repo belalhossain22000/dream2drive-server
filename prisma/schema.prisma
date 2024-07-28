@@ -26,20 +26,6 @@ model User {
   @@map("users")
 }
 
-model Admin {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  username  String
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("admins")
-}
-
 enum UserStatus {
   ACTIVE
   BLOCKED

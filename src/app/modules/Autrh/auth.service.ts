@@ -40,6 +40,10 @@ const loginUser = async (payload: { email: string; password: string }) => {
   return result;
 };
 
+
+
+
+
 export const AuthServices = {
   loginUser,
 };

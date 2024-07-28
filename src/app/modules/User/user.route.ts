@@ -10,10 +10,11 @@ router.post(
   validateRequest(UserValidation.CreateUserValidationSchema),
   userController.createUser
 );
-router.get(
-  "/users",
-  // validateRequest(UserValidation.CreateUserValidationSchema),
-  userController.getUsers
+router.post(
+  "/create-admin",
+  validateRequest(UserValidation.CreateUserValidationSchema),
+  userController.createAdmin
 );
+router.get("/users", userController.getUsers);
 
 export const userRoutes = router;
