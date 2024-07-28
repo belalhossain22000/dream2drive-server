@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  email              String     @unique
+  firstName          String
+  lastName           String
+  username           String
+  password           String
+  role               UserRole
+  needPasswordChange Boolean    @default(true)
+  userStatus         UserStatus
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  admin              Admin?
+
+  @@map("users")
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String
+  username  String
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [email], references: [email])
+
+  @@map("admins")
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum UserRole {
+  ADMIN
+  SELLER
+  BUYER
+}
+
+model Products {
+  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
+  productName        String         @unique
+  productImage       ProductImage[]
+  ProductDescription String
+  auction            Boolean
+  price              Int
+  brandId            String         @db.ObjectId
+  brand              Brand          @relation(fields: [brandId], references: [id])
+  drivingPosition    String
+  ManufactureCountry String
+  status             carStatusEnum
+  category           categoryEnum
+  isDeleted          Boolean
+
+  // productReview      review         @relation(fields: [reviewId], references: [id])
+  // reviewId           String         @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
+}
+
+enum categoryEnum {
+  weeklyHighlights
+  supercars
+  jdmLeagends
+  airCoooled
+  offRoadExplorer
+  twoWheels
+}
+
+enum carStatusEnum {
+  pending
+  live
+  sold
+}
+
+model ProductImage {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  image      String
+  imageType  String
+  Products   Products? @relation(fields: [productsId], references: [id])
+  productsId String?   @db.ObjectId
+}
+
+model Brand {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  brandName String     @unique
+  Products  Products[]
+
+  @@map("brands")
+}
+
+model review {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  reviewDesc String
+}
+
+model Article {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  bannerImage    String
+  articleTitle   String
+  articleImages  articleImages[]
+  published_by   String
+  published_Date DateTime
+  viewed_by      Int
+  description    String
+  userComment    String          @db.ObjectId
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("articles")
+}
+
+model articleImages {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  image     String
+  Article   Article? @relation(fields: [articleId], references: [id])
+  articleId String?  @db.ObjectId
+}
