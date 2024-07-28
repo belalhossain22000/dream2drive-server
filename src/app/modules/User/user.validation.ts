@@ -8,9 +8,23 @@ const CreateUserValidationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   username: z.string().min(1),
-  password: z.string().min(8),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .nonempty("Password is required"),
   role: UserRoleEnum,
   userStatus: UserStatusEnum,
 });
 
-export const UserValidation = { CreateUserValidationSchema };
+const UserLoginValidationSchema = z.object({
+  email: z.string().email().nonempty("Email is required"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .nonempty("Password is required"),
+});
+
+export const UserValidation = {
+  CreateUserValidationSchema,
+  UserLoginValidationSchema,
+};
