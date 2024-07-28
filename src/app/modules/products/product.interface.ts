@@ -1,7 +1,7 @@
 import { ObjectId } from 'mongodb'; // Import for clarity
 
 // ProductImage
-export interface ProductImage {
+export interface TProductImage {
   image: string;
   imageType: string;
 }
