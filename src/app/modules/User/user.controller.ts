@@ -1,28 +1,31 @@
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
-import { userServices } from "./user.services";
+import { userService } from "./user.services";
 import { Request, Response } from "express";
 
-const createAdmin = catchAsync(async (req: Request, res: Response) => {
-    const result = await userServices.createAdminIntoDB(req.body);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "Brand created successfully!",
-        data: result,
-    });
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.createUserIntoDb(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User Created successfully!",
+    data: result,
+  });
 });
-const getAdmin = catchAsync(async (req: Request, res: Response) => {
-    const result = await userServices.createAdminIntoDB(req.body);
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "Brand created successfully!",
-        data: result,
-    });
+
+// get all user form db
+const getUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.getUsersFromDb();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users retrieve successfully!",
+    data: result,
+  });
 });
 
 export const userController = {
-    createAdmin,getAdmin
-}
+  createUser,
+  getUsers
+};
