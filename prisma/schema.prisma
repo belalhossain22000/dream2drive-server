@@ -11,17 +11,17 @@ generator client {
 }
 
 model User {
-  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
-  email              String     @unique
-  firstName          String
-  lastName           String
-  username           String
-  password           String
-  role               UserRole
-  userStatus         UserStatus
-   biddings           Bidding[] 
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  email      String     @unique
+  firstName  String
+  lastName   String
+  username   String
+  password   String
+  role       UserRole
+  userStatus UserStatus
+  biddings   Bidding[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 
   @@map("users")
 }
@@ -36,7 +36,6 @@ model Admin {
   isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
 
   @@map("admins")
 }
@@ -60,14 +59,13 @@ model Products {
   auction            Boolean
   price              Int
   brandId            String         @db.ObjectId
-  brand              Brand          @relation(fields: [brandId], references: [id])
+  brand              Brand?         @relation(fields: [brandId], references: [id])
   drivingPosition    String
   ManufactureCountry String
   status             carStatusEnum
-   biddings           Bidding[]
+  biddings           Bidding[]
   category           categoryEnum
   isDeleted          Boolean
-  
 
   // productReview      review         @relation(fields: [reviewId], references: [id])
   // reviewId           String         @db.ObjectId
@@ -137,13 +135,14 @@ model articleImages {
 }
 
 model Bidding {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  bidPrice   Int
-  product    Products @relation(fields: [productId], references: [id])
-  productId  String   @db.ObjectId
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String   @db.ObjectId
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  bidPrice  Int
+  product   Products? @relation(fields: [productId], references: [id])
+  productId String    @db.ObjectId
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String    @db.ObjectId
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
   @@map("biddings")
 }
