@@ -25,7 +25,7 @@ const createUserIntoDb = async (payload: IUser) => {
       lastName: payload.lastName,
       username: payload.username,
       password: hashedPassword,
-      role: payload.role,
+      role: "USER",
       userStatus: payload.userStatus,
       createdAt: payload.createdAt,
       updatedAt: payload.updatedAt,
