@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
-import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
+import { carStatusEnum, categoryEnum, TProductImage, TProducts } from "./product.interface";
 
 
 
@@ -31,7 +31,7 @@ const createProductIntoDB = async (payload: TProducts) => {
         category: payload.category,
         isDeleted: false,
         productImage: {
-          create: payload.productImages.map(image=> ({
+          create: (payload.productImages || []).map((image: TProductImage) => ({
             image: image.image,
             imageType: image.imageType,
           }))
@@ -39,7 +39,7 @@ const createProductIntoDB = async (payload: TProducts) => {
       },
     });
 
-    // return result;
+    return result;
   } catch (error) {
     throw new Error(`Could not create product: ${error}`);
   }
@@ -70,7 +70,7 @@ const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: 
     });
     return result;
   } catch (error) {
-    throw new Error(`Could not get products: ${error.message}`);
+    throw new Error(`Could not get products: ${error}`);
   }
 };
 

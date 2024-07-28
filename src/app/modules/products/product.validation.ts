@@ -1,16 +1,15 @@
 import { z } from 'zod';
 
 const productImageSchema = z.object({
-  id: z.string(),
-  image: z.string(),
-  imageType: z.string(),
-  productsId: z.string().optional()
+  body: z.object({
+    id: z.string().optional(),
+    image: z.string(),
+    imageType: z.string(),
+    productsId: z.string().optional()
+  })
 });
 
-const brandSchema = z.object({
-  id: z.string(),
-  brandName: z.string(),
-});
+
 
 export const productValidationSchema = z.object({
   body: z.object({

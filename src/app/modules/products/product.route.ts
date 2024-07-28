@@ -8,7 +8,7 @@ import { productValidation } from './product.validation';
 const router = express.Router();
 
 // task 3
-router.post('/', productCotroller.createProduct);
+router.post('/',validateRequest(productValidation.productValidationSchema), productCotroller.createProduct);
 router.get('/', productCotroller.getAllProduct);
 
 
