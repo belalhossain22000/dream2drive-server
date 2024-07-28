@@ -142,4 +142,5 @@ model Bidding {
   userId    String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  @@map("biddings")
 }

@@ -13,7 +13,7 @@ const createBrandIntoDB = async (payload:TBrand) => {
   });
   if(existingBrands){
     throw new ApiError(httpStatus.CONFLICT,"this Brands is already exists!!");
-  }
+}
     const result = await prisma.brand.create({
       data: {
         brandName: payload.brandName,
