@@ -26,7 +26,41 @@ const createUserIntoDb = async (payload: IUser) => {
       username: payload.username,
       password: hashedPassword,
       role: "USER",
-      userStatus: payload.userStatus,
+      userStatus: "ACTIVE",
+      createdAt: payload.createdAt,
+      updatedAt: payload.updatedAt,
+    },
+  });
+
+  const { password, ...userWithoutPassword } = result;
+
+  return userWithoutPassword;
+};
+
+// / Create a new user in the database.
+const createAdminIntoDb = async (payload: IUser) => {
+  // Check if user with the same email or username already exists
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: payload.email }, { username: payload.username }],
+    },
+  });
+
+  if (existingUser) {
+    throw new ApiError(400, "User with this email or username already exists");
+  }
+
+  const hashedPassword: string = await bcrypt.hash(payload.password, 12);
+
+  const result = await prisma.user.create({
+    data: {
+      email: payload.email,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      username: payload.username,
+      password: hashedPassword,
+      role: "ADMIN",
+      userStatus: "ACTIVE",
       createdAt: payload.createdAt,
       updatedAt: payload.updatedAt,
     },
@@ -64,4 +98,5 @@ const getUsersFromDb = async () => {
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
+  createAdminIntoDb,
 };
