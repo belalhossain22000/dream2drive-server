@@ -108,27 +108,26 @@ const changePassword = async (
   return { message: "Password changed successfully" };
 };
 
-
 const forgotPassword = async (payload: { email: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
-      where: {
-          email: payload.email,
-      }
+    where: {
+      email: payload.email,
+    },
   });
 
-
   const resetPassToken = jwtHelpers.generateToken(
-      { email: userData.email, role: userData.role },
-      config.jwt.reset_pass_secret as Secret,
-      config.jwt.reset_pass_token_expires_in as string
-  )
+    { email: userData.email, role: userData.role },
+    config.jwt.reset_pass_secret as Secret,
+    config.jwt.reset_pass_token_expires_in as string
+  );
   //console.log(resetPassToken)
 
-  const resetPassLink = config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`
-
+  const resetPassLink =
+    config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`;
+  console.log(resetPassLink);
   await emailSender(
-      userData.email,
-      `
+    userData.email,
+    `
       <div>
           <p>Dear User,</p>
           <p>Your password reset link 
@@ -141,23 +140,28 @@ const forgotPassword = async (payload: { email: string }) => {
 
       </div>
       `
-  )
+  );
   return { message: "Reset password link sent via your email successfully" };
 };
 
-const resetPassword = async (token: string, payload: { id: string, password: string }) => {
-
-
+// reset password
+const resetPassword = async (
+  token: string,
+  payload: { id: string; password: string }
+) => {
   const userData = await prisma.user.findUniqueOrThrow({
-      where: {
-          id: payload.id,
-      }
+    where: {
+      id: payload.id,
+    },
   });
 
-  const isValidToken = jwtHelpers.verifyToken(token, config.jwt.reset_pass_secret as Secret)
+  const isValidToken = jwtHelpers.verifyToken(
+    token,
+    config.jwt.reset_pass_secret as Secret
+  );
 
   if (!isValidToken) {
-      throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!")
+    throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!");
   }
 
   // hash password
@@ -165,21 +169,20 @@ const resetPassword = async (token: string, payload: { id: string, password: str
 
   // update into database
   await prisma.user.update({
-      where: {
-          id: payload.id
-      },
-      data: {
-          password
-      }
-  })
+    where: {
+      id: payload.id,
+    },
+    data: {
+      password,
+    },
+  });
   return { message: "Password reset successfully" };
 };
-
 
 export const AuthServices = {
   loginUser,
   getMyProfile,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
 };
