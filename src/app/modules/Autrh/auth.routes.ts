@@ -4,6 +4,7 @@ import { AuthController } from "./auth.controller";
 import { UserValidation } from "../User/user.validation";
 import auth from "../../middlewares/auth";
 import { UserRole } from "@prisma/client";
+import { authValidation } from "./auth.validation";
 
 const router = express.Router();
 
@@ -18,7 +19,16 @@ router.post(
 router.post("/logout", AuthController.logoutUser);
 
 router.get(
-  "/get-me", auth(UserRole.ADMIN,UserRole.USER), AuthController.getMyProfile
-)
+  "/get-me",
+  auth(UserRole.ADMIN, UserRole.USER),
+  AuthController.getMyProfile
+);
+
+router.put(
+  "/change-password",
+  auth(UserRole.ADMIN, UserRole.USER),
+  validateRequest(authValidation.changePasswordValidationSchema),
+  AuthController.changePassword
+);
 
 export const AuthRoutes = router;

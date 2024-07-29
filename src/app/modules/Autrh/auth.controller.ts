@@ -3,6 +3,7 @@ import catchAsync from "../../../shared/catchAsync";
 import { AuthServices } from "./auth.service";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
+import { string } from "zod";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.loginUser(req.body);
@@ -42,9 +43,27 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+// change password
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  const userToken = req.headers.authorization;
+  const { oldPassword, newPassword } = req.body;
+
+  const result = await AuthServices.changePassword(
+    userToken as string,
+    newPassword,
+    oldPassword
+  );
+  sendResponse(res, {
+    success: true,
+    statusCode: 201,
+    message: "Password changed successfully",
+    data: result,
+  });
+});
 
 export const AuthController = {
   loginUser,
   logoutUser,
   getMyProfile,
+  changePassword,
 };
