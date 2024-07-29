@@ -11,19 +11,38 @@ generator client {
 }
 
 model User {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  email        String     @unique
-  firstName    String
-  lastName     String
-  username     String
-  password     String
-  role         UserRole
-  userStatus   UserStatus
-  biddings     Bidding[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id             String              @id @default(auto()) @map("_id") @db.ObjectId
+  email          String              @unique
+  firstName      String
+  lastName       String
+  username       String
+  password       String
+  role           UserRole
+  userStatus     UserStatus
+  biddings       Bidding[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  accountDetails UserAccountDetails?
 
   @@map("users")
+}
+
+model UserAccountDetails {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId  @unique
+  user   User   @relation(fields: [userId], references: [id])
+  cardNumber      String
+  firstName       String
+  lastName        String
+  phoneNumber     String
+  billingAddress1 String
+  address2        String?
+  townCity        String
+  countryState    String
+  postcodeZipcode String
+  country         String
+
+  @@map("user_account_details")
 }
 
 enum UserStatus {
