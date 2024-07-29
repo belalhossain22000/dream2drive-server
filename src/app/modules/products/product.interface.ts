@@ -31,9 +31,8 @@ export enum categoryEnum {
 
 // Products
 export interface TProducts {
-  productImages: any;
   productName: string;
-  productImage: ProductImage[]; // Array of ProductImage (if using one-to-many)
+  productImage: TProductImage[]; // Array of ProductImage (if using one-to-many)
   ProductDescription: string;
   auction: boolean;
   price: number;
@@ -45,4 +44,5 @@ export interface TProducts {
   category: categoryEnum;
   createdAt: Date;
   updatedAt: Date;
+  isDeleted?: boolean;
 }

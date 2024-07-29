@@ -6,7 +6,7 @@ import { carStatusEnum, categoryEnum, TProductImage, TProducts } from "./product
 
 
 const createProductIntoDB = async (payload: TProducts) => {
-  console.log(payload);
+  // console.log(payload);
   try {
     const existingProduct = await prisma.products.findUnique({
       where: {
@@ -31,11 +31,11 @@ const createProductIntoDB = async (payload: TProducts) => {
         category: payload.category,
         isDeleted: false,
         productImage: {
-          create: (payload.productImages || []).map((image: TProductImage) => ({
+          create: (payload.productImage || []).map((image: TProductImage) => ({
             image: image.image,
             imageType: image.imageType,
-          }))
-        }
+          })),
+        },
       },
     });
 
@@ -48,7 +48,7 @@ const createProductIntoDB = async (payload: TProducts) => {
 
 const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: categoryEnum, searchTerms: any }) => {
   try {
-    const andSearchCondition = [];
+    const andSearchCondition: any[] = [{ isDeleted: false }];
     if (query.category || query.status || query.searchTerms) {
       andSearchCondition.push({
         status: query.status ? query.status : undefined,
@@ -64,6 +64,7 @@ const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: 
     const whereConditions = { AND: andSearchCondition }
     const result = await prisma.products.findMany({
       where: whereConditions,
+
       include: {
         brand: true, // Assuming the relation is named brand
       },
@@ -74,6 +75,89 @@ const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: 
   }
 };
 
+const getSingleProductFromDB = async (id: string) => {
+  try {
+    const result = await prisma.products.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        brand: true, // Assuming the relation is named brand
+      },
+    });
+
+    if (!result) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Product not found!');
+    }
+
+    return result;
+  } catch (error) {
+    throw new Error(`Could not get product: ${error}`);
+  }
+};
+const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
+  try {
+    const existingProduct = await prisma.products.findUnique({
+      where: { id: id },
+    });
+
+    if (!existingProduct) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Product not found!');
+    }
+
+    const result = await prisma.products.update({
+      where: { id: id },
+      data: {
+        productName: payload.productName || existingProduct.productName,
+        ProductDescription: payload.ProductDescription || existingProduct.ProductDescription,
+        auction: payload.auction || existingProduct.auction,
+        price: payload.price || existingProduct.price,
+        brandId: payload.brandId ? payload.brandId.toString() : existingProduct.brandId,
+        drivingPosition: payload.drivingPosition || existingProduct.drivingPosition,
+        ManufactureCountry: payload.ManufactureCountry || existingProduct.ManufactureCountry,
+        status: payload.status || existingProduct.status,
+        category: payload.category || existingProduct.category,
+        isDeleted: payload.isDeleted !== undefined ? payload.isDeleted : existingProduct.isDeleted,
+        productImage: payload.productImage? {
+          deleteMany: {},
+          create: payload.productImage.map((image: TProductImage) => ({
+            image: image.image,
+            imageType: image.imageType,
+          })),
+        } : undefined,
+      },
+    });
+
+    return result;
+  } catch (error) {
+    throw new Error(`Could not update product: ${error}`);
+  }
+};
 
 
-export const productServices = { createProductIntoDB, getAllProductsFromDB };
+const deleteProductFromDB = async (id: string) => {
+  try {
+    const existingProduct = await prisma.products.findUnique({
+      where: { id: id },
+    });
+
+    if (!existingProduct) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Product not found!');
+    }
+
+    const result = await prisma.products.update({
+      where: { id: id },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    return { message: 'Product  deleted successfully!', result };
+  } catch (error) {
+    throw new Error(`Could not  delete product: ${error}`);
+  }
+};
+
+
+export const productServices = { createProductIntoDB, getAllProductsFromDB, getSingleProductFromDB, deleteProductFromDB, updateProductInDB };
+

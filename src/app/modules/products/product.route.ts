@@ -8,8 +8,11 @@ import { productValidation } from './product.validation';
 const router = express.Router();
 
 // task 3
-router.post('/',validateRequest(productValidation.productValidationSchema), productCotroller.createProduct);
+router.post('/', productCotroller.createProduct);
 router.get('/', productCotroller.getAllProduct);
+router.get('/:id', productCotroller.getSingleProduct);
+router.put('/:id', productCotroller.updateProduct);
+router.delete('/:id', productCotroller.deleteProduct);
 
 
 

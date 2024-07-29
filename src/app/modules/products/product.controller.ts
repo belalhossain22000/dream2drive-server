@@ -18,7 +18,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllProduct = catchAsync(async (req: Request, res: Response) => {
-    console.log(req.query);
     const result = await productServices.getAllProductsFromDB(req.query as any);
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -28,6 +27,40 @@ const getAllProduct = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    console.log(id);
+    const result = await productServices.getSingleProductFromDB(id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Single Product retrieval successfully',
+        data: result,
+    });
+});
+
+const updateProduct = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await productServices.updateProductInDB(id, req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Product updated successfully!",
+        data: result
+    })
+});
+const deleteProduct = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    console.log(id);
+    const result = await productServices.deleteProductFromDB(id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'product Deleted successfully',
+        data: result,
+    });
+});
 export const productCotroller = {
-    createProduct, getAllProduct
+    createProduct, getAllProduct, getSingleProduct, updateProduct, deleteProduct
 }
