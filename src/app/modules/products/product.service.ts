@@ -88,7 +88,8 @@ const getSingleProductFromDB = async (id: string) => {
         id: id,
       },
       include: {
-        brand: true, // Assuming the relation is named brand
+        brand: true,
+        Review: true,
       },
     });
 
@@ -199,12 +200,11 @@ const createFeaturedProduct = async (id: string) => {
 
 const getFeaturedProduct = async () => {
   // Unfeatured the currently featured product
-  console.log("featured product")
+  console.log("featured product");
 
   const currentFeatured = await prisma.products.findFirstOrThrow({
     where: { featured: true },
   });
-
 
   return currentFeatured;
 };

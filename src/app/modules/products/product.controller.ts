@@ -74,8 +74,6 @@ const createFeaturedProduct = catchAsync(async (req: Request, res: Response) => 
     });
 });
 const getFeaturedProduct = catchAsync(async (req: Request, res: Response) => {
-
- 
     const result = await productServices.getFeaturedProduct();
     sendResponse(res, {
         statusCode: httpStatus.OK,
