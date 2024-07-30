@@ -1,9 +1,12 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
-import { carStatusEnum, categoryEnum, TProductImage, TProducts } from "./product.interface";
-
-
+import {
+  carStatusEnum,
+  categoryEnum,
+  TProductImage,
+  TProducts,
+} from "./product.interface";
 
 const createProductIntoDB = async (payload: TProducts) => {
   // console.log(payload);
@@ -15,7 +18,7 @@ const createProductIntoDB = async (payload: TProducts) => {
     });
 
     if (existingProduct) {
-      throw new ApiError(httpStatus.CONFLICT, 'This product already exists!');
+      throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
     }
 
     const result = await prisma.products.create({
@@ -45,23 +48,26 @@ const createProductIntoDB = async (payload: TProducts) => {
   }
 };
 
-
-const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: categoryEnum, searchTerms: any }) => {
+const getAllProductsFromDB = async (query: {
+  status?: carStatusEnum;
+  category?: categoryEnum;
+  searchTerms: any;
+}) => {
   try {
     const andSearchCondition: any[] = [{ isDeleted: false }];
     if (query.category || query.status || query.searchTerms) {
       andSearchCondition.push({
         status: query.status ? query.status : undefined,
         category: query.category ? query.category : undefined,
-        OR: ['productName', 'ManufactureCountry'].map(field => ({
+        OR: ["productName", "ManufactureCountry"].map((field) => ({
           [field]: {
             contains: query.searchTerms,
-            mode: 'insensitive'
-          }
-        }))
-      },)
+            mode: "insensitive",
+          },
+        })),
+      });
     }
-    const whereConditions = { AND: andSearchCondition }
+    const whereConditions = { AND: andSearchCondition };
     const result = await prisma.products.findMany({
       where: whereConditions,
 
@@ -87,7 +93,7 @@ const getSingleProductFromDB = async (id: string) => {
     });
 
     if (!result) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Product not found!');
+      throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
     }
 
     return result;
@@ -102,29 +108,39 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
     });
 
     if (!existingProduct) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Product not found!');
+      throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
     }
 
     const result = await prisma.products.update({
       where: { id: id },
       data: {
         productName: payload.productName || existingProduct.productName,
-        ProductDescription: payload.ProductDescription || existingProduct.ProductDescription,
+        ProductDescription:
+          payload.ProductDescription || existingProduct.ProductDescription,
         auction: payload.auction || existingProduct.auction,
         price: payload.price || existingProduct.price,
-        brandId: payload.brandId ? payload.brandId.toString() : existingProduct.brandId,
-        drivingPosition: payload.drivingPosition || existingProduct.drivingPosition,
-        ManufactureCountry: payload.ManufactureCountry || existingProduct.ManufactureCountry,
+        brandId: payload.brandId
+          ? payload.brandId.toString()
+          : existingProduct.brandId,
+        drivingPosition:
+          payload.drivingPosition || existingProduct.drivingPosition,
+        ManufactureCountry:
+          payload.ManufactureCountry || existingProduct.ManufactureCountry,
         status: payload.status || existingProduct.status,
         category: payload.category || existingProduct.category,
-        isDeleted: payload.isDeleted !== undefined ? payload.isDeleted : existingProduct.isDeleted,
-        productImage: payload.productImage? {
-          deleteMany: {},
-          create: payload.productImage.map((image: TProductImage) => ({
-            image: image.image,
-            imageType: image.imageType,
-          })),
-        } : undefined,
+        isDeleted:
+          payload.isDeleted !== undefined
+            ? payload.isDeleted
+            : existingProduct.isDeleted,
+        productImage: payload.productImage
+          ? {
+              deleteMany: {},
+              create: payload.productImage.map((image: TProductImage) => ({
+                image: image.image,
+                imageType: image.imageType,
+              })),
+            }
+          : undefined,
       },
     });
 
@@ -134,7 +150,6 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
   }
 };
 
-
 const deleteProductFromDB = async (id: string) => {
   try {
     const existingProduct = await prisma.products.findUnique({
@@ -142,7 +157,7 @@ const deleteProductFromDB = async (id: string) => {
     });
 
     if (!existingProduct) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Product not found!');
+      throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
     }
 
     const result = await prisma.products.update({
@@ -152,12 +167,54 @@ const deleteProductFromDB = async (id: string) => {
       },
     });
 
-    return { message: 'Product  deleted successfully!', result };
+    return { message: "Product  deleted successfully!", result };
   } catch (error) {
     throw new Error(`Could not  delete product: ${error}`);
   }
 };
 
+const createFeaturedProduct = async (id: string) => {
+  console.log(id);
+  // Unfeatured the currently featured product
 
-export const productServices = { createProductIntoDB, getAllProductsFromDB, getSingleProductFromDB, deleteProductFromDB, updateProductInDB };
+  const currentFeatured = await prisma.products.findFirst({
+    where: { featured: true },
+  });
 
+  if (currentFeatured) {
+    await prisma.products.update({
+      where: { id: currentFeatured.id },
+      data: { featured: false },
+    });
+  }
+
+  // Feature the selected product
+  const product = await prisma.products.update({
+    where: { id },
+    data: { featured: true },
+  });
+
+  return { message: "Product featured successfully!", product };
+};
+
+const getFeaturedProduct = async () => {
+  // Unfeatured the currently featured product
+  console.log("featured product")
+
+  const currentFeatured = await prisma.products.findFirstOrThrow({
+    where: { featured: true },
+  });
+
+
+  return currentFeatured;
+};
+
+export const productServices = {
+  createProductIntoDB,
+  getAllProductsFromDB,
+  getSingleProductFromDB,
+  deleteProductFromDB,
+  updateProductInDB,
+  createFeaturedProduct,
+  getFeaturedProduct,
+};

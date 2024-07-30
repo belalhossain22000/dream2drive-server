@@ -28,9 +28,9 @@ model User {
 }
 
 model UserAccountDetails {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId  @unique
-  user   User   @relation(fields: [userId], references: [id])
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String  @unique @db.ObjectId
+  user            User    @relation(fields: [userId], references: [id])
   cardNumber      String
   firstName       String
   lastName        String
@@ -71,12 +71,10 @@ model Products {
   status             carStatusEnum
   biddings           Bidding[]
   category           categoryEnum
-  isDeleted          Boolean
-
-  // productReview      review         @relation(fields: [reviewId], references: [id])
-  // reviewId           String         @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isDeleted          Boolean        @default(false)
+  featured           Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 
   @@map("products")
 }
