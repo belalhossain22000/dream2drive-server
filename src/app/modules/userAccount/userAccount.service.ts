@@ -1,22 +1,7 @@
 import stripe from "../../../helpars/stripe";
-
-// const createSetupIntent = async () => {
-//   return await stripe.setupIntents.create({
-//     payment_method_types: ["card"],
-//   });
-// };
-
-// const validateCard = async (paymentMethodId: string) => {
-//   const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
-
-//   if (!paymentMethod || paymentMethod.type !== "card") {
-//     throw new Error("Invalid card");
-//   }
-
-//   return paymentMethod;
-// };
-
-
+import prisma from "../../../shared/prisma";
+import ApiError from "../../errors/ApiErrors";
+import { UserAccountDetails } from "./userAccount.interface";
 
 // validateCard card
 const validateCard = async (cardDetails: any) => {
@@ -38,7 +23,56 @@ const validateCard = async (cardDetails: any) => {
   }
 };
 
+// crete user bank account
+const createUserBankAccountIntoDb = async (payload: UserAccountDetails) => {
+  // validate use is exist
+
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      id: payload.userId,
+    },
+  });
+  console.log(isUserExist);
+
+  if (!isUserExist) {
+    throw new ApiError(
+      404,
+      "User not found wit the user userr Id: " + payload.userId
+    );
+  }
+
+  // Create a new user account details record in the database
+  const result = await prisma.userAccountDetails.create({
+    data: {
+      userId: payload.userId,
+      cardNumber: payload.cardNumber,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      phoneNumber: payload.phoneNumber,
+      billingAddress1: payload.billingAddress1,
+      address2: payload.address2,
+      townCity: payload.townCity,
+      countryState: payload.countryState,
+      postcodeZipcode: payload.postcodeZipcode,
+      country: payload.country,
+    },
+  });
+
+  return result;
+};
+
+// reterive all user bank account details
+
+const getAllUserAccountDetailsFromDB = async () => {
+  const result = await prisma.userAccountDetails.findMany();
+  if (!result) {
+    throw new ApiError(404, "User bank account details not found");
+  }
+  return result;
+};
+
 export const paymentService = {
-  // createSetupIntent,
   validateCard,
+  createUserBankAccountIntoDb,
+  getAllUserAccountDetailsFromDB,
 };
