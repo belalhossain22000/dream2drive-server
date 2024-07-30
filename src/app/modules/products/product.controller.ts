@@ -3,11 +3,18 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { Request, Response } from "express";
 import { productServices } from "./product.service";
+import { fileUploader } from "../../../helpars/fileUploader";
+import { json } from "stream/consumers";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
 
-
-    const result = await productServices.createProductIntoDB(req.body);
+    const files = req.files as Express.Multer.File[];
+    if (!files || files.length === 0) {
+        return res.status(400).send({ message: "No files uploaded" });
+    }
+    const uploadPromises = files.map(file => fileUploader.uploadToCloudinary(file));
+    const filesData = await Promise.all(uploadPromises);
+    const result = await productServices.createProductIntoDB(filesData, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

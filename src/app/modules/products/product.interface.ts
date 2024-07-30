@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb'; // Import for clarity
 
-// ProductImage
-export interface TProductImage {
-  image: string;
-  imageType: string;
-}
+
+// export interface TProductImage {
+//   image: string;
+//   imageType: string;
+// }
 
 // Brand
 export interface Brand {
@@ -32,12 +32,14 @@ export enum categoryEnum {
 // Products
 export interface TProducts {
   productName: string;
-  productImage: TProductImage[]; // Array of ProductImage (if using one-to-many)
+  productImage: any; // Array of ProductImage (if using one-to-many)
   ProductDescription: string;
   auction: boolean;
   price: number;
   brandId: ObjectId;
   brand?: Brand;
+  auctionStartDate: string;
+  auctionEndDate: string;
   drivingPosition: string;
   ManufactureCountry: string;
   status: carStatusEnum;
