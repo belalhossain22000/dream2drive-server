@@ -11,6 +11,7 @@ generator client {
 }
 
 model User {
+<<<<<<< HEAD
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   email      String     @unique
   firstName  String
@@ -22,8 +23,41 @@ model User {
   biddings   Bidding[]
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
+=======
+  id             String              @id @default(auto()) @map("_id") @db.ObjectId
+  email          String              @unique
+  firstName      String
+  lastName       String
+  username       String
+  password       String
+  role           UserRole
+  userStatus     UserStatus
+  biddings       Bidding[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  accountDetails UserAccountDetails?
+  Review         Review[]
+>>>>>>> 2654e668ff32cdd16eaac137525dfb6d554469c3
 
   @@map("users")
+}
+
+model UserAccountDetails {
+  id              String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String  @unique @db.ObjectId
+  user            User    @relation(fields: [userId], references: [id])
+  cardNumber      String
+  firstName       String
+  lastName        String
+  phoneNumber     String
+  billingAddress1 String
+  address2        String?
+  townCity        String
+  countryState    String
+  postcodeZipcode String
+  country         String
+
+  @@map("user_account_details")
 }
 
 enum UserStatus {
@@ -52,14 +86,26 @@ model Products {
   status             carStatusEnum
   biddings           Bidding[]
   category           categoryEnum
-  isDeleted          Boolean
-
-  // productReview      review         @relation(fields: [reviewId], references: [id])
-  // reviewId           String         @db.ObjectId
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  isDeleted          Boolean        @default(false)
+  featured           Boolean        @default(false)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  Review             Review[]
 
   @@map("products")
+}
+
+model Review {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  productId String   @db.ObjectId
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  product   Products @relation(fields: [productId], references: [id])
+
+  @@map("reviews")
 }
 
 enum categoryEnum {

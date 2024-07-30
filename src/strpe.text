@@ -1,0 +1,76 @@
+
+
+route
+
+
+// router.post("/create-setup-intent", paymentController.createSetupIntent);
+
+conrotller
+
+// export const createSetupIntent = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const setupIntent = await paymentService.createSetupIntent();
+//     res.json({ clientSecret: setupIntent.client_secret });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+// export const validateCard = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { paymentMethodId } = req.body;
+//     const paymentMethod = await paymentService.validateCard(paymentMethodId);
+//     res.json(paymentMethod);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+// const validateCards = async (req: Request, res: Response) => {
+//   const cardDetails = req.body.card;
+
+//   if (!cardDetails) {
+//     return res.status(400).json({ error: "Card details are required" });
+//   }
+
+//   try {
+//     const result = await paymentService.validateCard(cardDetails);
+
+//     if (result.valid) {
+//       return res.status(200).json({ valid: true });
+//     } else {
+//       return res.status(400).json({ valid: false, error: result.error });
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// };
+
+
+
+paymentService
+
+
+// const createSetupIntent = async () => {
+//   return await stripe.setupIntents.create({
+//     payment_method_types: ["card"],
+//   });
+// };
+
+// const validateCard = async (paymentMethodId: string) => {
+//   const paymentMethod = await stripe.paymentMethods.retrieve(paymentMethodId);
+
+//   if (!paymentMethod || paymentMethod.type !== "card") {
+//     throw new Error("Invalid card");
+//   }
+
+//   return paymentMethod;
+// };

@@ -68,6 +68,27 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
         data: result,
     });
 });
+
+const createFeaturedProduct = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+ 
+    const result = await productServices.createFeaturedProduct(id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'product featured successfully',
+        data: result,
+    });
+});
+const getFeaturedProduct = catchAsync(async (req: Request, res: Response) => {
+    const result = await productServices.getFeaturedProduct();
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: ' featured product reterive successfully',
+        data: result,
+    });
+});
 export const productCotroller = {
-    createProduct, getAllProduct, getSingleProduct, updateProduct, deleteProduct
+    createProduct, getAllProduct, getSingleProduct, updateProduct, deleteProduct,createFeaturedProduct,getFeaturedProduct
 }
