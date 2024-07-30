@@ -64,8 +64,12 @@ const createUserBankAccountIntoDb = async (payload: UserAccountDetails) => {
 // reterive all user bank account details
 
 const getAllUserAccountDetailsFromDB = async () => {
-  const result = await prisma.userAccountDetails.findMany();
-  if (!result) {
+  const result = await prisma.userAccountDetails.findMany({
+    include: {
+      user: true,
+    },
+  });
+  if (result.length === 0 && !result) {
     throw new ApiError(404, "User bank account details not found");
   }
   return result;
