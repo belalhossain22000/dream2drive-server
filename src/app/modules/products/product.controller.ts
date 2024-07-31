@@ -14,7 +14,11 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     }
     const uploadPromises = files.map(file => fileUploader.uploadToCloudinary(file));
     const filesData = await Promise.all(uploadPromises);
-    const result = await productServices.createProductIntoDB(filesData, req.body);
+
+    const secureUrls = filesData.map((file: any) => file.secure_url);
+
+
+    const result = await productServices.createProductIntoDB(secureUrls, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -71,7 +75,7 @@ const deleteProduct = catchAsync(async (req: Request, res: Response) => {
 
 const createFeaturedProduct = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
- 
+
     const result = await productServices.createFeaturedProduct(id);
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -89,6 +93,7 @@ const getFeaturedProduct = catchAsync(async (req: Request, res: Response) => {
         data: result,
     });
 });
+
 export const productCotroller = {
-    createProduct, getAllProduct, getSingleProduct, updateProduct, deleteProduct,createFeaturedProduct,getFeaturedProduct
+    createProduct, getAllProduct, getSingleProduct, updateProduct, deleteProduct, createFeaturedProduct, getFeaturedProduct
 }

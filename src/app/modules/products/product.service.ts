@@ -1,42 +1,25 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
-<<<<<<< HEAD
-import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
-import { json } from "stream/consumers";
-
-
-=======
 import {
   carStatusEnum,
   categoryEnum,
-  TProductImage,
   TProducts,
 } from "./product.interface";
->>>>>>> 2654e668ff32cdd16eaac137525dfb6d554469c3
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-
   try {
+    console.log(filesData);
     let productData: TProducts = JSON.parse(payload.data);
-  
+    console.log(productData.productName);
     const existingProduct = await prisma.products.findUnique({
       where: {
-        productName: payload.productName,
+        productName: productData.productName,
       },
     });
-
     if (existingProduct) {
       throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
     }
-
-    // Set your default type here
-    // Process filesData to extract image URLs and set a default type
-    const processedImages = filesData.map((file: any) => ({
-      images: file.secure_url,
-      imageType: payload.imageType,
-    }));
-
     const result = await prisma.products.create({
       data: {
         productName: productData.productName,
@@ -47,35 +30,43 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         auctionEndDate: productData.auctionEndDate,
         brandId: productData.brandId.toString(),
         drivingPosition: productData.drivingPosition,
+        totalCarRun: productData.totalCarRun,
+        gearType: productData.gearType,
+        carMetal: productData.carMetal,
+        leatherMaterial: productData.leatherMaterial,
+        carsInline: productData.carsInline,
+        vin: productData.vin,
+        lot: productData.lot,
+        productImage: filesData,
+        interiorImage: filesData,
+        exteriorImage: filesData,
+        othersImages: filesData,
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
         isDeleted: false,
-        productImage: processedImages,
       },
     });
-
     return result;
   } catch (error) {
     throw new Error(`Could not create product: ${error}`);
   }
 };
 
-const getAllProductsFromDB = async (query: {
-  status?: carStatusEnum;
-  category?: categoryEnum;
-  searchTerms: any;
-}) => {
+
+
+
+const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: categoryEnum, searchTerms: any }) => {
   try {
     const andSearchCondition: any[] = [{ isDeleted: false }];
     if (query.category || query.status || query.searchTerms) {
       andSearchCondition.push({
         status: query.status ? query.status : undefined,
         category: query.category ? query.category : undefined,
-        OR: ["productName", "ManufactureCountry"].map((field) => ({
+        OR: ['productName', 'ManufactureCountry'].map(field => ({
           [field]: {
             contains: query.searchTerms,
-            mode: "insensitive",
+            mode: 'insensitive',
           },
         })),
       });
@@ -84,9 +75,8 @@ const getAllProductsFromDB = async (query: {
     const result = await prisma.products.findMany({
       where: whereConditions,
       orderBy: {
-        price: "desc"
+        price: "desc",
       },
-
       include: {
         brand: true, // Assuming the relation is named brand
       },
@@ -105,10 +95,11 @@ const getSingleProductFromDB = async (id: string) => {
       },
       include: {
         brand: true,
-<<<<<<< HEAD
-=======
-        Review: true,
->>>>>>> 2654e668ff32cdd16eaac137525dfb6d554469c3
+        Review: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -121,6 +112,7 @@ const getSingleProductFromDB = async (id: string) => {
     throw new Error(`Could not get product: ${error}`);
   }
 };
+
 const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
   try {
     const existingProduct = await prisma.products.findUnique({
@@ -135,37 +127,25 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       where: { id: id },
       data: {
         productName: payload.productName || existingProduct.productName,
-        ProductDescription:
-          payload.ProductDescription || existingProduct.ProductDescription,
+        ProductDescription: payload.ProductDescription || existingProduct.ProductDescription,
         auction: payload.auction || existingProduct.auction,
         price: payload.price || existingProduct.price,
-        brandId: payload.brandId
-          ? payload.brandId.toString()
-          : existingProduct.brandId,
-        drivingPosition:
-          payload.drivingPosition || existingProduct.drivingPosition,
-        ManufactureCountry:
-          payload.ManufactureCountry || existingProduct.ManufactureCountry,
+        brandId: payload.brandId ? payload.brandId.toString() : existingProduct.brandId,
+        drivingPosition: payload.drivingPosition || existingProduct.drivingPosition,
+        ManufactureCountry: payload.ManufactureCountry || existingProduct.ManufactureCountry,
         status: payload.status || existingProduct.status,
         category: payload.category || existingProduct.category,
-<<<<<<< HEAD
         isDeleted: payload.isDeleted !== undefined ? payload.isDeleted : existingProduct.isDeleted,
-        productImage: payload.productImage !== undefined ? payload.productImage : existingProduct.productImage,
-=======
-        isDeleted:
-          payload.isDeleted !== undefined
-            ? payload.isDeleted
-            : existingProduct.isDeleted,
         productImage: payload.productImage
           ? {
-              deleteMany: {},
-              create: payload.productImage.map((image: TProductImage) => ({
-                image: image.image,
-                imageType: image.imageType,
-              })),
-            }
+            deleteMany: {},
+            create: payload.productImage.map((image: any) => ({
+              image: image.image,
+              imageType: image.imageType,
+            })),
+          }
           : undefined,
->>>>>>> 2654e668ff32cdd16eaac137525dfb6d554469c3
+
       },
     });
 
