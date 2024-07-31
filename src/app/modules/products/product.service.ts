@@ -89,7 +89,11 @@ const getSingleProductFromDB = async (id: string) => {
       },
       include: {
         brand: true,
-        Review: true,
+        Review: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 

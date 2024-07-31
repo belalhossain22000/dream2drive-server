@@ -6,6 +6,7 @@ import { biddingRoutes } from './modules/Bidding/bidding.route';
 import { AuthRoutes } from './modules/Autrh/auth.routes';
 import { userAccountRoutes } from './modules/userAccount/userAccount.routes';
 import { reviewRoutes } from './modules/review/review.route';
+import { wishlistRoute } from './modules/wishlist/wishlist.route';
 
 
 const router = express.Router();
@@ -38,6 +39,10 @@ const moduleRoutes = [
     {
         path: '/reviews',
         route: reviewRoutes
+    },
+    {
+        path: '/wishlist',
+        route: wishlistRoute
     },
 ];
 
