@@ -14,11 +14,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     }
     const uploadPromises = files.map(file => fileUploader.uploadToCloudinary(file));
     const filesData = await Promise.all(uploadPromises);
-
-    const secureUrls = filesData.map((file: any) => file.secure_url);
-
-
-    const result = await productServices.createProductIntoDB(secureUrls, req.body);
+    const result = await productServices.createProductIntoDB(filesData, req.body);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,

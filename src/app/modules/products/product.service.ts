@@ -1,17 +1,29 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
+
+import { json } from "stream/consumers";
+
 import {
   carStatusEnum,
   categoryEnum,
+<<<<<<< HEAD
+=======
+
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
   TProducts,
 } from "./product.interface";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
   try {
+<<<<<<< HEAD
     console.log(filesData);
     let productData: TProducts = JSON.parse(payload.data);
     console.log(productData.productName);
+=======
+    let productData: TProducts = JSON.parse(payload.data);
+
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
     const existingProduct = await prisma.products.findUnique({
       where: {
         productName: productData.productName,
@@ -20,6 +32,17 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
     if (existingProduct) {
       throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
     }
+<<<<<<< HEAD
+=======
+
+    // Set your default type here
+    // Process filesData to extract image URLs and set a default type
+    const processedImages = filesData.map((file: any) => ({
+      images: file.secure_url,
+      imageType: payload.imageType,
+    }));
+
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
     const result = await prisma.products.create({
       data: {
         productName: productData.productName,
@@ -30,6 +53,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         auctionEndDate: productData.auctionEndDate,
         brandId: productData.brandId.toString(),
         drivingPosition: productData.drivingPosition,
+<<<<<<< HEAD
         totalCarRun: productData.totalCarRun,
         gearType: productData.gearType,
         carMetal: productData.carMetal,
@@ -41,15 +65,21 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         interiorImage: filesData,
         exteriorImage: filesData,
         othersImages: filesData,
+=======
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
         isDeleted: false,
+<<<<<<< HEAD
+=======
+        productImage: processedImages,
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
       },
     });
     return result;
-  } catch (error) {
-    throw new Error(`Could not create product: ${error}`);
+  } catch (error: any) {
+    throw new Error(`Could not create product: ${error.message}`);
   }
 };
 
@@ -77,13 +107,17 @@ const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: 
       orderBy: {
         price: "desc",
       },
+<<<<<<< HEAD
+=======
+
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
       include: {
         brand: true, // Assuming the relation is named brand
       },
     });
     return result;
-  } catch (error) {
-    throw new Error(`Could not get products: ${error}`);
+  } catch (error: any) {
+    throw new Error(`Could not get products: ${error.message}`);
   }
 };
 
@@ -108,7 +142,7 @@ const getSingleProductFromDB = async (id: string) => {
     }
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not get product: ${error}`);
   }
 };
@@ -138,19 +172,28 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
         isDeleted: payload.isDeleted !== undefined ? payload.isDeleted : existingProduct.isDeleted,
         productImage: payload.productImage
           ? {
+<<<<<<< HEAD
             deleteMany: {},
             create: payload.productImage.map((image: any) => ({
               image: image.image,
               imageType: image.imageType,
             })),
           }
+=======
+              deleteMany: {},
+              create: payload.productImage.map((image: any) => ({
+                image: image.image,
+                imageType: image.imageType,
+              })),
+            }
+>>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
           : undefined,
 
       },
     });
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not update product: ${error}`);
   }
 };
@@ -173,7 +216,7 @@ const deleteProductFromDB = async (id: string) => {
     });
 
     return { message: "Product  deleted successfully!", result };
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not  delete product: ${error}`);
   }
 };

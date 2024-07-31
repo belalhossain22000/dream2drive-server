@@ -2,10 +2,11 @@ import { ObjectId } from 'mongodb'; // Import for clarity
 import { number } from 'zod';
 
 
-// export interface TProductImage {
-//   image: string;
-//   imageType: string;
-// }
+// ProductImage
+export interface TProductImage {
+  image: string;
+  imageType: string;
+}
 
 // Brand
 export interface Brand {
@@ -32,25 +33,13 @@ export enum categoryEnum {
 // Products
 export interface TProducts {
   productName: string;
+  productImage: TProductImage[]; // Array of ProductImage (if using one-to-many)
   ProductDescription: string;
   auction: boolean;
   price: number;
   brandId: ObjectId;
   brand?: Brand;
-  drivingPosition: "RHD" | "LHD";
-  totalCarRun: number;
-  gearType: ' manual' | 'auto';
-  carMetal: string;
-  leatherMaterial: string;
-  carsInline: string;
-  vin: string;
-  lot: string;
-  productImage: string[];
-  interiorImage: string[];
-  exteriorImage: string[];
-  othersImages: string[];
-  auctionStartDate: string;
-  auctionEndDate: string;
+  drivingPosition: string;
   ManufactureCountry: string;
   status: carStatusEnum;
   category: categoryEnum;
