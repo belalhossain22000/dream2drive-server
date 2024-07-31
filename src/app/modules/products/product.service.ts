@@ -4,34 +4,21 @@ import ApiError from "../../errors/ApiErrors";
 
 import { json } from "stream/consumers";
 
-import {
-  carStatusEnum,
-  categoryEnum,
-
-  TProducts,
-} from "./product.interface";
+import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
   try {
-    let productData: TProducts = JSON.parse(payload.data);
-
+    // console.log(payload);
+    let productData: TProducts = JSON.parse(payload);
+    console.log(productData);
     const existingProduct = await prisma.products.findUnique({
       where: {
-        productName: payload.productName,
+        productName: productData.productName,
       },
     });
-
     if (existingProduct) {
       throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
     }
-
-    // Set your default type here
-    // Process filesData to extract image URLs and set a default type
-    const processedImages = filesData.map((file: any) => ({
-      images: file.secure_url,
-      imageType: payload.imageType,
-    }));
-
     const result = await prisma.products.create({
       data: {
         productName: productData.productName,
@@ -42,14 +29,23 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         auctionEndDate: productData.auctionEndDate,
         brandId: productData.brandId.toString(),
         drivingPosition: productData.drivingPosition,
+        totalCarRun: productData.totalCarRun,
+        gearType: productData.gearType,
+        carMetal: productData.carMetal,
+        leatherMaterial: productData.leatherMaterial,
+        carsInline: productData.carsInline,
+        vin: productData.vin,
+        lot: productData.lot,
+        productImage: filesData,
+        interiorImage: filesData,
+        exteriorImage: filesData,
+        othersImages: filesData,
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
         isDeleted: false,
-        productImage: processedImages,
       },
     });
-
     return result;
   } catch (error: any) {
     throw new Error(`Could not create product: ${error.message}`);
@@ -81,7 +77,6 @@ const getAllProductsFromDB = async (query: {
       orderBy: {
         price: "desc",
       },
-
       include: {
         brand: true, // Assuming the relation is named brand
       },
@@ -100,7 +95,11 @@ const getSingleProductFromDB = async (id: string) => {
       },
       include: {
         brand: true,
-        Review: true,
+        Review: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -113,6 +112,7 @@ const getSingleProductFromDB = async (id: string) => {
     throw new Error(`Could not get product: ${error}`);
   }
 };
+
 const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
   try {
     const existingProduct = await prisma.products.findUnique({
