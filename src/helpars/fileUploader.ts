@@ -3,25 +3,24 @@ import path from "path"
 import fs from 'fs'
 import { v2 as cloudinary } from 'cloudinary';
 import { ICloudinaryResponse, IFile } from "../app/interfaces/file";
-
+import config from "../config";
 
 cloudinary.config({
-    cloud_name: 'dbgrq28js',
-    api_key: '173484379744282',
-    api_secret: 'eHKsVTxIOLl5oaO_BHxBQWAK3GA'
+    cloud_name: 'dse4w3es9',
+    api_key: '799237289977844',
+    api_secret: 'KM5tfi0VKxLd5ylCOLx8D-5ERlo'
 });
-
 const storage = multer.diskStorage({
-    destination: function (req: any, file: any, cb: any) {
+    destination: function (req, file, cb) {
         cb(null, path.join(process.cwd(), 'uploads'))
     },
-    filename: function (req: any, file: any, cb: any) {
+    filename: function (req, file, cb) {
         cb(null, file.originalname)
     }
 })
 
 const upload = multer({ storage: storage })
-
+const uploadMultiple = upload.array("files", 50);
 const uploadToCloudinary = async (file: IFile): Promise<ICloudinaryResponse | undefined> => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload(file.path,
@@ -39,5 +38,6 @@ const uploadToCloudinary = async (file: IFile): Promise<ICloudinaryResponse | un
 
 export const fileUploader = {
     upload,
+    uploadMultiple,
     uploadToCloudinary
 }

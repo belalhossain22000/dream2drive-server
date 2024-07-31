@@ -1,16 +1,20 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
+
+import { json } from "stream/consumers";
+
 import {
   carStatusEnum,
   categoryEnum,
-  TProductImage,
+
   TProducts,
 } from "./product.interface";
 
-const createProductIntoDB = async (payload: TProducts) => {
-  // console.log(payload);
+const createProductIntoDB = async (filesData: any, payload: any) => {
   try {
+    let productData: TProducts = JSON.parse(payload.data);
+
     const existingProduct = await prisma.products.findUnique({
       where: {
         productName: payload.productName,
@@ -21,30 +25,34 @@ const createProductIntoDB = async (payload: TProducts) => {
       throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
     }
 
+    // Set your default type here
+    // Process filesData to extract image URLs and set a default type
+    const processedImages = filesData.map((file: any) => ({
+      images: file.secure_url,
+      imageType: payload.imageType,
+    }));
+
     const result = await prisma.products.create({
       data: {
-        productName: payload.productName,
-        ProductDescription: payload.ProductDescription,
-        auction: payload.auction,
-        price: payload.price,
-        brandId: payload.brandId.toString(),
-        drivingPosition: payload.drivingPosition,
-        ManufactureCountry: payload.ManufactureCountry,
-        status: payload.status,
-        category: payload.category,
+        productName: productData.productName,
+        ProductDescription: productData.ProductDescription,
+        auction: productData.auction,
+        price: productData.price,
+        auctionStartDate: productData.auctionStartDate,
+        auctionEndDate: productData.auctionEndDate,
+        brandId: productData.brandId.toString(),
+        drivingPosition: productData.drivingPosition,
+        ManufactureCountry: productData.ManufactureCountry,
+        status: productData.status,
+        category: productData.category,
         isDeleted: false,
-        productImage: {
-          create: (payload.productImage || []).map((image: TProductImage) => ({
-            image: image.image,
-            imageType: image.imageType,
-          })),
-        },
+        productImage: processedImages,
       },
     });
 
     return result;
-  } catch (error) {
-    throw new Error(`Could not create product: ${error}`);
+  } catch (error: any) {
+    throw new Error(`Could not create product: ${error.message}`);
   }
 };
 
@@ -70,14 +78,17 @@ const getAllProductsFromDB = async (query: {
     const whereConditions = { AND: andSearchCondition };
     const result = await prisma.products.findMany({
       where: whereConditions,
+      orderBy: {
+        price: "desc",
+      },
 
       include: {
         brand: true, // Assuming the relation is named brand
       },
     });
     return result;
-  } catch (error) {
-    throw new Error(`Could not get products: ${error}`);
+  } catch (error: any) {
+    throw new Error(`Could not get products: ${error.message}`);
   }
 };
 
@@ -89,11 +100,7 @@ const getSingleProductFromDB = async (id: string) => {
       },
       include: {
         brand: true,
-        Review: {
-          include: {
-            user: true,
-          },
-        },
+        Review: true,
       },
     });
 
@@ -102,7 +109,7 @@ const getSingleProductFromDB = async (id: string) => {
     }
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not get product: ${error}`);
   }
 };
@@ -140,7 +147,7 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
         productImage: payload.productImage
           ? {
               deleteMany: {},
-              create: payload.productImage.map((image: TProductImage) => ({
+              create: payload.productImage.map((image: any) => ({
                 image: image.image,
                 imageType: image.imageType,
               })),
@@ -150,7 +157,7 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
     });
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not update product: ${error}`);
   }
 };
@@ -173,7 +180,7 @@ const deleteProductFromDB = async (id: string) => {
     });
 
     return { message: "Product  deleted successfully!", result };
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Could not  delete product: ${error}`);
   }
 };

@@ -1,14 +1,13 @@
 import express from 'express'
 import { productCotroller } from './product.controller';
-import validateRequest from '../../middlewares/validateRequest';
-import { productValidation } from './product.validation';
+import { fileUploader } from '../../../helpars/fileUploader';
 
 
 
 const router = express.Router();
 
 // task 3
-router.post('/', productCotroller.createProduct);
+router.post('/',fileUploader.uploadMultiple, productCotroller.createProduct);
 router.get('/', productCotroller.getAllProduct);
 router.get('/featured', productCotroller.getFeaturedProduct);
 router.get('/:id', productCotroller.getSingleProduct);

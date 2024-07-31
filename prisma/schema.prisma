@@ -11,20 +11,20 @@ generator client {
 }
 
 model User {
-  id             String              @id @default(auto()) @map("_id") @db.ObjectId
-  email          String              @unique
-  firstName      String
-  lastName       String
-  username       String
-  password       String
-  role           UserRole
-  userStatus     UserStatus
-  biddings       Bidding[]
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  accountDetails UserAccountDetails?
-  Review         Review[]
-  Wishlist       Wishlist[]
+  id                 String              @id @default(auto()) @map("_id") @db.ObjectId
+  email              String              @unique
+  firstName          String
+  lastName           String
+  username           String
+  password           String
+  role               UserRole
+  userStatus         UserStatus
+  biddings           Bidding[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  Wishlist           Wishlist[]
+  UserAccountDetails UserAccountDetails?
+  Review             Review[]
 
   @@map("users")
 }
@@ -58,25 +58,25 @@ enum UserRole {
 }
 
 model Products {
-  id                 String         @id @default(auto()) @map("_id") @db.ObjectId
-  productName        String         @unique
-  productImage       ProductImage[]
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  productName        String        @unique
+  productImage       Json
   ProductDescription String
   auction            Boolean
-  auctionStartDate   DateTime?
-  auctionEndDate     DateTime?
+  auctionStartDate   DateTime
+  auctionEndDate     DateTime
   price              Int
-  brandId            String         @db.ObjectId
-  brand              Brand?         @relation(fields: [brandId], references: [id])
+  brandId            String        @db.ObjectId
+  brand              Brand?        @relation(fields: [brandId], references: [id])
   drivingPosition    String
   ManufactureCountry String
   status             carStatusEnum
   biddings           Bidding[]
   category           categoryEnum
-  isDeleted          Boolean        @default(false)
-  featured           Boolean        @default(false)
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  isDeleted          Boolean       @default(false)
+  featured           Boolean       @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
   Review             Review[]
   wishlist           Wishlist[]
 
@@ -123,13 +123,13 @@ enum carStatusEnum {
   sold
 }
 
-model ProductImage {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  image      String
-  imageType  String
-  Products   Products? @relation(fields: [productsId], references: [id])
-  productsId String?   @db.ObjectId
-}
+// model ProductImage {
+//   id         String    @id @default(auto()) @map("_id") @db.ObjectId
+//   image      String
+//   imageType  String
+//   Products   Products? @relation(fields: [productsId], references: [id])
+//   productsId String?   @db.ObjectId
+// }
 
 model Brand {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
