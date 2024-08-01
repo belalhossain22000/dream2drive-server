@@ -33,13 +33,25 @@ export enum categoryEnum {
 // Products
 export interface TProducts {
   productName: string;
-  productImage: TProductImage[]; // Array of ProductImage (if using one-to-many)
   ProductDescription: string;
   auction: boolean;
   price: number;
   brandId: ObjectId;
   brand?: Brand;
-  drivingPosition: string;
+  drivingPosition: "RHD" | "LHD";
+  totalCarRun: number;
+  gearType: ' manual' | 'auto';
+  carMetal: string;
+  leatherMaterial: string;
+  carsInline: string;
+  vin: string;
+  lot: string;
+  productImage: string[];
+  interiorImage: string[];
+  exteriorImage: string[];
+  othersImages: string[];
+  auctionStartDate: string;
+  auctionEndDate: string;
   ManufactureCountry: string;
   status: carStatusEnum;
   category: categoryEnum;
