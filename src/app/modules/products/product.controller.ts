@@ -12,8 +12,11 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
   }
-  const uploadPromises = files.map((file) =>
-    fileUploader.uploadToCloudinary(file)
+  const uploadPromises = files.map((file) =>{
+    console.log(file)
+  }
+    // fileUploader.uploadToCloudinary(file)
+
   );
   const filesData = await Promise.all(uploadPromises);
 
