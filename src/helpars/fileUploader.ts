@@ -20,7 +20,12 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage })
-const uploadMultiple = upload.array("files", 50);
+const uploadMultiple = upload.fields([
+    { name: 'productImage', maxCount: 10 },
+    { name: 'interiorImage', maxCount: 10 },
+    { name: 'exteriorImage', maxCount: 10 },
+    { name: 'othersImage', maxCount: 10 },
+]);
 const uploadToCloudinary = async (file: IFile): Promise<ICloudinaryResponse | undefined> => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader.upload(file.path,

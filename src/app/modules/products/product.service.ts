@@ -4,26 +4,15 @@ import ApiError from "../../errors/ApiErrors";
 
 import { json } from "stream/consumers";
 
-import {
-  carStatusEnum,
-  categoryEnum,
-<<<<<<< HEAD
-=======
-
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
-  TProducts,
-} from "./product.interface";
+import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-  try {
-<<<<<<< HEAD
-    console.log(filesData);
-    let productData: TProducts = JSON.parse(payload.data);
-    console.log(productData.productName);
-=======
-    let productData: TProducts = JSON.parse(payload.data);
+  const { productURL,interiorURL,expteriorURL,othersURL}=filesData;
 
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
+  try {
+    // console.log(payload);
+    let productData: TProducts = JSON.parse(payload);
+    console.log(productData);
     const existingProduct = await prisma.products.findUnique({
       where: {
         productName: productData.productName,
@@ -32,17 +21,6 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
     if (existingProduct) {
       throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
     }
-<<<<<<< HEAD
-=======
-
-    // Set your default type here
-    // Process filesData to extract image URLs and set a default type
-    const processedImages = filesData.map((file: any) => ({
-      images: file.secure_url,
-      imageType: payload.imageType,
-    }));
-
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
     const result = await prisma.products.create({
       data: {
         productName: productData.productName,
@@ -53,7 +31,6 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         auctionEndDate: productData.auctionEndDate,
         brandId: productData.brandId.toString(),
         drivingPosition: productData.drivingPosition,
-<<<<<<< HEAD
         totalCarRun: productData.totalCarRun,
         gearType: productData.gearType,
         carMetal: productData.carMetal,
@@ -61,20 +38,14 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         carsInline: productData.carsInline,
         vin: productData.vin,
         lot: productData.lot,
-        productImage: filesData,
-        interiorImage: filesData,
-        exteriorImage: filesData,
-        othersImages: filesData,
-=======
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
+        productImage: productURL,
+        interiorImage: interiorURL,
+        exteriorImage: expteriorURL,
+        othersImages:othersURL,
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
         isDeleted: false,
-<<<<<<< HEAD
-=======
-        productImage: processedImages,
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
       },
     });
     return result;
@@ -83,20 +54,21 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
   }
 };
 
-
-
-
-const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: categoryEnum, searchTerms: any }) => {
+const getAllProductsFromDB = async (query: {
+  status?: carStatusEnum;
+  category?: categoryEnum;
+  searchTerms: any;
+}) => {
   try {
     const andSearchCondition: any[] = [{ isDeleted: false }];
     if (query.category || query.status || query.searchTerms) {
       andSearchCondition.push({
         status: query.status ? query.status : undefined,
         category: query.category ? query.category : undefined,
-        OR: ['productName', 'ManufactureCountry'].map(field => ({
+        OR: ["productName", "ManufactureCountry"].map((field) => ({
           [field]: {
             contains: query.searchTerms,
-            mode: 'insensitive',
+            mode: "insensitive",
           },
         })),
       });
@@ -107,10 +79,6 @@ const getAllProductsFromDB = async (query: { status?: carStatusEnum, category?: 
       orderBy: {
         price: "desc",
       },
-<<<<<<< HEAD
-=======
-
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
       include: {
         brand: true, // Assuming the relation is named brand
       },
@@ -161,34 +129,32 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       where: { id: id },
       data: {
         productName: payload.productName || existingProduct.productName,
-        ProductDescription: payload.ProductDescription || existingProduct.ProductDescription,
+        ProductDescription:
+          payload.ProductDescription || existingProduct.ProductDescription,
         auction: payload.auction || existingProduct.auction,
         price: payload.price || existingProduct.price,
-        brandId: payload.brandId ? payload.brandId.toString() : existingProduct.brandId,
-        drivingPosition: payload.drivingPosition || existingProduct.drivingPosition,
-        ManufactureCountry: payload.ManufactureCountry || existingProduct.ManufactureCountry,
+        brandId: payload.brandId
+          ? payload.brandId.toString()
+          : existingProduct.brandId,
+        drivingPosition:
+          payload.drivingPosition || existingProduct.drivingPosition,
+        ManufactureCountry:
+          payload.ManufactureCountry || existingProduct.ManufactureCountry,
         status: payload.status || existingProduct.status,
         category: payload.category || existingProduct.category,
-        isDeleted: payload.isDeleted !== undefined ? payload.isDeleted : existingProduct.isDeleted,
+        isDeleted:
+          payload.isDeleted !== undefined
+            ? payload.isDeleted
+            : existingProduct.isDeleted,
         productImage: payload.productImage
           ? {
-<<<<<<< HEAD
             deleteMany: {},
             create: payload.productImage.map((image: any) => ({
               image: image.image,
               imageType: image.imageType,
             })),
           }
-=======
-              deleteMany: {},
-              create: payload.productImage.map((image: any) => ({
-                image: image.image,
-                imageType: image.imageType,
-              })),
-            }
->>>>>>> 327c2db7ab1e6211ebb54b415e457cfa3689af9a
           : undefined,
-
       },
     });
 

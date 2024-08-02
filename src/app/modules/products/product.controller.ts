@@ -5,22 +5,39 @@ import { Request, Response } from "express";
 import { productServices } from "./product.service";
 import { fileUploader } from "../../../helpars/fileUploader";
 import { json } from "stream/consumers";
-
+export interface ICloudinaryResult {
+  secure_url: string;
+  // Add other properties if needed
+}
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-    console.log(req.body.body);
-  const files = req.files as Express.Multer.File[];
+  const files = req.files as any;
+
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
   }
-  const uploadPromises = files.map((file) =>
-    fileUploader.uploadToCloudinary(file)
-  );
-  const filesData = await Promise.all(uploadPromises);
 
-  const secureUrls = filesData.map((file: any) => file.secure_url);
+  const productImageFiles = files.productImage;
+  const interiorImageFiles = files.interiorImage || [];
+  const exteriorImageFiles = files.exteriorImage || [];
+  const othersImageFiles = files.othersImage || [];
+  const productImageResults = productImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file))
+  const interiorImageResults = interiorImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file));
+  const exteriorImageResults = exteriorImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file));
+  const othersImageResults = othersImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file));
 
-//   console.log(req.body);
-  const result = await productServices.createProductIntoDB(secureUrls, req.body.body);
+  const productData = await Promise.all(productImageResults)
+  const interiorData = await Promise.all(interiorImageResults)
+  const exteriorData = await Promise.all(exteriorImageResults)
+  const othersData = await Promise.all(othersImageResults)
+const productURL=productData.map(product=>product.secure_url);
+const interiorURL=interiorData.map(interior=>interior.secure_url);
+const expteriorURL=exteriorData.map(exterior=>exterior.secure_url);
+const othersURL=othersData.map(others=>others.secure_url);
+  const filesData = {
+    productURL,interiorURL,expteriorURL,othersURL
+  };
+
+  const result = await productServices.createProductIntoDB(filesData , req.body.body);
 
   sendResponse(res, {
       statusCode: httpStatus.OK,
