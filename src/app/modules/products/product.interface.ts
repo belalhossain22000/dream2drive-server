@@ -2,10 +2,11 @@ import { ObjectId } from 'mongodb'; // Import for clarity
 import { number } from 'zod';
 
 
-// export interface TProductImage {
-//   image: string;
-//   imageType: string;
-// }
+// ProductImage
+export interface TProductImage {
+  image: string;
+  imageType: string;
+}
 
 // Brand
 export interface Brand {

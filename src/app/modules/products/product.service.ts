@@ -7,6 +7,8 @@ import { json } from "stream/consumers";
 import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
+  const { productURL,interiorURL,expteriorURL,othersURL}=filesData;
+
   try {
     // console.log(payload);
     let productData: TProducts = JSON.parse(payload);
@@ -36,10 +38,10 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         carsInline: productData.carsInline,
         vin: productData.vin,
         lot: productData.lot,
-        productImage: filesData,
-        interiorImage: filesData,
-        exteriorImage: filesData,
-        othersImages: filesData,
+        productImage: productURL,
+        interiorImage: interiorURL,
+        exteriorImage: expteriorURL,
+        othersImages:othersURL,
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
@@ -146,12 +148,12 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
             : existingProduct.isDeleted,
         productImage: payload.productImage
           ? {
-              deleteMany: {},
-              create: payload.productImage.map((image: any) => ({
-                image: image.image,
-                imageType: image.imageType,
-              })),
-            }
+            deleteMany: {},
+            create: payload.productImage.map((image: any) => ({
+              image: image.image,
+              imageType: image.imageType,
+            })),
+          }
           : undefined,
       },
     });
