@@ -6,6 +6,7 @@ import httpStatus from "http-status";
 import { string } from "zod";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
+  console.log(req.body)
   const result = await AuthServices.loginUser(req.body);
   res.cookie("token", result.token, { httpOnly: true });
   sendResponse(res, {
@@ -43,6 +44,7 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 // change password
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   const userToken = req.headers.authorization;

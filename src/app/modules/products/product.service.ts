@@ -7,7 +7,7 @@ import { json } from "stream/consumers";
 import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-  const { productURL,interiorURL,expteriorURL,othersURL}=filesData;
+  const { productURL, interiorURL, expteriorURL, othersURL } = filesData;
 
   try {
     // console.log(payload);
@@ -41,7 +41,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         productImage: productURL,
         interiorImage: interiorURL,
         exteriorImage: expteriorURL,
-        othersImages:othersURL,
+        othersImages: othersURL,
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
@@ -57,15 +57,18 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
 const getAllProductsFromDB = async (query: {
   status?: carStatusEnum;
   category?: categoryEnum;
-  searchTerms: any;
+  searchTerms?: any;
+  brands?: any;
 }) => {
   try {
     const andSearchCondition: any[] = [{ isDeleted: false }];
-    if (query.category || query.status || query.searchTerms) {
+    
+    if (query.category || query.status || query.searchTerms || query.brands) {
       andSearchCondition.push({
         status: query.status ? query.status : undefined,
         category: query.category ? query.category : undefined,
-        OR: ["productName", "ManufactureCountry"].map((field) => ({
+        brand: query.brands ? query.brands: undefined,
+        OR: ["productName", "ManufactureCountry","brand"].map((field) => ({
           [field]: {
             contains: query.searchTerms,
             mode: "insensitive",
@@ -73,6 +76,8 @@ const getAllProductsFromDB = async (query: {
         })),
       });
     }
+  
+console.log(andSearchCondition)
     const whereConditions = { AND: andSearchCondition };
     const result = await prisma.products.findMany({
       where: whereConditions,
@@ -83,6 +88,7 @@ const getAllProductsFromDB = async (query: {
         brand: true, // Assuming the relation is named brand
       },
     });
+   
     return result;
   } catch (error: any) {
     throw new Error(`Could not get products: ${error.message}`);
@@ -148,12 +154,12 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
             : existingProduct.isDeleted,
         productImage: payload.productImage
           ? {
-            deleteMany: {},
-            create: payload.productImage.map((image: any) => ({
-              image: image.image,
-              imageType: image.imageType,
-            })),
-          }
+              deleteMany: {},
+              create: payload.productImage.map((image: any) => ({
+                image: image.image,
+                imageType: image.imageType,
+              })),
+            }
           : undefined,
       },
     });

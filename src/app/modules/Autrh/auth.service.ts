@@ -60,6 +60,8 @@ const getMyProfile = async (userToken: string) => {
       id: true,
       username: true,
       email: true,
+      firstName: true,
+      lastName: true,
       role: true,
       createdAt: true,
       updatedAt: true,

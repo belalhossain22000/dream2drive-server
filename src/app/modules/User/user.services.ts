@@ -1,3 +1,4 @@
+import { tuple } from "zod";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IUser } from "./user.interface";
@@ -5,6 +6,7 @@ import * as bcrypt from "bcrypt";
 
 // Create a new user in the database.
 const createUserIntoDb = async (payload: IUser) => {
+  console.log(payload);
   // Check if user with the same email or username already exists
   const existingUser = await prisma.user.findFirst({
     where: {
@@ -95,8 +97,45 @@ const getUsersFromDb = async () => {
   return result;
 };
 
+// update profile
+const updateProfile = async (user: IUser, payload: IUser) => {
+  console.log(payload)
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: payload.email,
+      id: payload.id,
+    },
+  });
+
+  // Update the user profile with the new information
+  const updatedUser = await prisma.user.update({
+    where: {
+      email: userInfo.email,
+    },
+    data: {
+      firstName: payload.firstName,
+      lastName:payload.lastName,
+      username:payload.username,
+      email:payload.email
+
+    },
+    select:{
+      id:true,
+      firstName:true,
+      lastName:true,
+      username:true,
+      email:true,
+      role:true,
+      userStatus:true
+    }
+  });
+
+  return updatedUser;
+};
+
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
   createAdminIntoDb,
+  updateProfile,
 };

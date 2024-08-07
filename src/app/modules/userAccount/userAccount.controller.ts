@@ -6,7 +6,8 @@ import stripe from "../../../helpars/stripe";
 import { paymentService } from "./userAccount.service";
 
 const validateCards = async (req: Request, res: Response) => {
-  const { token } = req.body; // Token ID received from the frontend
+  console.log(req.body);
+  const { token } = req.body;
 
   if (!token) {
     return res.status(400).json({ error: "Token is required" });

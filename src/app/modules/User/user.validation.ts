@@ -22,7 +22,17 @@ const UserLoginValidationSchema = z.object({
     .nonempty("Password is required"),
 });
 
+
+const userUpdateSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  username: z.string().optional(),
+  email: z.string().email(),
+  // Add other fields if necessary
+});
+
 export const UserValidation = {
   CreateUserValidationSchema,
   UserLoginValidationSchema,
+  userUpdateSchema
 };

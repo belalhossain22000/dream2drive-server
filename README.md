@@ -23,8 +23,11 @@
 
 ## Auth Routes
 - **POST /auth/login**: Login a user
-- **POST /auth/register**: Register a new user
-- **POST /auth/refresh-token**: Refresh JWT token
+- **POST /auth/logout**: Logout a user
+- **GET /auth/get-me**: Retrieve the profile of the logged-in user
+- **PUT /auth/change-password**: Change the password of the logged-in user
+- **POST /auth/forgot-password**: Initiate password reset process
+- **POST /auth/reset-password**: Complete password reset process
 
 ## Bidding Routes
 - **POST /bidding**: Place a bid

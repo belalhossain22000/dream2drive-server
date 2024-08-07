@@ -36,8 +36,22 @@ const getUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// get all user form db
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const user = req?.user;
+
+  const result = await userService.updateProfile(user, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Profile updated successfully!",
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getUsers,
   createAdmin,
+  updateProfile,
 };
