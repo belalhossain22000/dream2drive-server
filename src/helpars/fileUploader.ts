@@ -19,7 +19,8 @@ const storage = multer.diskStorage({
     }
 })
 
-const upload = multer({ storage: storage })
+const upload = multer({ storage: storage });
+const uploadSingle = upload.single('carImage');
 const uploadMultiple = upload.fields([
     { name: 'productImage', maxCount: 10 },
     { name: 'interiorImage', maxCount: 10 },
@@ -43,6 +44,7 @@ const uploadToCloudinary = async (file: IFile): Promise<ICloudinaryResponse | un
 
 export const fileUploader = {
     upload,
+    uploadSingle,
     uploadMultiple,
     uploadToCloudinary
 }

@@ -12,7 +12,6 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
   try {
     // console.log(payload);
     let productData: TProducts = JSON.parse(payload);
-    console.log(productData);
     const existingProduct = await prisma.products.findUnique({
       where: {
         productName: productData.productName,
