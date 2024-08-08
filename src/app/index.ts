@@ -33,7 +33,7 @@ const moduleRoutes = [
         route: AuthRoutes
     },
     {
-        path: '/payment',
+        path: '/',
         route: userAccountRoutes
     },
     {

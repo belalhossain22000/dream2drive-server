@@ -6,20 +6,18 @@ import { UserAccountDetails } from "./userAccount.interface";
 // validateCard card
 const validateCard = async (cardDetails: any) => {
   try {
-    // Create a PaymentMethod with card details
-    const paymentMethod = await stripe.paymentMethods.create({
-      type: "card",
-      card: cardDetails,
-    });
-    return {
-      valid: true,
-      paymentMethod,
-    };
-  } catch (error: any) {
-    return {
-      valid: false,
-      error: error.message,
-    };
+    const { userId } = req.body;
+
+    // Create a SetupIntent
+    const setupIntent = await stripe.setupIntents.create();
+
+    console.log("SetupIntent:", setupIntent); // Log the SetupIntent object
+
+    // Send the client secret back to the client
+    res.json({ clientSecret: setupIntent.client_secret });
+  } catch (error) {
+    console.error("Error creating SetupIntent:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
