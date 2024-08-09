@@ -5,6 +5,10 @@ import ApiError from "../../errors/ApiErrors";
 import { json } from "stream/consumers";
 
 import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
+import { IPaginationOptions } from "../../interfaces/paginations";
+import { paginationHelper } from "../../../helpars/paginationHelper";
+import { Prisma } from "@prisma/client";
+import { productsSearchAbleFields } from "./product.constants";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
   const { productURL, interiorURL, expteriorURL, othersURL } = filesData;
@@ -54,45 +58,69 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
   }
 };
 
-const getAllProductsFromDB = async (query: {
-  status?: carStatusEnum;
-  category?: categoryEnum;
-  searchTerms?: any;
-  brands?: any;
-}) => {
-  try {
-    const andSearchCondition: any[] = [{ isDeleted: false }];
-    
-    if (query.category || query.status || query.searchTerms || query.brands) {
-      andSearchCondition.push({
-        status: query.status ? query.status : undefined,
-        category: query.category ? query.category : undefined,
-        brand: query.brands ? query.brands: undefined,
-        OR: ["productName", "ManufactureCountry","brand"].map((field) => ({
-          [field]: {
-            contains: query.searchTerms,
-            mode: "insensitive",
-          },
-        })),
-      });
-    }
-  
-console.log(andSearchCondition)
-    const whereConditions = { AND: andSearchCondition };
-    const result = await prisma.products.findMany({
-      where: whereConditions,
-      orderBy: {
-        price: "desc",
-      },
-      include: {
-        brand: true, // Assuming the relation is named brand
-      },
+const getAllProductsFromDB = async (
+  params: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = params;
+  const andCondions: Prisma.ProductsWhereInput[] = [];
+
+  //console.log(filterData);
+  if (params.searchTerm) {
+    andCondions.push({
+      OR: productsSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: params.searchTerm,
+          mode: "insensitive",
+        },
+      })),
     });
-   
-    return result;
-  } catch (error: any) {
-    throw new Error(`Could not get products: ${error.message}`);
   }
+
+  if (Object.keys(filterData).length > 0) {
+    andCondions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+
+  andCondions.push({
+    isDeleted: false,
+  });
+
+  //console.dir(andCondions, { depth: 'inifinity' })
+  const whereConditons: Prisma.ProductsWhereInput = { AND: andCondions };
+
+  const result = await prisma.products.findMany({
+    where: whereConditons,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.products.count({
+    where: whereConditons,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 const getSingleProductFromDB = async (id: string) => {

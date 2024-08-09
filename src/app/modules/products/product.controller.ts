@@ -5,6 +5,8 @@ import { Request, Response } from "express";
 import { productServices } from "./product.service";
 import { fileUploader } from "../../../helpars/fileUploader";
 import { json } from "stream/consumers";
+import pick from "../../../shared/pick";
+import { productsFilterableFields } from "./product.constants";
 export interface ICloudinaryResult {
   secure_url: string;
   // Add other properties if needed
@@ -48,7 +50,9 @@ const othersURL=othersData.map(others=>others.secure_url);
 });
 
 const getAllProduct = catchAsync(async (req: Request, res: Response) => {
-  const result = await productServices.getAllProductsFromDB(req.query as any);
+  const filters = pick(req.query, productsFilterableFields);
+    const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder'])
+  const result = await productServices.getAllProductsFromDB(filters, options);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
