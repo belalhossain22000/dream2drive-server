@@ -57,7 +57,6 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
     throw new Error(`Could not create product: ${error.message}`);
   }
 };
-
 const getAllProductsFromDB = async (
   params: any,
   options: IPaginationOptions

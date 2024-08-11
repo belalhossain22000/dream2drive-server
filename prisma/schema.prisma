@@ -1,5 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// *! This is your Prisma schema file,
+// *! learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
   provider = "mongodb"
@@ -10,6 +10,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ** user accoutn model
 model User {
   id                 String              @id @default(auto()) @map("_id") @db.ObjectId
   email              String              @unique
@@ -29,6 +30,7 @@ model User {
   @@map("users")
 }
 
+// user wishlist model
 model Wishlist {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
@@ -41,6 +43,7 @@ model Wishlist {
   @@map("wishlist")
 }
 
+// user bank account model
 model UserAccountDetails {
   id              String  @id @default(auto()) @map("_id") @db.ObjectId
   userId          String  @unique @db.ObjectId
@@ -59,16 +62,19 @@ model UserAccountDetails {
   @@map("user_account_details")
 }
 
+// user status enum
 enum UserStatus {
   ACTIVE
   BLOCKED
 }
 
+// user role enum
 enum UserRole {
   ADMIN
   USER
 }
 
+// car/products model
 model Products {
   id                 String          @id @default(auto()) @map("_id") @db.ObjectId
   productName        String          @unique
@@ -115,6 +121,7 @@ model Products {
 //   @@map("product_images")
 // }
 
+// review model
 model Review {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
@@ -128,11 +135,13 @@ model Review {
   @@map("reviews")
 }
 
+// car driving position enum
 enum drivingPosition {
   RHD
   LHD
 }
 
+// car/porductrs category enum
 enum categoryEnum {
   weeklyHighlights
   supercars
@@ -142,12 +151,14 @@ enum categoryEnum {
   twoWheels
 }
 
+// car status enum
 enum carStatusEnum {
   pending
   live
   sold
 }
 
+// brand model
 model Brand {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
   brandName String     @unique
@@ -156,11 +167,8 @@ model Brand {
   @@map("brands")
 }
 
-model review {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  reviewDesc String
-}
 
+// 
 model Article {
   id             String          @id @default(auto()) @map("_id") @db.ObjectId
   bannerImage    String

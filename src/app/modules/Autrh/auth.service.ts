@@ -8,6 +8,8 @@ import emailSender from "./emailSender";
 import { UserStatus } from "@prisma/client";
 import httpStatus from "http-status";
 
+
+// user login 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
@@ -51,7 +53,7 @@ const getMyProfile = async (userToken: string) => {
     config.jwt.jwt_secret!
   );
 
-  // Getting user data
+  
   const userProfile = await prisma.user.findUnique({
     where: {
       id: decodedToken.id,
