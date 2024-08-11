@@ -11,7 +11,7 @@ import { Prisma } from "@prisma/client";
 import { productsSearchAbleFields } from "./product.constants";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-  const { productURL, interiorURL, expteriorURL, othersURL } = filesData;
+  const { productURL, interiorURL, expteriorURL, othersURL,singleImageURL} = filesData;
 
   try {
     // console.log(payload);
@@ -42,10 +42,16 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         carsInline: productData.carsInline,
         vin: productData.vin,
         lot: productData.lot,
+        productSingleImage:singleImageURL,
         productImage: productURL,
         interiorImage: interiorURL,
         exteriorImage: expteriorURL,
         othersImages: othersURL,
+        keyFacts: productData.keyFacts,
+        equipmentAndFeature: productData.keyFacts,
+        condition: productData.condition,
+        serviceHistory: productData.serviceHistory,
+        summary: productData.summary,
         ManufactureCountry: productData.ManufactureCountry,
         status: productData.status,
         category: productData.category,
@@ -175,6 +181,13 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
           payload.ManufactureCountry || existingProduct.ManufactureCountry,
         status: payload.status || existingProduct.status,
         category: payload.category || existingProduct.category,
+        keyFacts: payload.keyFacts || existingProduct.keyFacts,
+        equipmentAndFeature:
+          payload.equipmentAndFeature || existingProduct.equipmentAndFeature,
+        condition: payload.condition || existingProduct.condition,
+        serviceHistory:
+          payload.serviceHistory || existingProduct.serviceHistory,
+        summary: payload.summary || existingProduct.summary,
         isDeleted:
           payload.isDeleted !== undefined
             ? payload.isDeleted

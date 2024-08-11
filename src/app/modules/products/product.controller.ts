@@ -17,26 +17,31 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
   }
-
+console.log(req.files)
   const productImageFiles = files.productImage;
   const interiorImageFiles = files.interiorImage || [];
   const exteriorImageFiles = files.exteriorImage || [];
   const othersImageFiles = files.othersImage || [];
+  const productSingleImage=files.productSingleImage ||[];
   const productImageResults = productImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file))
   const interiorImageResults = interiorImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file));
   const exteriorImageResults = exteriorImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file));
   const othersImageResults = othersImageFiles.map((file: any) => fileUploader.uploadToCloudinary(file));
+  const singleProductImageResults = productSingleImage.map((file: any) => fileUploader.uploadToCloudinary(file));
+  
 
   const productData = await Promise.all(productImageResults)
   const interiorData = await Promise.all(interiorImageResults)
   const exteriorData = await Promise.all(exteriorImageResults)
   const othersData = await Promise.all(othersImageResults)
+  const singleImageData=await Promise.all(singleProductImageResults)
 const productURL=productData.map(product=>product.secure_url);
 const interiorURL=interiorData.map(interior=>interior.secure_url);
 const expteriorURL=exteriorData.map(exterior=>exterior.secure_url);
 const othersURL=othersData.map(others=>others.secure_url);
+const singleImageURL=singleImageData.map(single=>single.secure_url);
   const filesData = {
-    productURL,interiorURL,expteriorURL,othersURL
+    productURL,interiorURL,expteriorURL,othersURL,singleImageURL
   };
 
   const result = await productServices.createProductIntoDB(filesData , req.body.body);

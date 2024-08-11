@@ -25,6 +25,7 @@ const uploadMultiple = upload.fields([
     { name: 'interiorImage', maxCount: 10 },
     { name: 'exteriorImage', maxCount: 10 },
     { name: 'othersImage', maxCount: 10 },
+    { name: 'productSingleImage', maxCount: 10},
 ]);
 const uploadToCloudinary = async (file: IFile): Promise<ICloudinaryResponse | undefined> => {
     return new Promise((resolve, reject) => {
