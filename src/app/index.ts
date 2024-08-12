@@ -7,6 +7,8 @@ import { AuthRoutes } from './modules/Autrh/auth.routes';
 import { userAccountRoutes } from './modules/userAccount/userAccount.routes';
 import { reviewRoutes } from './modules/review/review.route';
 import { wishlistRoute } from './modules/wishlist/wishlist.route';
+import { contactInfoRoutes } from './modules/contactInfo/contactInfo.routes';
+import { vehicleInfoRoutes } from './modules/vehicleInfo/vehicleInfo.route';
 
 
 const router = express.Router();
@@ -43,6 +45,18 @@ const moduleRoutes = [
     {
         path: '/wishlist',
         route: wishlistRoute
+    },
+    {
+        path: '/contactInfo',
+        route: contactInfoRoutes
+    },
+    {
+        path: '/contactInfo',
+        route: contactInfoRoutes
+    },
+    {
+        path: '/vehicleInfo',
+        route: vehicleInfoRoutes
     },
 ];
 

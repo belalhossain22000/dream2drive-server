@@ -205,3 +205,17 @@ model Bidding {
 
   @@map("biddings")
 }
+
+model VehicleInfo {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName  String
+  lastName   String
+  email      String
+  mobileNo   String
+  carMake    String
+  carDetails String
+  carImage   String?
+  aboutHear  String
+
+  @@map("vehicleInfos")
+}
