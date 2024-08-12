@@ -17,7 +17,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
   }
-console.log(req.files)
+
   const productImageFiles = files.productImage;
   const interiorImageFiles = files.interiorImage || [];
   const exteriorImageFiles = files.exteriorImage || [];

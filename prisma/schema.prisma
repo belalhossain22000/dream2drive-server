@@ -76,43 +76,43 @@ enum UserRole {
 
 // car/products model
 model Products {
-  id                 String          @id @default(auto()) @map("_id") @db.ObjectId
-  productName        String          @unique
-  ProductDescription String
-  auction            Boolean
-  auctionStartDate   DateTime
-  auctionEndDate     DateTime
-  price              Int
-  brandId            String          @db.ObjectId
-  brand              Brand           @relation(fields: [brandId], references: [id])
-  drivingPosition    drivingPosition
-  totalCarRun        Int
-  gearType           String
-  keyFacts           String
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  productName         String          @unique
+  ProductDescription  String
+  auction             Boolean
+  auctionStartDate    DateTime
+  auctionEndDate      DateTime
+  price               Int
+  brandId             String          @db.ObjectId
+  brand               Brand           @relation(fields: [brandId], references: [id])
+  drivingPosition     drivingPosition
+  totalCarRun         Int
+  gearType            String
+  keyFacts            String
   equipmentAndFeature String
-  condition          String
-  serviceHistory     String
-  summary            String
-  carMetal           String
-  leatherMaterial    String
-  carsInline         String
-  vin                String
-  lot                String
-  ManufactureCountry String
-  status             carStatusEnum
-  biddings           Bidding[]
-  category           categoryEnum
-  isDeleted          Boolean         @default(false)
-  featured           Boolean         @default(false)
-  Review             Review[]
-productSingleImage  Json
-  productImage  Json
-  interiorImage Json
-  exteriorImage Json
-  othersImages  Json
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  Wishlist      Wishlist[]
+  condition           String
+  serviceHistory      String
+  summary             String
+  carMetal            String
+  leatherMaterial     String
+  carsInline          String
+  vin                 String
+  lot                 String
+  ManufactureCountry  String
+  status              carStatusEnum
+  biddings            Bidding[]
+  category            categoryEnum
+  isDeleted           Boolean         @default(false)
+  featured            Boolean         @default(false)
+  Review              Review[]
+  productSingleImage  Json
+  productImage        Json
+  interiorImage       Json
+  exteriorImage       Json
+  othersImages        Json
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  Wishlist            Wishlist[]
 
   @@map("products")
 }
@@ -148,12 +148,9 @@ enum drivingPosition {
 
 // car/porductrs category enum
 enum categoryEnum {
-  weeklyHighlights
-  supercars
-  jdmLeagends
-  airCoooled
-  offRoadExplorer
-  twoWheels
+  allLive
+  commingSoon
+  sold
 }
 
 // car status enum
@@ -171,7 +168,6 @@ model Brand {
 
   @@map("brands")
 }
-
 
 // 
 model Article {

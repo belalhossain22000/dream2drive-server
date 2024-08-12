@@ -4,19 +4,20 @@ import ApiError from "../../errors/ApiErrors";
 
 import { json } from "stream/consumers";
 
-import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
+import { carStatusEnum, TProducts } from "./product.interface";
 import { IPaginationOptions } from "../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma } from "@prisma/client";
 import { productsSearchAbleFields } from "./product.constants";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-  const { productURL, interiorURL, expteriorURL, othersURL,singleImageURL} = filesData;
-
+  const { productURL, interiorURL, expteriorURL, othersURL, singleImageURL } =
+    filesData;
+  console.log(payload, filesData);
   try {
     // console.log(payload);
     let productData: TProducts = JSON.parse(payload);
-    console.log(productData);
+    // console.log(productData);
     const existingProduct = await prisma.products.findUnique({
       where: {
         productName: productData.productName,
@@ -42,7 +43,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
         carsInline: productData.carsInline,
         vin: productData.vin,
         lot: productData.lot,
-        productSingleImage:singleImageURL,
+        productSingleImage: singleImageURL,
         productImage: productURL,
         interiorImage: interiorURL,
         exteriorImage: expteriorURL,
@@ -63,6 +64,8 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
     throw new Error(`Could not create product: ${error.message}`);
   }
 };
+
+// get all data with filtering
 const getAllProductsFromDB = async (
   params: any,
   options: IPaginationOptions
@@ -82,16 +85,26 @@ const getAllProductsFromDB = async (
       })),
     });
   }
+  console.dir(andCondions, { depth: 'infinity' });
 
-  if (Object.keys(filterData).length > 0) {
+if (Object.keys(filterData).length > 0) {
     andCondions.push({
-      AND: Object.keys(filterData).map((key) => ({
-        [key]: {
-          equals: (filterData as any)[key],
-        },
-      })),
+      AND: Object.keys(filterData).map((key) => {
+        let value = (filterData as any)[key];
+
+        // Handle boolean string conversion
+        if (value === 'true') value = true;
+        if (value === 'false') value = false;
+
+        return {
+          [key]: {
+            equals: value,
+          },
+        };
+      }),
     });
   }
+
 
   andCondions.push({
     isDeleted: false,

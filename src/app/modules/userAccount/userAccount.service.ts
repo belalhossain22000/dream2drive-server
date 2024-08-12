@@ -5,20 +5,20 @@ import { UserAccountDetails } from "./userAccount.interface";
 
 // validateCard card
 const validateCard = async (cardDetails: any) => {
-  try {
-    const { userId } = req.body;
+  // try {
+  //   const { userId } = req.body;
 
-    // Create a SetupIntent
-    const setupIntent = await stripe.setupIntents.create();
+  //   // Create a SetupIntent
+  //   const setupIntent = await stripe.setupIntents.create();
 
-    console.log("SetupIntent:", setupIntent); // Log the SetupIntent object
+  //   console.log("SetupIntent:", setupIntent); // Log the SetupIntent object
 
-    // Send the client secret back to the client
-    res.json({ clientSecret: setupIntent.client_secret });
-  } catch (error) {
-    console.error("Error creating SetupIntent:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+  //   // Send the client secret back to the client
+  //   res.json({ clientSecret: setupIntent.client_secret });
+  // } catch (error) {
+  //   console.error("Error creating SetupIntent:", error);
+  //   res.status(500).json({ error: "Internal Server Error" });
+  // }
 };
 
 // crete user bank account
