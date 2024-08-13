@@ -216,6 +216,21 @@ model VehicleInfo {
   carDetails String
   carImage   String?
   aboutHear  String
+  carModel   String
 
   @@map("vehicleInfos")
+}
+
+model VehicleSourcing {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  phone         String
+  model         String
+  email         String // Optional field
+  manufacturer  String
+  preferredYear String? // Optional field
+  maximumBudget String
+  message       String? // Optional field
+  currency      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }

@@ -9,6 +9,7 @@ import { reviewRoutes } from './modules/review/review.route';
 import { wishlistRoute } from './modules/wishlist/wishlist.route';
 import { contactInfoRoutes } from './modules/contactInfo/contactInfo.routes';
 import { vehicleInfoRoutes } from './modules/vehicleInfo/vehicleInfo.route';
+import { vehicleSourcingRoutes } from './modules/vehicleSourcing/vehicleSourcing.route';
 
 
 const router = express.Router();
@@ -57,6 +58,10 @@ const moduleRoutes = [
     {
         path: '/vehicleInfo',
         route: vehicleInfoRoutes
+    },
+    {
+        path: '/vehicle-sourcing',
+        route: vehicleSourcingRoutes
     },
 ];
 
