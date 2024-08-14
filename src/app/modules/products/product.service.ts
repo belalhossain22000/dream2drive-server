@@ -4,11 +4,16 @@ import ApiError from "../../errors/ApiErrors";
 
 import { json } from "stream/consumers";
 
-import { carStatusEnum, categoryEnum, TProducts } from "./product.interface";
+import { carStatusEnum, TProducts } from "./product.interface";
+import { IPaginationOptions } from "../../interfaces/paginations";
+import { paginationHelper } from "../../../helpars/paginationHelper";
+import { Prisma } from "@prisma/client";
+import { productsSearchAbleFields } from "./product.constants";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-  const { productURL,interiorURL,expteriorURL,othersURL}=filesData;
-
+  const { productURL, interiorURL, expteriorURL, othersURL, singleImageURL } =
+    filesData;
+  console.log(payload, filesData);
   try {
     // console.log(payload);
     let productData: TProducts = JSON.parse(payload);
@@ -59,39 +64,80 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
   }
 };
 
-const getAllProductsFromDB = async (query: {
-  status?: carStatusEnum;
-  category?: categoryEnum;
-  searchTerms: any;
-}) => {
-  try {
-    const andSearchCondition: any[] = [{ isDeleted: false }];
-    if (query.category || query.status || query.searchTerms) {
-      andSearchCondition.push({
-        status: query.status ? query.status : undefined,
-        category: query.category ? query.category : undefined,
-        OR: ["productName", "ManufactureCountry"].map((field) => ({
-          [field]: {
-            contains: query.searchTerms,
-            mode: "insensitive",
-          },
-        })),
-      });
-    }
-    const whereConditions = { AND: andSearchCondition };
-    const result = await prisma.products.findMany({
-      where: whereConditions,
-      orderBy: {
-        price: "desc",
-      },
-      include: {
-        brand: true, // Assuming the relation is named brand
-      },
+// get all data with filtering
+const getAllProductsFromDB = async (
+  params: any,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = params;
+  const andCondions: Prisma.ProductsWhereInput[] = [];
+
+  //console.log(filterData);
+  if (params.searchTerm) {
+    andCondions.push({
+      OR: productsSearchAbleFields.map((field) => ({
+        [field]: {
+          contains: params.searchTerm,
+          mode: "insensitive",
+        },
+      })),
     });
-    return result;
-  } catch (error: any) {
-    throw new Error(`Could not get products: ${error.message}`);
   }
+  console.dir(andCondions, { depth: 'infinity' });
+
+if (Object.keys(filterData).length > 0) {
+    andCondions.push({
+      AND: Object.keys(filterData).map((key) => {
+        let value = (filterData as any)[key];
+
+        // Handle boolean string conversion
+        if (value === 'true') value = true;
+        if (value === 'false') value = false;
+
+        return {
+          [key]: {
+            equals: value,
+          },
+        };
+      }),
+    });
+  }
+
+
+  andCondions.push({
+    isDeleted: false,
+  });
+
+  //console.dir(andCondions, { depth: 'inifinity' })
+  const whereConditons: Prisma.ProductsWhereInput = { AND: andCondions };
+
+  const result = await prisma.products.findMany({
+    where: whereConditons,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? {
+            [options.sortBy]: options.sortOrder,
+          }
+        : {
+            createdAt: "desc",
+          },
+  });
+
+  const total = await prisma.products.count({
+    where: whereConditons,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 const getSingleProductFromDB = async (id: string) => {
@@ -147,18 +193,25 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
           payload.ManufactureCountry || existingProduct.ManufactureCountry,
         status: payload.status || existingProduct.status,
         category: payload.category || existingProduct.category,
+        keyFacts: payload.keyFacts || existingProduct.keyFacts,
+        equipmentAndFeature:
+          payload.equipmentAndFeature || existingProduct.equipmentAndFeature,
+        condition: payload.condition || existingProduct.condition,
+        serviceHistory:
+          payload.serviceHistory || existingProduct.serviceHistory,
+        summary: payload.summary || existingProduct.summary,
         isDeleted:
           payload.isDeleted !== undefined
             ? payload.isDeleted
             : existingProduct.isDeleted,
         productImage: payload.productImage
           ? {
-            deleteMany: {},
-            create: payload.productImage.map((image: any) => ({
-              image: image.image,
-              imageType: image.imageType,
-            })),
-          }
+              deleteMany: {},
+              create: payload.productImage.map((image: any) => ({
+                image: image.image,
+                imageType: image.imageType,
+              })),
+            }
           : undefined,
       },
     });

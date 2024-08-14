@@ -5,8 +5,7 @@ import { BiddingCotroller } from './bidding.controller';
 
 
 const router = express.Router();
-
-// task 3
+// bidding
 router.post('/', BiddingCotroller.createBidding);
 router.get('/', BiddingCotroller.getAllBidding);
 

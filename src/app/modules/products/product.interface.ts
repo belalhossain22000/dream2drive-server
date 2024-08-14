@@ -1,5 +1,6 @@
+import { categoryEnum } from "@prisma/client";
 import { ObjectId } from "mongodb"; // Import for clarity
-
+import { number } from "zod";
 
 // ProductImage
 export interface TProductImage {
@@ -21,14 +22,14 @@ export enum carStatusEnum {
 }
 
 // categoryEnum (recommended for consistency)
-export enum categoryEnum {
-  weeklyHighlights = "weeklyHighlights",
-  supercars = "supercars",
-  jdmLeagends = "jdmLeagends",
-  airCoooled = "airCoooled",
-  offRoadExplorer = "offRoadExplorer",
-  twoWheels = "twoWheels",
-}
+// export enum categoryEnum {
+//   weeklyHighlights = "weeklyHighlights",
+//   supercars = "supercars",
+//   jdmLeagends = "jdmLeagends",
+//   airCoooled = "airCoooled",
+//   offRoadExplorer = "offRoadExplorer",
+//   twoWheels = "twoWheels",
+// }
 // Products
 export interface TProducts {
   productName: string;

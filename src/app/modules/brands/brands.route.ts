@@ -5,8 +5,10 @@ import { brandController } from './brands.controller';
 
 const router = express.Router();
 
-// task 3
+// crate a brands
 router.post('/', validateRequest(brandValidation.BrandValidationSchema),brandController.createBrand);
+
+// get all brands
 router.get('/',  brandController.getAllBrands);
 
 

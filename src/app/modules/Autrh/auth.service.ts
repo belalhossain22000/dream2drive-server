@@ -8,6 +8,8 @@ import emailSender from "./emailSender";
 import { UserStatus } from "@prisma/client";
 import httpStatus from "http-status";
 
+
+// user login 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
@@ -51,7 +53,7 @@ const getMyProfile = async (userToken: string) => {
     config.jwt.jwt_secret!
   );
 
-  // Getting user data
+  
   const userProfile = await prisma.user.findUnique({
     where: {
       id: decodedToken.id,
@@ -60,6 +62,8 @@ const getMyProfile = async (userToken: string) => {
       id: true,
       username: true,
       email: true,
+      firstName: true,
+      lastName: true,
       role: true,
       createdAt: true,
       updatedAt: true,
@@ -120,7 +124,6 @@ const forgotPassword = async (payload: { email: string }) => {
     config.jwt.reset_pass_secret as Secret,
     config.jwt.reset_pass_token_expires_in as string
   );
-  //console.log(resetPassToken)
 
   const resetPassLink =
     config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`;
