@@ -36,7 +36,7 @@ model Wishlist {
   userId    String   @db.ObjectId
   productId String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
-  product   Products @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -74,57 +74,71 @@ enum UserRole {
   USER
 }
 
-// car/products model
-model Products {
-  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
-  productName         String          @unique
-  ProductDescription  String
-  auction             Boolean
-  auctionStartDate    DateTime
-  auctionEndDate      DateTime
-  price               Int
-  brandId             String          @db.ObjectId
-  brand               Brand           @relation(fields: [brandId], references: [id])
-  drivingPosition     drivingPosition
-  totalCarRun         Int
-  gearType            String
+// product model
+model Product {
+  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
+  productName         String
+  singleImage         Json
   keyFacts            String
-  equipmentAndFeature String
+  equepmentAndFeature String
   condition           String
   serviceHistory      String
   summary             String
-  carMetal            String
-  leatherMaterial     String
-  carsInline          String
+  youtubeVideo        String
+  galleryImage        Json[]
+  exteriorImage       Json[]
+  interiorImage       Json[]
+  othersImage         Json[]
+  auctionStartDate    DateTime
+  auctionEndDate      DateTime
+  brandId             String        @db.ObjectId
+  brand               Brand         @relation(fields: [brandId], references: [id])
+  speed               Float
+  price               Float
+  gear                String
+  drivingSide         DrivingSide
+  color               String
+  interior            String
+  engine              String
   vin                 String
-  lot                 String
-  ManufactureCountry  String
-  status              carStatusEnum
+  country             String
+  isDeleted           Boolean       @default(false)
+  featured            Boolean       @default(false)
+  status              ProductStatus
+  wishlist            Wishlist[]
+  reviews             Review[]
   biddings            Bidding[]
-  category            categoryEnum
-  isDeleted           Boolean         @default(false)
-  featured            Boolean         @default(false)
-  Review              Review[]
-  productSingleImage  Json
-  productImage        Json
-  interiorImage       Json
-  exteriorImage       Json
-  othersImages        Json
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
-  Wishlist            Wishlist[]
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   @@map("products")
 }
 
-// model ProductImage {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   imagesUrl String[]
-//   productId String   @db.ObjectId
-//   product   Products @relation("ProductImages", fields: [productId], references: [id])
+enum DrivingSide {
+  LHD
+  RHD
+}
 
-//   @@map("product_images")
-// }
+enum ProductStatus {
+  commiSoon
+  live
+  sold
+  unsold
+}
+
+// car driving position enum
+enum drivingPosition {
+  RHD
+  LHD
+}
+
+// product status enum
+enum productStatusEnum {
+  commingSoon
+  live
+  sold
+  unsold
+}
 
 // review model
 model Review {
@@ -135,68 +149,24 @@ model Review {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
-  product   Products @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
 
   @@map("reviews")
 }
 
-// car driving position enum
-enum drivingPosition {
-  RHD
-  LHD
-}
-
-// car/porductrs category enum
-enum categoryEnum {
-  allLive
-  commingSoon
-  sold
-}
-
-// car status enum
-enum carStatusEnum {
-  pending
-  live
-  sold
-}
-
 // brand model
 model Brand {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  brandName String     @unique
-  Products  Products[]
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  brandName String    @unique
+  Products  Product[]
 
   @@map("brands")
-}
-
-// 
-model Article {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId
-  bannerImage    String
-  articleTitle   String
-  articleImages  articleImages[]
-  published_by   String
-  published_Date DateTime
-  viewed_by      Int
-  description    String
-  userComment    String          @db.ObjectId
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-
-  @@map("articles")
-}
-
-model articleImages {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  image     String
-  Article   Article? @relation(fields: [articleId], references: [id])
-  articleId String?  @db.ObjectId
 }
 
 model Bidding {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   bidPrice  Int
-  product   Products @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
   productId String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @db.ObjectId

@@ -1,67 +1,79 @@
 import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
-
-import { json } from "stream/consumers";
-
-import { carStatusEnum, TProducts } from "./product.interface";
 import { IPaginationOptions } from "../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
 import { Prisma } from "@prisma/client";
 import { productsSearchAbleFields } from "./product.constants";
+import { TProducts } from "./product.interface";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
-  const { productURL, interiorURL, expteriorURL, othersURL, singleImageURL } =
-    filesData;
-  console.log(payload, filesData);
-  try {
-    // console.log(payload);
-    let productData: TProducts = JSON.parse(payload);
-    const existingProduct = await prisma.products.findUnique({
-      where: {
-        productName: productData.productName,
-      },
-    });
-    if (existingProduct) {
-      throw new ApiError(httpStatus.CONFLICT, "This product already exists!");
-    }
-    const result = await prisma.products.create({
-      data: {
-        productName: productData.productName,
-        ProductDescription: productData.ProductDescription,
-        auction: productData.auction,
-        price: productData.price,
-        auctionStartDate: productData.auctionStartDate,
-        auctionEndDate: productData.auctionEndDate,
-        brandId: productData.brandId.toString(),
-        drivingPosition: productData.drivingPosition,
-        totalCarRun: productData.totalCarRun,
-        gearType: productData.gearType,
-        carMetal: productData.carMetal,
-        leatherMaterial: productData.leatherMaterial,
-        carsInline: productData.carsInline,
-        vin: productData.vin,
-        lot: productData.lot,
-        productSingleImage: singleImageURL,
-        productImage: productURL,
-        interiorImage: interiorURL,
-        exteriorImage: expteriorURL,
-        othersImages: othersURL,
-        keyFacts: productData.keyFacts,
-        equipmentAndFeature: productData.keyFacts,
-        condition: productData.condition,
-        serviceHistory: productData.serviceHistory,
-        summary: productData.summary,
-        ManufactureCountry: productData.ManufactureCountry,
-        status: productData.status,
-        category: productData.category,
-        isDeleted: false,
-      },
-    });
-    return result;
-  } catch (error: any) {
-    throw new Error(`Could not create product: ${error.message}`);
+  const {
+    galleryImage,
+    interiorImage,
+    exteriorImage,
+    othersImage,
+    singleImage,
+  } = filesData;
+  console.log(filesData);
+  let productData: TProducts = JSON.parse(payload);
+
+  const existingProduct = await prisma.product.findFirst({
+    where: {
+      productName: productData.productName,
+    },
+  });
+  if (existingProduct) {
+    throw new ApiError(
+      400,
+      `product already exist by this name ${productData.productName}`
+    );
   }
+  const isBrandExist = await prisma.brand.findFirst({
+    where: {
+      id: productData.brandId,
+    },
+  });
+
+  if (!isBrandExist) {
+    throw new ApiError(
+      400,
+      `brand is not exist you provide ${productData.brandId}`
+    );
+  }
+
+  const result = await prisma.product.create({
+    data: {
+      productName: productData.productName,
+      singleImage: singleImage,
+      keyFacts: productData.keyFacts,
+      equepmentAndFeature: productData.equepmentAndFeature,
+      condition: productData.condition,
+      serviceHistory: productData.serviceHistory,
+      summary: productData.summary,
+      youtubeVideo: productData.youtubeVideo,
+      galleryImage: galleryImage,
+      exteriorImage: exteriorImage,
+      interiorImage: interiorImage,
+      othersImage: othersImage,
+      auctionStartDate: productData.auctionStartDate,
+      auctionEndDate: productData.auctionEndDate,
+      brandId: productData.brandId,
+      speed: productData.speed,
+      price: productData.price,
+      gear: productData.gear,
+      drivingSide: productData.drivingSide,
+      color: productData.color,
+      interior: productData.interior,
+      engine: productData.engine,
+      vin: productData.vin,
+      country: productData.country,
+      isDeleted: false,
+      featured: false,
+      status: productData.status,
+    },
+  });
+  return result;
 };
 
 // get all data with filtering
@@ -71,7 +83,7 @@ const getAllProductsFromDB = async (
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
-  const andCondions: Prisma.ProductsWhereInput[] = [];
+  const andCondions: Prisma.ProductWhereInput[] = [];
 
   //console.log(filterData);
   if (params.searchTerm) {
@@ -84,16 +96,15 @@ const getAllProductsFromDB = async (
       })),
     });
   }
-  console.dir(andCondions, { depth: 'infinity' });
 
-if (Object.keys(filterData).length > 0) {
+  if (Object.keys(filterData).length > 0) {
     andCondions.push({
       AND: Object.keys(filterData).map((key) => {
         let value = (filterData as any)[key];
 
         // Handle boolean string conversion
-        if (value === 'true') value = true;
-        if (value === 'false') value = false;
+        if (value === "true") value = true;
+        if (value === "false") value = false;
 
         return {
           [key]: {
@@ -104,15 +115,14 @@ if (Object.keys(filterData).length > 0) {
     });
   }
 
-
   andCondions.push({
     isDeleted: false,
   });
 
   //console.dir(andCondions, { depth: 'inifinity' })
-  const whereConditons: Prisma.ProductsWhereInput = { AND: andCondions };
+  const whereConditons: Prisma.ProductWhereInput = { AND: andCondions };
 
-  const result = await prisma.products.findMany({
+  const result = await prisma.product.findMany({
     where: whereConditons,
     skip,
     take: limit,
@@ -126,7 +136,7 @@ if (Object.keys(filterData).length > 0) {
           },
   });
 
-  const total = await prisma.products.count({
+  const total = await prisma.product.count({
     where: whereConditons,
   });
 
@@ -141,127 +151,110 @@ if (Object.keys(filterData).length > 0) {
 };
 
 const getSingleProductFromDB = async (id: string) => {
-  try {
-    const result = await prisma.products.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        brand: true,
-        Review: {
-          include: {
-            user: true,
-          },
-        },
-      },
-    });
-
-    if (!result) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
-    }
-
-    return result;
-  } catch (error: any) {
-    throw new Error(`Could not get product: ${error}`);
+  const result = await prisma.product.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      brand: true,
+      reviews: true,
+    },
+  });
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
   }
+  return result;
 };
 
 const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
-  try {
-    const existingProduct = await prisma.products.findUnique({
-      where: { id: id },
-    });
+  const existingProduct = await prisma.product.findUnique({
+    where: { id: id },
+  });
 
-    if (!existingProduct) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
-    }
-
-    const result = await prisma.products.update({
-      where: { id: id },
-      data: {
-        productName: payload.productName || existingProduct.productName,
-        ProductDescription:
-          payload.ProductDescription || existingProduct.ProductDescription,
-        auction: payload.auction || existingProduct.auction,
-        price: payload.price || existingProduct.price,
-        brandId: payload.brandId
-          ? payload.brandId.toString()
-          : existingProduct.brandId,
-        drivingPosition:
-          payload.drivingPosition || existingProduct.drivingPosition,
-        ManufactureCountry:
-          payload.ManufactureCountry || existingProduct.ManufactureCountry,
-        status: payload.status || existingProduct.status,
-        category: payload.category || existingProduct.category,
-        keyFacts: payload.keyFacts || existingProduct.keyFacts,
-        equipmentAndFeature:
-          payload.equipmentAndFeature || existingProduct.equipmentAndFeature,
-        condition: payload.condition || existingProduct.condition,
-        serviceHistory:
-          payload.serviceHistory || existingProduct.serviceHistory,
-        summary: payload.summary || existingProduct.summary,
-        isDeleted:
-          payload.isDeleted !== undefined
-            ? payload.isDeleted
-            : existingProduct.isDeleted,
-        productImage: payload.productImage
-          ? {
-              deleteMany: {},
-              create: payload.productImage.map((image: any) => ({
-                image: image.image,
-                imageType: image.imageType,
-              })),
-            }
-          : undefined,
-      },
-    });
-
-    return result;
-  } catch (error: any) {
-    throw new Error(`Could not update product: ${error}`);
+  if (!existingProduct) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
   }
+
+  const result = await prisma.product.update({
+    where: { id: id },
+    data: {
+      productName: payload.productName || existingProduct.productName,
+      singleImage: payload.singleImage || existingProduct.singleImage,
+      keyFacts: payload.keyFacts || existingProduct.keyFacts,
+      equepmentAndFeature:
+        payload.equepmentAndFeature || existingProduct.equepmentAndFeature,
+      condition: payload.condition || existingProduct.condition,
+      serviceHistory: payload.serviceHistory || existingProduct.serviceHistory,
+      summary: payload.summary || existingProduct.summary,
+      youtubeVideo: payload.youtubeVideo || existingProduct.youtubeVideo,
+      galleryImage: payload.galleryImage || existingProduct.galleryImage,
+      exteriorImage: payload.exteriorImage || existingProduct.exteriorImage,
+      interiorImage: payload.interiorImage || existingProduct.interiorImage,
+      othersImage: payload.othersImage || existingProduct.othersImage,
+      auctionStartDate:
+        payload.auctionStartDate || existingProduct.auctionStartDate,
+      auctionEndDate: payload.auctionEndDate || existingProduct.auctionEndDate,
+      brandId: payload.brandId || existingProduct.brandId,
+      speed: payload.speed || existingProduct.speed,
+      price: payload.price || existingProduct.price,
+      gear: payload.gear || existingProduct.gear,
+      drivingSide: payload.drivingSide || existingProduct.drivingSide,
+      color: payload.color || existingProduct.color,
+      interior: payload.interior || existingProduct.interior,
+      engine: payload.engine || existingProduct.engine,
+      vin: payload.vin || existingProduct.vin,
+      country: payload.country || existingProduct.country,
+      isDeleted:
+        payload.isDeleted !== undefined
+          ? payload.isDeleted
+          : existingProduct.isDeleted,
+      featured:
+        payload.featured !== undefined
+          ? payload.featured
+          : existingProduct.featured,
+      status: payload.status || existingProduct.status,
+    },
+  });
+
+  return result;
 };
 
 const deleteProductFromDB = async (id: string) => {
-  try {
-    const existingProduct = await prisma.products.findUnique({
-      where: { id: id },
-    });
+  const existingProduct = await prisma.product.findUnique({
+    where: { id: id },
+  });
 
-    if (!existingProduct) {
-      throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
-    }
-
-    const result = await prisma.products.update({
-      where: { id: id },
-      data: {
-        isDeleted: true,
-      },
-    });
-
-    return { message: "Product  deleted successfully!", result };
-  } catch (error: any) {
-    throw new Error(`Could not  delete product: ${error}`);
+  if (!existingProduct) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Product not found!");
   }
+
+  const result = await prisma.product.update({
+    where: { id: id },
+    data: {
+      isDeleted: true,
+    },
+  });
+
+  return { message: "Product  deleted successfully!", result };
 };
 
 const createFeaturedProduct = async (id: string) => {
   console.log(id);
   // Unfeatured the currently featured product
 
-  const currentFeatured = await prisma.products.findFirst({
+  const currentFeatured = await prisma.product.findFirst({
     where: { featured: true },
   });
 
   if (currentFeatured) {
-    await prisma.products.update({
+    await prisma.product.update({
       where: { id: currentFeatured.id },
       data: { featured: false },
     });
   }
 
   // Feature the selected product
-  const product = await prisma.products.update({
+  const product = await prisma.product.update({
     where: { id },
     data: { featured: true },
   });
@@ -271,9 +264,9 @@ const createFeaturedProduct = async (id: string) => {
 
 const getFeaturedProduct = async () => {
   // Unfeatured the currently featured product
-  console.log("featured product");
+  // console.log("featured product");
 
-  const currentFeatured = await prisma.products.findFirstOrThrow({
+  const currentFeatured = await prisma.product.findFirstOrThrow({
     where: { featured: true },
   });
 

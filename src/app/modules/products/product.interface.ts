@@ -1,67 +1,54 @@
-import { categoryEnum } from "@prisma/client";
-import { ObjectId } from "mongodb"; // Import for clarity
-import { number } from "zod";
+import { Bidding, Brand, DrivingSide, ProductStatus, Review, Wishlist } from "@prisma/client";
+import { ObjectId } from "mongodb";
 
-// ProductImage
-export interface TProductImage {
-  image: string;
-  imageType: string;
+// Enum for driving side
+export enum DrivingSideEnum {
+  LHD = "LHD",
+  RHD = "RHD",
 }
 
-// Brand
-export interface Brand {
-  brandName: string;
-  Products?: TProducts[]; // Array of Products (if using one-to-many)
-}
-
-// carStatusEnum (recommended for consistency
-export enum carStatusEnum {
-  pending = "pending",
+// Enum for product status
+export enum ProductStatusEnum {
+  comingSoon = "comingSoon",
   live = "live",
   sold = "sold",
+  unsold = "unsold",
 }
 
-// categoryEnum (recommended for consistency)
-// export enum categoryEnum {
-//   weeklyHighlights = "weeklyHighlights",
-//   supercars = "supercars",
-//   jdmLeagends = "jdmLeagends",
-//   airCoooled = "airCoooled",
-//   offRoadExplorer = "offRoadExplorer",
-//   twoWheels = "twoWheels",
-// }
-// Products
 export interface TProducts {
+  id: string;
   productName: string;
-  ProductDescription: string;
-  auction: boolean;
-  price: number;
-  brandId: ObjectId;
-  brand?: Brand;
-  drivingPosition: "RHD" | "LHD";
-  totalCarRun: number;
-  gearType: " manual" | "auto";
-  carMetal: string;
-  leatherMaterial: string;
-  carsInline: string;
-  vin: string;
-  lot: string;
-  productSingleImage:string;
-  productImage: string[];
-  interiorImage: string[];
-  exteriorImage: string[];
-  othersImages: string[];
-  auctionStartDate: string;
-  auctionEndDate: string;
-  ManufactureCountry: string;
+  singleImage: any;
   keyFacts: string;
-  equipmentAndFeature: string;
+  equepmentAndFeature: string;
   condition: string;
   serviceHistory: string;
   summary: string;
-  status: carStatusEnum;
-  category: categoryEnum;
-  isDeleted?: boolean;
+  youtubeVideo: string;
+  galleryImage: any[]; // Json[] in Prisma can be represented as any[] in TypeScript
+  exteriorImage: any[];
+  interiorImage: any[];
+  othersImage: any[];
+  auctionStartDate: Date;
+  auctionEndDate: Date;
+  brandId: string;
+  brand: Brand; // Assuming Brand is another interface defined for the Brand model
+  speed: number;
+  price: number;
+  gear: string;
+  drivingSide: DrivingSide; // Assuming DrivingSide is an enum
+  color: string;
+  interior: string;
+  engine: string;
+  vin: string;
+  country: string;
+  isDeleted: boolean;
+  featured: boolean;
+  status: ProductStatus; // Assuming ProductStatus is an enum
+  wishlist: Wishlist[]; // Assuming Wishlist is another interface defined for the Wishlist model
+  reviews: Review[]; // Assuming Review is another interface defined for the Review model
+  biddings: Bidding[]; // Assuming Bidding is another interface defined for the Bidding model
   createdAt: Date;
   updatedAt: Date;
 }
+
