@@ -18,7 +18,7 @@ export enum ProductStatusEnum {
 export interface TProducts {
   id: string;
   productName: string;
-  singleImage: any;
+  singleImage: string;
   keyFacts: string;
   equepmentAndFeature: string;
   condition: string;
