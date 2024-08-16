@@ -1,14 +1,18 @@
+import { Prisma } from "@prisma/client";
+
 export const productsFilterableFields = [
-  "productName",
   "searchTerm",
-  "category",
-  "drivingPosition",
-  "auction",
+  "drivingSide",
+  "status",
+  "country",
+  "brand"
 ];
 
-export const productsSearchAbleFields = [
+export const productsSearchAbleFields: (keyof Prisma.ProductWhereInput)[] = [
   "productName",
-  "ProductDescription",
-  "condition",
-  "gearType",
+  "keyFacts",
+  "country",
+  "color",
+  "interior",
+  "brand"
 ];

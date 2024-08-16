@@ -70,6 +70,9 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
+// get all products
+
 const getAllProduct = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, productsFilterableFields);
   const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
@@ -84,7 +87,7 @@ const getAllProduct = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(id);
+  // console.log(id);
   const result = await productServices.getSingleProductFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,

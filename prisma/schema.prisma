@@ -186,7 +186,7 @@ model VehicleInfo {
   carDetails String
   carImage   String?
   aboutHear  String
-  carModel   String
+  // carModel   String
 
   @@map("vehicleInfos")
 }

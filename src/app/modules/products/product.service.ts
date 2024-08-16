@@ -85,7 +85,7 @@ const getAllProductsFromDB = async (
   const { searchTerm, ...filterData } = params;
   const andCondions: Prisma.ProductWhereInput[] = [];
 
-  //console.log(filterData);
+  // searching
   if (params.searchTerm) {
     andCondions.push({
       OR: productsSearchAbleFields.map((field) => ({
@@ -97,6 +97,7 @@ const getAllProductsFromDB = async (
     });
   }
 
+  // filtering
   if (Object.keys(filterData).length > 0) {
     andCondions.push({
       AND: Object.keys(filterData).map((key) => {
@@ -124,6 +125,9 @@ const getAllProductsFromDB = async (
 
   const result = await prisma.product.findMany({
     where: whereConditons,
+    include: {
+      brand: true,
+    },
     skip,
     take: limit,
     orderBy:
@@ -179,10 +183,9 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
     where: { id: id },
     data: {
       productName: payload.productName || existingProduct.productName,
-      singleImage: payload.singleImage || existingProduct.singleImage,
+      singleImage:payload.singleImage,
       keyFacts: payload.keyFacts || existingProduct.keyFacts,
-      equepmentAndFeature:
-        payload.equepmentAndFeature || existingProduct.equepmentAndFeature,
+      equepmentAndFeature: payload.equepmentAndFeature || existingProduct.equepmentAndFeature,
       condition: payload.condition || existingProduct.condition,
       serviceHistory: payload.serviceHistory || existingProduct.serviceHistory,
       summary: payload.summary || existingProduct.summary,
