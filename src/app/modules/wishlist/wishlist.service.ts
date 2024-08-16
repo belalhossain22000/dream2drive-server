@@ -8,7 +8,7 @@ const createWishlistIntoDb = async (payload: Wishlist) => {
     where: { id: payload.userId },
   });
 
-  const product = await prisma.products.findFirstOrThrow({
+  const product = await prisma.product.findFirstOrThrow({
     where: { id: payload.productId },
   });
 

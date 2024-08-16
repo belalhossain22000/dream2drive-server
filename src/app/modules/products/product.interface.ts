@@ -19,6 +19,7 @@ export interface TProducts {
   id: string;
   productName: string;
   singleImage: string;
+  userId:string
   keyFacts: string;
   equepmentAndFeature: string;
   condition: string;

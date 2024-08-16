@@ -1,4 +1,4 @@
-import { Products, User } from "@prisma/client";
+import { Product, User } from "@prisma/client";
 
 export interface Review {
     id: string;
@@ -9,5 +9,5 @@ export interface Review {
     createdAt: Date; 
     updatedAt: Date; 
     user?: User; 
-    product?: Products; 
+    product?: Product; 
   }

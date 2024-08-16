@@ -21,8 +21,8 @@ const vehicleEmailSender = async (
     });
 
     const mailOptions = {
-      from: `"Collecting Cars" <belalhossain22000@gmail.com>`, // sender address (website owner)
-      to: `${userEmail}`, // receiver address (website owner)
+      from: `"Collecting Cars" <${userEmail}>`, // sender address (website owner)
+      to: `belalhossain22000@gmail.com`, // receiver address (website owner)
       subject: "New Vehicle Sourcing Request", // Subject line
       html: htmlContent, // HTML body content
       replyTo: userEmail, // Set the user's email as the reply-to address

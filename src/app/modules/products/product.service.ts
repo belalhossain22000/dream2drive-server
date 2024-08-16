@@ -47,6 +47,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
       productName: productData.productName,
       singleImage: singleImage,
       keyFacts: productData.keyFacts,
+      userId: productData.userId,
       equepmentAndFeature: productData.equepmentAndFeature,
       condition: productData.condition,
       serviceHistory: productData.serviceHistory,
@@ -127,6 +128,7 @@ const getAllProductsFromDB = async (
     where: whereConditons,
     include: {
       brand: true,
+      user:true
     },
     skip,
     take: limit,
@@ -183,9 +185,10 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
     where: { id: id },
     data: {
       productName: payload.productName || existingProduct.productName,
-      singleImage:payload.singleImage,
+      singleImage: payload.singleImage,
       keyFacts: payload.keyFacts || existingProduct.keyFacts,
-      equepmentAndFeature: payload.equepmentAndFeature || existingProduct.equepmentAndFeature,
+      equepmentAndFeature:
+        payload.equepmentAndFeature || existingProduct.equepmentAndFeature,
       condition: payload.condition || existingProduct.condition,
       serviceHistory: payload.serviceHistory || existingProduct.serviceHistory,
       summary: payload.summary || existingProduct.summary,

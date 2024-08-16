@@ -9,7 +9,7 @@ const createReviewIntoDb = async (payload: Review) => {
     },
   });
 
-  await prisma.products.findFirstOrThrow({
+  await prisma.product.findFirstOrThrow({
     where: {
       id: payload.productId,
     },

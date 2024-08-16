@@ -57,6 +57,8 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     othersImage,
     singleImage,
   };
+
+  // console.log(filesData,req.body.body)
   const result = await productServices.createProductIntoDB(
     filesData,
     req.body.body

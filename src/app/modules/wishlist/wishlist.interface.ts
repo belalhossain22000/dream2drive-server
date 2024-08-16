@@ -1,4 +1,4 @@
-import { Products, User } from "@prisma/client";
+import { Product, User } from "@prisma/client";
 
 
 export interface Wishlist {
@@ -6,6 +6,6 @@ export interface Wishlist {
   userId: string;
   user: User;
   productId: string;
-  product: Products;
+  product: Product;
   createdAt: Date;
 }
