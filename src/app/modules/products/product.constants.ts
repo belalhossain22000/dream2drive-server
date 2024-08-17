@@ -1,18 +1,21 @@
-import { Prisma } from "@prisma/client";
+
 
 export const productsFilterableFields = [
   "searchTerm",
   "drivingSide",
   "status",
   "country",
-  "brand"
+  "brand",
 ];
 
-export const productsSearchAbleFields: (keyof Prisma.ProductWhereInput)[] = [
+export const productsSearchAbleFields = [
   "productName",
-  "keyFacts",
   "country",
+  "status",
   "color",
   "interior",
-  "brand"
+  "condition",
+  "gear",
+  "brand.brandName",  
+  "drivingSide", 
 ];

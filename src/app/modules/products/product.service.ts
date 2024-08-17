@@ -3,9 +3,12 @@ import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IPaginationOptions } from "../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
-import { Prisma } from "@prisma/client";
+import { DrivingSide, Prisma, ProductStatus } from "@prisma/client";
 import { productsSearchAbleFields } from "./product.constants";
 import { TProducts } from "./product.interface";
+import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
+import normalizeStatus from "../../../shared/normalizedStatus";
+// import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
   const {
@@ -84,23 +87,56 @@ const getAllProductsFromDB = async (
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
-  const andCondions: Prisma.ProductWhereInput[] = [];
+  const andConditions: Prisma.ProductWhereInput[] = [];
 
-  // searching
-  if (params.searchTerm) {
-    andCondions.push({
-      OR: productsSearchAbleFields.map((field) => ({
-        [field]: {
-          contains: params.searchTerm,
-          mode: "insensitive",
-        },
-      })),
+  // Normalize searchTerm and filterData for case sensitivity
+  const normalizedSearchTerm = searchTerm?.toLowerCase() || '';
+
+  // Searching
+  if (normalizedSearchTerm) {
+    andConditions.push({
+      OR: productsSearchAbleFields.map((field) => {
+        if (field === "brand.brandName") {
+          return {
+            brand: {
+              brandName: {
+                contains: normalizedSearchTerm,
+                mode: "insensitive",
+              },
+            },
+          };
+        } else if (field === "drivingSide") {
+          const normalizedDrivingSide = normalizeDrivingSide(normalizedSearchTerm);
+          if (normalizedDrivingSide) {
+            return {
+              drivingSide: normalizedDrivingSide,
+            };
+          } else {
+            return {}; // Skip if searchTerm is not valid for enum
+          }
+        } else if (field === "status") {
+          const normalizedStatus = normalizeStatus(normalizedSearchTerm);
+          if (normalizedStatus) {
+            return {
+              status: normalizedStatus,
+            };
+          } else {
+            return {}; // Skip if searchTerm is not valid for enum
+          }
+        }
+        return {
+          [field]: {
+            contains: normalizedSearchTerm,
+            mode: "insensitive",
+          },
+        };
+      }),
     });
   }
 
-  // filtering
+  // Filtering
   if (Object.keys(filterData).length > 0) {
-    andCondions.push({
+    andConditions.push({
       AND: Object.keys(filterData).map((key) => {
         let value = (filterData as any)[key];
 
@@ -108,27 +144,64 @@ const getAllProductsFromDB = async (
         if (value === "true") value = true;
         if (value === "false") value = false;
 
+        // Special handling for status
+        if (key === "status") {
+          const normalizedStatus = normalizeStatus(value);
+          if (normalizedStatus) {
+            return {
+              status: normalizedStatus,
+            };
+          } else {
+            return {}; // Skip if value is not valid for enum
+          }
+        }
+
+        // Special handling for drivingSide enum
+        if (key === "drivingSide") {
+          const normalizedDrivingSide = normalizeDrivingSide(value);
+          if (normalizedDrivingSide) {
+            return {
+              drivingSide: normalizedDrivingSide,
+            };
+          } else {
+            return {}; // Skip if value is not valid for enum
+          }
+        }
+
+        // Special handling for brand filtering
+        if (key === "brand") {
+          return {
+            brand: {
+              brandName: {
+                equals: value,
+                mode: "insensitive",
+              },
+            },
+          };
+        }
+
         return {
           [key]: {
             equals: value,
+             mode: "insensitive",
           },
         };
-      }),
+      }) as Prisma.ProductWhereInput[], // Cast the result as Prisma.ProductWhereInput[]
     });
   }
 
-  andCondions.push({
+  // Always exclude deleted products
+  andConditions.push({
     isDeleted: false,
   });
 
-  //console.dir(andCondions, { depth: 'inifinity' })
-  const whereConditons: Prisma.ProductWhereInput = { AND: andCondions };
+  const whereConditions: Prisma.ProductWhereInput = { AND: andConditions };
 
   const result = await prisma.product.findMany({
-    where: whereConditons,
+    where: whereConditions,
     include: {
       brand: true,
-      user:true
+      user: true,
     },
     skip,
     take: limit,
@@ -143,7 +216,7 @@ const getAllProductsFromDB = async (
   });
 
   const total = await prisma.product.count({
-    where: whereConditons,
+    where: whereConditions,
   });
 
   return {
@@ -155,6 +228,18 @@ const getAllProductsFromDB = async (
     data: result,
   };
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 const getSingleProductFromDB = async (id: string) => {
   const result = await prisma.product.findUnique({
