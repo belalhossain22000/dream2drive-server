@@ -19,6 +19,7 @@ export interface TProducts {
   id: string;
   productName: string;
   singleImage: string;
+  region: string;
   userId:string
   keyFacts: string;
   equepmentAndFeature: string;
@@ -41,8 +42,12 @@ export interface TProducts {
   color: string;
   interior: string;
   engine: string;
+  sellerPhoneNumber:string; // Assuming
+  sellerEmail: string; // Assuming
+  sellerName: string; // Assuming
   vin: string;
   country: string;
+  lotNumbers: string;
   isDeleted: boolean;
   featured: boolean;
   status: ProductStatus; // Assuming ProductStatus is an enum

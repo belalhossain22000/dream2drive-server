@@ -18,6 +18,7 @@ router.post(
   userController.createAdmin
 );
 router.get("/", userController.getUsers);
+router.put("/:id", userController.updateUser);
 router.put(
   "/profile",
   validateRequest(UserValidation.userUpdateSchema),

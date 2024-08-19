@@ -75,6 +75,11 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
       isDeleted: false,
       featured: false,
       status: productData.status,
+      lotNumbers: productData.lotNumbers,
+      sellerEmail: productData.sellerEmail,
+      sellerPhoneNumber: productData.sellerPhoneNumber,
+      sellerName: productData.sellerName,
+      region: productData.region,
     },
   });
   return result;
@@ -90,7 +95,7 @@ const getAllProductsFromDB = async (
   const andConditions: Prisma.ProductWhereInput[] = [];
 
   // Normalize searchTerm and filterData for case sensitivity
-  const normalizedSearchTerm = searchTerm?.toLowerCase() || '';
+  const normalizedSearchTerm = searchTerm?.toLowerCase() || "";
 
   // Searching
   if (normalizedSearchTerm) {
@@ -106,7 +111,8 @@ const getAllProductsFromDB = async (
             },
           };
         } else if (field === "drivingSide") {
-          const normalizedDrivingSide = normalizeDrivingSide(normalizedSearchTerm);
+          const normalizedDrivingSide =
+            normalizeDrivingSide(normalizedSearchTerm);
           if (normalizedDrivingSide) {
             return {
               drivingSide: normalizedDrivingSide,
@@ -183,7 +189,7 @@ const getAllProductsFromDB = async (
         return {
           [key]: {
             equals: value,
-             mode: "insensitive",
+            mode: "insensitive",
           },
         };
       }) as Prisma.ProductWhereInput[], // Cast the result as Prisma.ProductWhereInput[]
@@ -229,18 +235,7 @@ const getAllProductsFromDB = async (
   };
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
+//
 const getSingleProductFromDB = async (id: string) => {
   const result = await prisma.product.findUnique({
     where: {
@@ -304,6 +299,12 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
           ? payload.featured
           : existingProduct.featured,
       status: payload.status || existingProduct.status,
+      region: payload.region || existingProduct.region,
+      sellerEmail: payload.sellerEmail || existingProduct.sellerEmail,
+      sellerPhoneNumber:
+        payload.sellerPhoneNumber || existingProduct.sellerPhoneNumber,
+      sellerName: payload.sellerName || existingProduct.sellerName,
+      lotNumbers: payload.lotNumbers || existingProduct.lotNumbers
     },
   });
 
