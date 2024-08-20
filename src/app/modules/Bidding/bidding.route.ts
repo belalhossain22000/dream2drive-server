@@ -8,6 +8,7 @@ const router = express.Router();
 // bidding
 router.post('/', BiddingCotroller.createBidding);
 router.get('/', BiddingCotroller.getAllBidding);
+router.get('/:id', BiddingCotroller.getSingleBidding);
 
 
 
