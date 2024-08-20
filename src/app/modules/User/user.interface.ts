@@ -5,7 +5,7 @@ export interface IUser {
   lastName: string;
   username: string;
   password: string;
-  role: "ADMIN" | "SELLER" | "BUYER";
+  role: "ADMIN" | "USER";
   userStatus: "ACTIVE" | "BLOCKED";
   createdAt?: Date;
   updatedAt?: Date;

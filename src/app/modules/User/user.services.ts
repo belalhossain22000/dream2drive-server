@@ -187,7 +187,7 @@ const updateProfile = async (user: IUser, payload: IUser) => {
 };
 
 const updateUserIntoDb = async (payload: IUser, id: string) => {
-  console.log(payload);
+  console.log(payload,id,"from user upate role and status");
 
   // Retrieve the existing user info
   const userInfo = await prisma.user.findUniqueOrThrow({
@@ -195,10 +195,20 @@ const updateUserIntoDb = async (payload: IUser, id: string) => {
       id: id,
     },
   });
-
   
+// Update the user with the provided payload
+const result = await prisma.user.update({
+  where: {
+    id: userInfo.id,
+  },
+  data: {
+    userStatus: payload.userStatus ||userInfo.userStatus,
+    role: payload.role ||userInfo.role,
+    updatedAt: new Date(),
+  },
+});
 
-
+return result
 
 };
 
@@ -207,5 +217,5 @@ export const userService = {
   getUsersFromDb,
   createAdminIntoDb,
   updateProfile,
-  updateUserIntoDb
+  updateUserIntoDb,
 };
