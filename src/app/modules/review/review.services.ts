@@ -41,8 +41,30 @@ const getReviewsWithUser = async () => {
 
   return reviews;
 };
+const getSingleProductReviewsWithUser = async (id:any) => {
+console.log(id)
+  const reviews = await prisma.review.findMany({
+    where: {
+      productId: id,
+    },
+    orderBy:{
+     createdAt:"desc"
+    },
+    include: {
+      user: true, // Include the related user data
+      product: true, // Include the related product data (if needed)
+    },
+  });
+
+  if (!reviews) {
+    throw new ApiError(404, `Review not found`);
+  }
+
+  return reviews;
+};
 
 export const reviewService = {
   createReviewIntoDb,
   getReviewsWithUser,
+  getSingleProductReviewsWithUser,
 };
