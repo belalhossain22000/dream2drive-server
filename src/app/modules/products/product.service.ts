@@ -75,6 +75,11 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
       isDeleted: false,
       featured: false,
       status: productData.status,
+      lotNumbers: productData.lotNumbers,
+      sellerEmail: productData.sellerEmail,
+      sellerPhoneNumber: productData.sellerPhoneNumber,
+      sellerName: productData.sellerName,
+      region: productData.region,
     },
   });
   return result;
@@ -294,6 +299,12 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
           ? payload.featured
           : existingProduct.featured,
       status: payload.status || existingProduct.status,
+      region: payload.region || existingProduct.region,
+      sellerEmail: payload.sellerEmail || existingProduct.sellerEmail,
+      sellerPhoneNumber:
+        payload.sellerPhoneNumber || existingProduct.sellerPhoneNumber,
+      sellerName: payload.sellerName || existingProduct.sellerName,
+      lotNumbers: payload.lotNumbers || existingProduct.lotNumbers
     },
   });
 

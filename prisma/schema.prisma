@@ -111,11 +111,19 @@ model Product {
   wishlist            Wishlist[]
   reviews             Review[]
   biddings            Bidding[]
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  region              String
+  sellerName          String
+  sellerEmail         String
+  sellerPhoneNumber   String
+  lotNumbers          String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("products")
 }
+
+// *! remove from front end mechanical image
 
 enum DrivingSide {
   LHD

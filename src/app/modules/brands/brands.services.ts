@@ -19,6 +19,7 @@ const createBrandIntoDB = async (payload:TBrand) => {
         brandName: payload.brandName,
       },
     });
+   
     return result;
   } catch (error: any) {
     throw new Error(`Could not create brand: ${error.message}`);
@@ -28,7 +29,9 @@ const createBrandIntoDB = async (payload:TBrand) => {
 const getAllBrandsIntoDB = async () => {
   try {
     const result = await prisma.brand.findMany();
-    return result;
+    const results = result.map(el => ({ id: el.id, name: el.brandName }));
+
+    return results;
   } catch (error: any) {
     throw new Error(`Could not get brands: ${error.message}`);
   }

@@ -55,10 +55,22 @@ const updateProfile = catchAsync(async (req: Request & {user?:any}, res: Respons
     data: result,
   });
 });
+// get all user form db
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+const id = req.params.id;
+  const result = await userService.updateUserIntoDb( req.body,id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User updated successfully!",
+    data: result,
+  });
+});
 
 export const userController = {
   createUser,
   getUsers,
   createAdmin,
   updateProfile,
+  updateUser
 };

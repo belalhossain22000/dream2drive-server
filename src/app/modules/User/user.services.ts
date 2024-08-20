@@ -5,7 +5,7 @@ import { IUser, IUserFilterRequest } from "./user.interface";
 import * as bcrypt from "bcrypt";
 import { IPaginationOptions } from "../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { userSearchAbleFields } from "./user.costant";
 
 // Create a new user in the database.
@@ -186,9 +186,26 @@ const updateProfile = async (user: IUser, payload: IUser) => {
   return updatedUser;
 };
 
+const updateUserIntoDb = async (payload: IUser, id: string) => {
+  console.log(payload);
+
+  // Retrieve the existing user info
+  const userInfo = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: id,
+    },
+  });
+
+  
+
+
+
+};
+
 export const userService = {
   createUserIntoDb,
   getUsersFromDb,
   createAdminIntoDb,
   updateProfile,
+  updateUserIntoDb
 };
