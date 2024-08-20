@@ -28,7 +28,21 @@ const getAllVehicleInfoFromDB = async () => {
   }
 };
 
+// delete vehicle from deb
+
+const deleteVehicleFromDB = async (vehicleId: string) => {
+  await prisma.vehicleInfo.findFirstOrThrow({
+    where: { id: vehicleId },
+  });
+
+  const result = await prisma.vehicleInfo.delete({
+    where: { id: vehicleId },
+  });
+  return result;
+};
+
 export const VehicleInfoServices = {
   createVehicleInfoIntoDB,
   getAllVehicleInfoFromDB,
+  deleteVehicleFromDB
 };

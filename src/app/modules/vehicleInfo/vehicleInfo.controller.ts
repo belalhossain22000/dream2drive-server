@@ -40,7 +40,19 @@ const getAllVehicleInfos = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const deleteVehicle = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params
+  const result = await VehicleInfoServices.deleteVehicleFromDB(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "VehicleInfo deleted successfully",
+    data: result,
+  });
+});
+
 export const VehicleInfoController = {
   createVehicleInfo,
   getAllVehicleInfos,
+  deleteVehicle
 };

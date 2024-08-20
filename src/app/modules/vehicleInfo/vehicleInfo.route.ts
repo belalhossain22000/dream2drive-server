@@ -6,14 +6,15 @@ import { fileUploader } from "../../../helpars/fileUploader";
 
 const router = express.Router();
 
-// *? create vehicle 
+// *? create vehicle
 router.post(
   "/",
   fileUploader.uploadSingle,
   VehicleInfoController.createVehicleInfo
 );
 
-// *? get vehicle 
+// *? get vehicle
 router.get("/", VehicleInfoController.getAllVehicleInfos);
+router.delete("/:id", VehicleInfoController.deleteVehicle);
 
 export const vehicleInfoRoutes = router;
