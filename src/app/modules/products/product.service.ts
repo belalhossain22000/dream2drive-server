@@ -72,6 +72,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
       engine: productData.engine,
       vin: productData.vin,
       country: productData.country,
+      lotNumbers:productData.lotNumbers,
       isDeleted: false,
       featured: false,
       status: productData.status,
