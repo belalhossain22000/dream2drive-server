@@ -75,7 +75,6 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
       lotNumbers:productData.lotNumbers,
       isDeleted: false,
       featured: false,
-      lotNumbers: productData.lotNumbers,
       status: productData.status,
       sellerEmail: productData.sellerEmail,
       sellerPhoneNumber: productData.sellerPhoneNumber,
