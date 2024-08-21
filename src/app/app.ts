@@ -8,7 +8,12 @@ import GlobalErrorHandler from "./middlewares/globalErrorHandler";
 
 const app: Application = express();
 const corsOptions = {
-  origin: ["http://localhost:3001","https://collecting-cars-font-end.vercel.app","http://localhost:3000","https://dream-2-drive.vercel.app"],
+  origin: [
+    "http://localhost:3001",
+    "https://collecting-cars-font-end.vercel.app",
+    "http://localhost:3000",
+    "https://dream-2-drive.vercel.app",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
@@ -56,7 +61,7 @@ const globalErrorHandler = (
   res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
     success: false,
     message: "Internal Server Error",
-    error: err.message, // You can customize error handling here
+    error: err.message, 
   });
 };
 
