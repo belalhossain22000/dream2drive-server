@@ -8,7 +8,7 @@ import GlobalErrorHandler from "./middlewares/globalErrorHandler";
 
 const app: Application = express();
 const corsOptions = {
-  origin: ["http://localhost:3001","https://collecting-cars-font-end.vercel.app","http://localhost:3000"],
+  origin: ["http://localhost:3001","https://collecting-cars-font-end.vercel.app","http://localhost:3000","https://dream-2-drive.vercel.app"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
