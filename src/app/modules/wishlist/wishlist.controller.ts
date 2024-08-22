@@ -17,7 +17,8 @@ const createWishlist = catchAsync(async (req: Request, res: Response) => {
 
 // create wishlist
 const getWishlistByUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await wishlistService.getWishlistByUserFromDb(req.body);
+  const id=req.params.id;
+  const result = await wishlistService.getWishlistByUserFromDb(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -25,8 +26,33 @@ const getWishlistByUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
-
+// const getWishlistBySingleUser = catchAsync(
+//   async (req: Request, res: Response) => {
+//     const id = req.params.id;
+//     const result = await wishlistService.getWishByUserFromDB(id);
+//     sendResponse(res, {
+//       statusCode: httpStatus.OK,
+//       success: true,
+//       message: "User wishlist reterive successfully!",
+//       data: result,
+//     });
+//   }
+// );
+const deleteWishlist = catchAsync(async (req: Request, res: Response) => {
+  const { userId, productId } = req.body;
+  const result = await wishlistService.deleteWishlistFromDb({
+    userId,
+    productId,
+  });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Wishlist item deleted successfully!",
+    data: result,
+  });
+});
 export const wishlistController = {
   createWishlist,
   getWishlistByUser,
+  deleteWishlist,
 };
