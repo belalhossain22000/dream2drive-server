@@ -8,6 +8,7 @@ import { productsSearchAbleFields } from "./product.constants";
 import { TProducts } from "./product.interface";
 import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 import normalizeStatus from "../../../shared/normalizedStatus";
+import { JsonArray } from "@prisma/client/runtime/library";
 // import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
@@ -72,7 +73,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
       engine: productData.engine,
       vin: productData.vin,
       country: productData.country,
-      lotNumbers:productData.lotNumbers,
+      lotNumbers: productData.lotNumbers,
       isDeleted: false,
       featured: false,
       status: productData.status,
@@ -252,6 +253,7 @@ const getSingleProductFromDB = async (id: string) => {
   return result;
 };
 
+// *! update product
 const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
   const existingProduct = await prisma.product.findUnique({
     where: { id: id },
@@ -264,47 +266,48 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
   const result = await prisma.product.update({
     where: { id: id },
     data: {
-      productName: payload.productName || existingProduct.productName,
-      singleImage: payload.singleImage,
-      keyFacts: payload.keyFacts || existingProduct.keyFacts,
+      productName: payload.productName ?? existingProduct?.productName,
+      singleImage:
+        payload.singleImage ?? (existingProduct?.singleImage as JsonArray),
+      keyFacts: payload.keyFacts ?? existingProduct?.keyFacts,
       equepmentAndFeature:
-        payload.equepmentAndFeature || existingProduct.equepmentAndFeature,
-      condition: payload.condition || existingProduct.condition,
-      serviceHistory: payload.serviceHistory || existingProduct.serviceHistory,
-      summary: payload.summary || existingProduct.summary,
-      youtubeVideo: payload.youtubeVideo || existingProduct.youtubeVideo,
-      galleryImage: payload.galleryImage || existingProduct.galleryImage,
-      exteriorImage: payload.exteriorImage || existingProduct.exteriorImage,
-      interiorImage: payload.interiorImage || existingProduct.interiorImage,
-      othersImage: payload.othersImage || existingProduct.othersImage,
+        payload.equepmentAndFeature ?? existingProduct?.equepmentAndFeature,
+      condition: payload.condition ?? existingProduct?.condition,
+      serviceHistory: payload.serviceHistory ?? existingProduct?.serviceHistory,
+      summary: payload.summary ?? existingProduct?.summary,
+      youtubeVideo: payload.youtubeVideo ?? existingProduct?.youtubeVideo,
+      galleryImage: payload.galleryImage ?? existingProduct?.galleryImage,
+      exteriorImage: payload.exteriorImage ?? existingProduct?.exteriorImage,
+      interiorImage: payload.interiorImage ?? existingProduct?.interiorImage,
+      othersImage: payload.othersImage ?? existingProduct?.othersImage,
       auctionStartDate:
-        payload.auctionStartDate || existingProduct.auctionStartDate,
-      auctionEndDate: payload.auctionEndDate || existingProduct.auctionEndDate,
-      brandId: payload.brandId || existingProduct.brandId,
-      speed: payload.speed || existingProduct.speed,
-      price: payload.price || existingProduct.price,
-      gear: payload.gear || existingProduct.gear,
-      drivingSide: payload.drivingSide || existingProduct.drivingSide,
-      color: payload.color || existingProduct.color,
-      interior: payload.interior || existingProduct.interior,
-      engine: payload.engine || existingProduct.engine,
-      vin: payload.vin || existingProduct.vin,
-      country: payload.country || existingProduct.country,
+        payload.auctionStartDate ?? existingProduct?.auctionStartDate,
+      auctionEndDate: payload.auctionEndDate ?? existingProduct?.auctionEndDate,
+      brandId: payload.brandId ?? existingProduct?.brandId,
+      speed: payload.speed ?? existingProduct?.speed,
+      price: payload.price ?? existingProduct?.price,
+      gear: payload.gear ?? existingProduct?.gear,
+      drivingSide: payload.drivingSide ?? existingProduct?.drivingSide,
+      color: payload.color ?? existingProduct?.color,
+      interior: payload.interior ?? existingProduct?.interior,
+      engine: payload.engine ?? existingProduct?.engine,
+      vin: payload.vin ?? existingProduct?.vin,
+      country: payload.country ?? existingProduct?.country,
       isDeleted:
         payload.isDeleted !== undefined
           ? payload.isDeleted
-          : existingProduct.isDeleted,
+          : existingProduct?.isDeleted,
       featured:
         payload.featured !== undefined
           ? payload.featured
-          : existingProduct.featured,
-      status: payload.status || existingProduct.status,
-      region: payload.region || existingProduct.region,
-      sellerEmail: payload.sellerEmail || existingProduct.sellerEmail,
+          : existingProduct?.featured,
+      status: payload.status ?? existingProduct?.status,
+      region: payload.region ?? existingProduct?.region,
+      sellerEmail: payload.sellerEmail ?? existingProduct?.sellerEmail,
       sellerPhoneNumber:
-        payload.sellerPhoneNumber || existingProduct.sellerPhoneNumber,
-      sellerName: payload.sellerName || existingProduct.sellerName,
-      lotNumbers: payload.lotNumbers || existingProduct.lotNumbers,
+        payload.sellerPhoneNumber ?? existingProduct?.sellerPhoneNumber,
+      sellerName: payload.sellerName ?? existingProduct?.sellerName,
+      lotNumbers: payload.lotNumbers ?? existingProduct?.lotNumbers,
     },
   });
 

@@ -72,7 +72,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 // get all products
 
 const getAllProduct = catchAsync(async (req: Request, res: Response) => {
@@ -99,10 +98,92 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// update products
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  const result = await productServices.updateProductInDB(id, req.body);
+  const files = req?.files as any;
 
+  // Parse incoming data from the request body
+  const data = req?.body?.body;
+  const parsedData = JSON.parse(data);
+
+  // Initialize arrays to store existing and new image URLs
+  let singleImage: string[] = parsedData.singleImage || [];
+  let galleryImage: string[] = parsedData.galleryImage || [];
+  let interiorImage: string[] = parsedData.interiorImage || [];
+  let exteriorImage: string[] = parsedData.exteriorImage || [];
+  let othersImage: string[] = parsedData.othersImage || [];
+
+  // Check if any files are uploaded
+  if (files && Object.keys(files).length > 0) {
+    // Extract the product images from payload
+    const productSingleImage = files.singleImage || [];
+    const productImageFiles = files.galleryImage || [];
+    const interiorImageFiles = files.interiorImage || [];
+    const exteriorImageFiles = files.exteriorImage || [];
+    const othersImageFiles = files.othersImage || [];
+
+    // Upload product images to Cloudinary
+    const productImageResults = productImageFiles.map((file: any) =>
+      fileUploader.uploadToCloudinary(file)
+    );
+    const interiorImageResults = interiorImageFiles.map((file: any) =>
+      fileUploader.uploadToCloudinary(file)
+    );
+    const exteriorImageResults = exteriorImageFiles.map((file: any) =>
+      fileUploader.uploadToCloudinary(file)
+    );
+    const othersImageResults = othersImageFiles.map((file: any) =>
+      fileUploader.uploadToCloudinary(file)
+    );
+    const singleProductImageResults = productSingleImage.map((file: any) =>
+      fileUploader.uploadToCloudinary(file)
+    );
+
+    // Await the results from Cloudinary
+    const productData = await Promise.all(productImageResults);
+    const interiorData = await Promise.all(interiorImageResults);
+    const exteriorData = await Promise.all(exteriorImageResults);
+    const othersData = await Promise.all(othersImageResults);
+    const singleImageData = await Promise.all(singleProductImageResults);
+
+    // Extract URLs from Cloudinary responses
+    const existingSingleImage = singleImageData.map(
+      (single) => single.secure_url
+    );
+    const existingGalleryImage = productData.map(
+      (product) => product.secure_url
+    );
+    const existingInteriorImage = interiorData.map(
+      (interior) => interior.secure_url
+    );
+    const existingExteriorImage = exteriorData.map(
+      (exterior) => exterior.secure_url
+    );
+    const existingOthersImage = othersData.map((others) => others.secure_url);
+
+    // Merge existing and new images
+    singleImage = [...singleImage, ...existingSingleImage];
+    galleryImage = [...galleryImage, ...existingGalleryImage];
+    interiorImage = [...interiorImage, ...existingInteriorImage];
+    exteriorImage = [...exteriorImage, ...existingExteriorImage];
+    othersImage = [...othersImage, ...existingOthersImage];
+  }
+
+  // Format the data to send to the database
+  const updateData = {
+    ...parsedData,
+    singleImage,
+    galleryImage,
+    interiorImage,
+    exteriorImage,
+    othersImage,
+  };
+  console.log(updateData);
+  // Update the product in the database
+  const result = await productServices.updateProductInDB(id, updateData);
+
+  // Send response back to the client
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -110,6 +191,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   console.log(id);
