@@ -25,6 +25,8 @@ const getAllBidding = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
+// get all user bidding for showing biding card information
 const getSingleBidding = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await BiddingServices.getSingleProductBiddingsIntoDB(id);
@@ -35,9 +37,22 @@ const getSingleBidding = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+// get all user bidding for showing biding card information
+const getBiddingByUser = catchAsync(async (req: Request, res: Response) => {
+  const id = req?.user?.id;
+  const result = await BiddingServices.getBiddingsByUser(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Product bidding retrieval successfully",
+    data: result,
+  });
+});
+
 
 export const BiddingCotroller = {
   createBidding,
   getAllBidding,
   getSingleBidding,
+  getBiddingByUser
 };
