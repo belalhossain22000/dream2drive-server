@@ -38,11 +38,11 @@ const createWishlistIntoDb = async (payload: Wishlist) => {
   return wishlistItem;
 };
 
-const getWishlistByUserFromDb = async (id:any) => {
-  console.log(id)
+const getWishlistByUserFromDb = async (id: any) => {
   if (!id) {
     throw new ApiError(400, "User ID must be provided.");
   }
+
   //   // Check if the user exists
   const user = await prisma.user.findFirstOrThrow({
     where: { id: id },
@@ -55,6 +55,7 @@ const getWishlistByUserFromDb = async (id:any) => {
       product: true,
     },
   });
+  console.log(result, "from service wishlist ================================");
 
   return result;
 };
@@ -119,5 +120,5 @@ const deleteWishlistFromDb = async (payload: {
 export const wishlistService = {
   createWishlistIntoDb,
   getWishlistByUserFromDb,
-  deleteWishlistFromDb
+  deleteWishlistFromDb,
 };
