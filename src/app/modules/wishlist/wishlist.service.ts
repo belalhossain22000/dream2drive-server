@@ -39,6 +39,7 @@ const createWishlistIntoDb = async (payload: Wishlist) => {
 };
 
 const getWishlistByUserFromDb = async (id:any) => {
+  console.log(id)
   if (!id) {
     throw new ApiError(400, "User ID must be provided.");
   }

@@ -1,4 +1,4 @@
-import httpStatus from "http-status";
+  import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { userService } from "./user.services";

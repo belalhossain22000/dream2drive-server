@@ -17,7 +17,7 @@ const createWishlist = catchAsync(async (req: Request, res: Response) => {
 
 // create wishlist
 const getWishlistByUser = catchAsync(async (req: Request, res: Response) => {
-  const id=req.params.id;
+  const id=req?.user?.id;
   const result = await wishlistService.getWishlistByUserFromDb(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
