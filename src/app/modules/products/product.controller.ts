@@ -227,6 +227,16 @@ const getFeaturedProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getProductGroupings = catchAsync(async (req: Request, res: Response) => {
+  const result = await productServices.getProductGroupings();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: " All Product list reterive successfully",
+    data: result,
+  });
+});
+
 export const productCotroller = {
   createProduct,
   getAllProduct,
@@ -235,4 +245,5 @@ export const productCotroller = {
   deleteProduct,
   createFeaturedProduct,
   getFeaturedProduct,
+  getProductGroupings,
 };

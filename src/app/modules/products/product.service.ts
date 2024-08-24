@@ -93,6 +93,7 @@ const getAllProductsFromDB = async (
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
+  // console.log(filterData,"================================================================================================")
   const andConditions: Prisma.ProductWhereInput[] = [];
 
   // Normalize searchTerm and filterData for case sensitivity
@@ -368,6 +369,81 @@ const getFeaturedProduct = async () => {
   return currentFeatured;
 };
 
+const getProductGroupings = async () => {
+  // Fetch all products from the database with related brand data
+  const products = await prisma.product.findMany({
+    include: {
+      brand: true, // Include the brand information
+    },
+  });
+
+  // Initialize grouping objects
+  const regionGroup: Record<string, number> = {};
+  const countryGroup: Record<string, number> = {};
+  const drivingSideGroup: Record<string, number> = {};
+  const brandGroup: Record<string, number> = {};
+
+  // Group and count products by region, country, drivingSide, and brandName
+  products.forEach((product) => {
+    // Group by region
+    if (product.region) {
+      if (!regionGroup[product.region]) {
+        regionGroup[product.region] = 0;
+      }
+      regionGroup[product.region]++;
+    }
+
+    // Group by country
+    if (product.country) {
+      if (!countryGroup[product.country]) {
+        countryGroup[product.country] = 0;
+      }
+      countryGroup[product.country]++;
+    }
+
+    // Group by drivingSide
+    if (product.drivingSide) {
+      if (!drivingSideGroup[product.drivingSide]) {
+        drivingSideGroup[product.drivingSide] = 0;
+      }
+      drivingSideGroup[product.drivingSide]++;
+    }
+
+    // Group by brandName
+    if (product.brand?.brandName) {
+      if (!brandGroup[product.brand.brandName]) {
+        brandGroup[product.brand.brandName] = 0;
+      }
+      brandGroup[product.brand.brandName]++;
+    }
+  });
+
+  // Convert group objects to arrays of strings with counts
+  const regionList = Object.entries(regionGroup).map(
+    ([region, count]) => `${region} (${count})`
+  );
+
+  const countryList = Object.entries(countryGroup).map(
+    ([country, count]) => `${country} (${count})`
+  );
+
+  const drivingSideList = Object.entries(drivingSideGroup).map(
+    ([drivingSide, count]) => `${drivingSide} (${count})`
+  );
+
+  const brandList = Object.entries(brandGroup).map(
+    ([brandName, count]) => `${brandName} (${count})`
+  );
+
+  // Return the formatted lists
+  return {
+    region: regionList,
+    country: countryList,
+    drivingSide: drivingSideList,
+    brand: brandList,
+  };
+};
+
 export const productServices = {
   createProductIntoDB,
   getAllProductsFromDB,
@@ -376,4 +452,5 @@ export const productServices = {
   updateProductInDB,
   createFeaturedProduct,
   getFeaturedProduct,
+  getProductGroupings,
 };
