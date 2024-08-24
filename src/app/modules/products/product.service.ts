@@ -315,6 +315,22 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
   return result;
 };
 
+const updateProductStatus = async (payload: any, id: string) => {
+  const isProductExist = await prisma.product.findUniqueOrThrow({
+    where: { id: id },
+  });
+  // Update the product with the provided payload
+  const result = await prisma.product.update({
+    where: { id: id },
+    data: {
+      ...payload,
+    },
+  });
+
+  // Return the updated product or a success message
+  return result;
+};
+
 const deleteProductFromDB = async (id: string) => {
   const existingProduct = await prisma.product.findUnique({
     where: { id: id },
@@ -453,4 +469,5 @@ export const productServices = {
   createFeaturedProduct,
   getFeaturedProduct,
   getProductGroupings,
+  updateProductStatus,
 };

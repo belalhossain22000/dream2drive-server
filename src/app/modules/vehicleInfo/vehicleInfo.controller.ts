@@ -8,6 +8,7 @@ import { fileUploader } from "../../../helpars/fileUploader";
 const createVehicleInfo = catchAsync(async (req: Request, res: Response) => {
   
   const file=req.file;
+  console.log(req.file)
   // console.log(file);
     if(!file){
       throw new Error("file was not aaded!!");

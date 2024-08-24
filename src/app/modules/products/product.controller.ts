@@ -179,7 +179,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     exteriorImage,
     othersImage,
   };
-  console.log(updateData);
+
   // Update the product in the database
   const result = await productServices.updateProductInDB(id, updateData);
 
@@ -192,6 +192,17 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+ 
+  const result = await productServices.updateProductStatus(req.body, id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "product updated successfully",
+    data: result,
+  });
+});
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   console.log(id);
@@ -246,4 +257,5 @@ export const productCotroller = {
   createFeaturedProduct,
   getFeaturedProduct,
   getProductGroupings,
+  updateProductStatus,
 };
