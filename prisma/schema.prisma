@@ -215,3 +215,14 @@ model VehicleSourcing {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+model Payment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  items     Json
+  amount    Int
+  currency  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
