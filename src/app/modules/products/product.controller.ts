@@ -248,6 +248,7 @@ const getProductGroupings = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+
 export const productCotroller = {
   createProduct,
   getAllProduct,

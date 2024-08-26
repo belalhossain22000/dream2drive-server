@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import cron from "node-cron";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IPaginationOptions } from "../../interfaces/paginations";
@@ -9,6 +10,7 @@ import { TProducts } from "./product.interface";
 import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 import normalizeStatus from "../../../shared/normalizedStatus";
 import { JsonArray } from "@prisma/client/runtime/library";
+import emailSender from "../Autrh/emailSender";
 // import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 
 const createProductIntoDB = async (filesData: any, payload: any) => {
@@ -460,6 +462,63 @@ const getProductGroupings = async () => {
   };
 };
 
+// *! send email auction end highest bidder
+
+const checkAuctionEnd = async () => {
+  const now = new Date();
+
+  // Find products where auctionEndDate is less than current date and status is 'live'
+  const endedAuctions = await prisma.product.findMany({
+    where: {
+      auctionEndDate: { lte: now },
+      status: "live",
+    },
+    include: {
+      biddings: {
+        orderBy: {
+          bidPrice: "desc", // Sort by highest bid
+        },
+        take: 1, // Get the highest bidder
+      },
+      user: true, // Include the product's user information
+    },
+  });
+
+  for (const auction of endedAuctions) {
+    const highestBidder = auction.biddings[0];
+
+    if (highestBidder) {
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          id: highestBidder.userId,
+        },
+      });
+      // Using console.dir() with depth: Infinity
+      console.dir(user?.email, { depth: Infinity });
+
+      // Send email to the highest bidder
+      await emailSender(user?.email, `<h1>${auction.productName}</h1>`);
+
+      // Update the product status to 'sold'
+      await prisma.product.update({
+        where: { id: auction.id },
+        data: { status: "sold" },
+      });
+    } else {
+      // No bids placed, mark as unsold
+      await prisma.product.update({
+        where: { id: auction.id },
+        data: { status: "unsold" },
+      });
+    }
+  }
+};
+
+// Schedule the cron job to run every minute
+export const scheduleAuctionCheck = () => {
+  cron.schedule("* * * * *", checkAuctionEnd);
+};
+
 export const productServices = {
   createProductIntoDB,
   getAllProductsFromDB,
@@ -470,4 +529,5 @@ export const productServices = {
   getFeaturedProduct,
   getProductGroupings,
   updateProductStatus,
+  checkAuctionEnd,
 };

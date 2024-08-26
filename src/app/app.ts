@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import router from ".";
 import GlobalErrorHandler from "./middlewares/globalErrorHandler";
+import { scheduleAuctionCheck } from "./modules/products/product.service";
 
 const app: Application = express();
 const corsOptions = {
@@ -33,6 +34,9 @@ app.get("/", (req: Request, res: Response) => {
     Message: "Collecting car server..",
   });
 });
+
+// Start the cron job
+scheduleAuctionCheck();
 
 // Router setup
 app.use("/api/v1", router);

@@ -7,6 +7,7 @@ const router = express.Router();
 // task 3
 router.post("/", fileUploader.uploadMultiple, productCotroller.createProduct);
 router.get("/", productCotroller.getAllProduct);
+// router.get("/send-mail-winner", productCotroller.checkAuctionEnd);
 router.get("/count-list", productCotroller.getProductGroupings);
 router.get("/featured", productCotroller.getFeaturedProduct);
 router.get("/:id", productCotroller.getSingleProduct);
