@@ -218,7 +218,6 @@ model VehicleSourcing {
 
 model Payment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  items     Json
   amount    Int
   currency  String
   createdAt DateTime @default(now())

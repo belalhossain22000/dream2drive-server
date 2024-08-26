@@ -1,19 +1,19 @@
 // src/controllers/orderController.ts
 import { Request, Response } from "express";
 import { createPaymentIntent } from "./payment.services";
+import catchAsync from "../../../shared/catchAsync";
+import sendResponse from "../../../shared/sendResponse";
+import httpStatus from "http-status";
 
-export const createPaymentIntentController = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const clientSecret = await createPaymentIntent(req.body);
-    res.send({ clientSecret });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ error: "Failed to create payment intent" });
-  }
-};
+const createPaymentIntentController = catchAsync(async (req: Request, res: Response) => {
+  const clientSecret = await createPaymentIntent(req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: " Review created successfully",
+    data: clientSecret,
+  });
+});
 export const paymentControllers = {
   createPaymentIntentController,
 };
