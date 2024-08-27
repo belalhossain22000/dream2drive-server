@@ -497,7 +497,131 @@ const checkAuctionEnd = async () => {
       console.dir(user?.email, { depth: Infinity });
 
       // Send email to the highest bidder
-      await emailSender(user?.email, `<h1>${auction.productName}</h1>`);
+      await emailSender(
+        `Congratulations! You've Won the Auction for ${auction?.productName}`,
+        user?.email,
+        `
+        
+        <!DOCTYPE html>
+                  <html lang="en">
+
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Congratulations! You've Won the Auction</title>
+                      <style>
+                          body {
+                              font-family: Arial, sans-serif;
+                              background-color: #f4f4f4;
+                              color: #333333;
+                              margin: 0;
+                              padding: 0;
+                          }
+
+                          .container {
+                              width: 100%;
+                              max-width: 600px;
+                              margin: 0 auto;
+                              background-color: #ffffff;
+                              padding: 20px;
+                              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                          }
+
+                          .header {
+                              text-align: center;
+                              background-color: #4CAF50;
+                              color: #ffffff;
+                              padding: 20px 0;
+                          }
+
+                          .header h1 {
+                              margin: 0;
+                              font-size: 24px;
+                          }
+
+                          .content {
+                              padding: 20px;
+                          }
+
+                          .content h2 {
+                              color: #4CAF50;
+                              font-size: 20px;
+                          }
+
+                          .content p {
+                              font-size: 16px;
+                              line-height: 1.6;
+                              margin: 10px 0;
+                          }
+
+                          .content .product-details {
+                              margin: 20px 0;
+                              border: 1px solid #dddddd;
+                              padding: 10px;
+                              background-color: #f9f9f9;
+                          }
+
+                          .content .product-details h3 {
+                              margin: 0;
+                              font-size: 18px;
+                          }
+
+                          .content .product-details p {
+                              margin: 5px 0;
+                              font-size: 16px;
+                          }
+
+                          .footer {
+                              text-align: center;
+                              padding: 20px 0;
+                              font-size: 14px;
+                              color: #777777;
+                          }
+
+                          .footer p {
+                              margin: 0;
+                          }
+
+                          .footer a {
+                              color: #4CAF50;
+                              text-decoration: none;
+                          }
+                      </style>
+                  </head>
+
+                  <body>
+                      <div class="container">
+                          <div class="header">
+                              <h1>Congratulations, ${user?.firstName}</h1>
+                          </div>
+                          <div class="content">
+                              <h2>You've Won the Auction!</h2>
+                              <p>Dear ${user?.firstName},</p>
+                              <p>We are thrilled to inform you that you have won the auction for the following product:</p>
+                              <div class="product-details">
+                                  <h3>Product Name: ${auction?.productName}</h3>
+                                  <a href="http://localhost:3001/buy/${auction?.id}">See Your Win car</a></p>
+                                  <p>Final Bid Amount: $${auction?.biddings[0]?.bidPrice}</p>
+                                  <p>Auction End Date: ${auction?.auctionEndDate}</p>
+                                   <img src="${auction.singleImage}" alt="${auction.productName}">
+                              </div>
+                              <p>Thank you for participating in the auction. We will be in touch with you shortly to finalize the purchase process.</p>
+                              <p>If you have any questions or need further assistance, please feel free to contact us.</p>
+                              <p>Best regards,</p>
+                              <p>The Auction Team</p>
+                          </div>
+                          <div class="footer">
+                              <p>© 2024 Auction House. All rights reserved.</p>
+                              <p><a href="http://localhost:3001">Visit our website</a></p>
+                          </div>
+                      </div>
+                  </body>
+
+                  </html>
+
+        
+        `
+      );
 
       // Update the product status to 'sold'
       await prisma.product.update({
