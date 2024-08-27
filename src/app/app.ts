@@ -7,7 +7,7 @@ import router from ".";
 import GlobalErrorHandler from "./middlewares/globalErrorHandler";
 
 const app: Application = express();
-const corsOptions = {
+export const corsOptions = {
   origin: [
     "http://localhost:3001",
     "https://collecting-cars-font-end.vercel.app",
