@@ -125,28 +125,12 @@ model Product {
   @@map("products")
 }
 
-// *! remove from front end mechanical image
-
 enum DrivingSide {
   LHD
   RHD
 }
 
 enum ProductStatus {
-  commingSoon
-  live
-  sold
-  unsold
-}
-
-// car driving position enum
-enum drivingPosition {
-  RHD
-  LHD
-}
-
-// product status enum
-enum productStatusEnum {
   commingSoon
   live
   sold
@@ -199,7 +183,6 @@ model VehicleInfo {
   carDetails String
   carImage   String?
   aboutHear  String
-  // carModel   String
 
   @@map("vehicleInfos")
 }
@@ -208,7 +191,7 @@ model VehicleSourcing {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   phone         String
   model         String
-  email         String // Optional field
+  email         String
   manufacturer  String
   preferredYear String? // Optional field
   maximumBudget String
@@ -260,8 +243,8 @@ model ChatroomMember {
   chatroomId String   @db.ObjectId
   chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
   userId     String   @db.ObjectId
-  role       UserRole
   user       User     @relation(fields: [userId], references: [id], name: "UserChatroomMembers")
+  role       UserRole
   joinedAt   DateTime @default(now())
 
   @@map("chatroom_members")

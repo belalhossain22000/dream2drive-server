@@ -2,6 +2,7 @@ import { Server } from 'http';
 import config from './config';
 import { Server as SocketIOServer } from 'socket.io';
 import app, { corsOptions } from './app/app';
+import { chatServices } from './app/modules/chat/chat.services';
 async function main() {
     const server: Server =app.listen(config.port, () => {
         console.log("Sever is running on port ", config.port);
@@ -9,29 +10,25 @@ async function main() {
     const io = new SocketIOServer(server, {
         cors: corsOptions
     });
-    io.on('connection', (socket:any) => {
-        console.log('A user connected:', socket.id);
+    io.on("connection", (socket) => {
+        console.log("A user connected:", socket.id);
     
-        // Handle incoming messages
-        socket.on('sendMessage', (data:any) => {
-            console.log('Message received:', data);
-            io.to(data.roomId).emit('receiveMessage', data);
+        socket.on("joinRoom", async (roomId) => {
+          socket.join(roomId);
+          console.log(`Socket ${socket.id} joined room ${roomId}`);
+          const messages = await chatServices.getMessagesByChatroomIntoDB(roomId);
+          socket.emit("loadMessages", messages);
         });
     
-        // Join a room
-        socket.on('joinRoom', (roomId:any) => {
-            socket.join(roomId);
-            console.log(`Socket ${socket.id} joined room ${roomId}`);
+        socket.on("sendMessage", async (data) => {
+          console.log("Message received:", data);
+          const { chatroomId, senderId, content } = data;
+          const message = await chatServices.createMessageIntoDB(chatroomId, senderId, content);
+          io.to(chatroomId).emit("receiveMessage", message);
         });
     
-        // Handle connection errors
-        socket.on('connect_error', (err:any) => {
-            console.error('Socket connection error:', err);
-        });
-
-        // Handle disconnection
-        socket.on('disconnect', () => {
-            console.log('User disconnected:', socket.id);
+        socket.on("disconnect", () => {
+          console.log("User disconnected:", socket.id);
         });
     });
     const exitHandler = () => {
