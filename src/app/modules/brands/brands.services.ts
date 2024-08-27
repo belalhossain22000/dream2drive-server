@@ -3,38 +3,33 @@ import prisma from "../../../shared/prisma";
 import { TBrand } from "./brands.interface";
 import ApiError from "../../errors/ApiErrors";
 
-const createBrandIntoDB = async (payload:TBrand) => {
-  try {
-    // Validate payload using Zod sche
-  const existingBrands=await prisma.brand.findUnique({
-    where:{
-      brandName:payload.brandName
-    }
+const createBrandIntoDB = async (payload: TBrand) => {
+  const existingBrands = await prisma.brand.findUnique({
+    where: {
+      brandName: payload.brandName,
+    },
   });
-  if(existingBrands){
-    throw new ApiError(httpStatus.CONFLICT,"this Brands is already exists!!");
-}
-    const result = await prisma.brand.create({
-      data: {
-        brandName: payload.brandName,
-      },
-    });
-   
-    return result;
-  } catch (error: any) {
-    throw new Error(`Could not create brand: ${error.message}`);
+  if (existingBrands) {
+    throw new ApiError(httpStatus.CONFLICT, "this Brands is already exists!!");
   }
+  const result = await prisma.brand.create({
+    data: {
+      brandName: payload.brandName,
+    },
+  });
+
+  return result;
 };
 
 const getAllBrandsIntoDB = async () => {
-  try {
-    const result = await prisma.brand.findMany();
-    const results = result.map(el => ({ id: el.id, name: el.brandName }));
+  const result = await prisma.brand.findMany();
+  const results = result.map((el) => ({ id: el.id, name: el.brandName }));
 
-    return results;
-  } catch (error: any) {
-    throw new Error(`Could not get brands: ${error.message}`);
+  if (!results) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No brands found");
   }
+
+  return results;
 };
 
 export const brandServices = { createBrandIntoDB, getAllBrandsIntoDB };
