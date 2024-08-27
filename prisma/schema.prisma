@@ -10,7 +10,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// ** user accoutn model
+// ** user account model
 model User {
   id                 String              @id @default(auto()) @map("_id") @db.ObjectId
   email              String              @unique
@@ -27,6 +27,8 @@ model User {
   UserAccountDetails UserAccountDetails?
   Review             Review[]
   Product            Product[]
+  chatroomMembers    ChatroomMember[]    @relation("UserChatroomMembers")
+  messages           Message[]           @relation("UserMessages")
 
   @@map("users")
 }
@@ -224,4 +226,43 @@ model Payment {
   updatedAt DateTime @updatedAt
 
   @@map("payments")
+}
+
+// Chatroom model
+model Chatroom {
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  roomName     String
+  messages     Message[]       @relation("ChatroomMessages")
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  chatroomMembers ChatroomMember[]
+
+  @@map("chatrooms")
+}
+
+// Message model
+model Message {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  chatroomId  String   @db.ObjectId
+  chatroom    Chatroom @relation(fields: [chatroomId], references: [id], name: "ChatroomMessages")
+  senderId    String   @db.ObjectId
+  sender      User     @relation(fields: [senderId], references: [id], name: "UserMessages")
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("messages")
+}
+
+// ChatroomMember model to manage user-chatroom relationships
+model ChatroomMember {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  chatroomId String   @db.ObjectId
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id])
+  userId     String   @db.ObjectId
+  role       UserRole
+  user       User     @relation(fields: [userId], references: [id], name: "UserChatroomMembers")
+  joinedAt   DateTime @default(now())
+
+  @@map("chatroom_members")
 }

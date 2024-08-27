@@ -9,6 +9,7 @@ import { wishlistRoute } from './modules/wishlist/wishlist.route';
 import { vehicleInfoRoutes } from './modules/vehicleInfo/vehicleInfo.route';
 import { vehicleSourcingRoutes } from './modules/vehicleSourcing/vehicleSourcing.route';
 import { paymentRoutes } from './modules/payment/payment.route';
+import { chatrooomRoutes } from './modules/chatroom/chatroom.routes';
 
 
 const router = express.Router();
@@ -53,6 +54,10 @@ const moduleRoutes = [
     {
         path: '/create-payment-intent',
         route: paymentRoutes
+    },
+    {
+        path: '/chatrooms',
+        route: chatrooomRoutes
     },
 ];
 

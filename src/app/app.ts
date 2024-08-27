@@ -8,7 +8,7 @@ import GlobalErrorHandler from "./middlewares/globalErrorHandler";
 import { scheduleAuctionCheck } from "./modules/products/product.service";
 
 const app: Application = express();
-const corsOptions = {
+export const corsOptions = {
   origin: [
     "http://localhost:3001",
     "https://collecting-cars-font-end.vercel.app",
