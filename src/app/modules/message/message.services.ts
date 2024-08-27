@@ -1,28 +1,23 @@
-// services/message.service.ts
-import prisma from "../../../shared/prisma"; // Adjust the path as needed
-import { Server as SocketIOServer } from "socket.io";
-import { TMessage } from "./message.interface";
+import prisma from "../../../shared/prisma";
 
-export const saveAndEmitMessage = async (
-  io: SocketIOServer,
-  message: TMessage
-) => {
-  try {
-    // Save message to the database using Prisma
-    await prisma.message.create({
+const createMessage = async (chatroomId: string, senderId: string, content: string) => {
+    const result = await prisma.message.create({
       data: {
-        chatroomId: message.roomId,
-        senderId: message.senderId,
-        content: message.content,
+        chatroomId,
+        senderId,
+        content,
       },
     });
-
-    // Emit message to other users in the room
-    io.to(message.roomId).emit("newMessage", {
-      senderId: message.senderId,
-      content: message.content,
+    return result;
+  };
+  
+  const getMessagesByChatroom = async (chatroomId: string) => {
+    const result = await prisma.message.findMany({
+      where: { chatroomId },
+      orderBy: { createdAt: "asc" },
     });
-  } catch (err) {
-    console.error("Error saving message:", err);
+    return result;
+  };
+  export const messageServices={
+    createMessage,getMessagesByChatroom
   }
-};

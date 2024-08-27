@@ -1,8 +1,8 @@
-// interfaces/message.interface.ts
-
 export interface TMessage {
-    roomId: string;
+    id: string;
+    chatroomId: string;
     senderId: string;
     content: string;
+    createdAt: Date;
+    updatedAt: Date;
   }
-  
