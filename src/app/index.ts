@@ -10,6 +10,7 @@ import { vehicleInfoRoutes } from "./modules/vehicleInfo/vehicleInfo.route";
 import { vehicleSourcingRoutes } from "./modules/vehicleSourcing/vehicleSourcing.route";
 import { paymentRoutes } from "./modules/payment/payment.route";
 import { chatRoutes } from "./modules/chat/chat.route";
+import { paymentInfoRoutes } from "./modules/paymentInfo/paymentInfo.route";
 
 
 const router = express.Router();
@@ -58,6 +59,10 @@ const moduleRoutes = [
   {
     path: "/chatroom",
     route: chatRoutes,
+  },
+  {
+    path: "/paymentInfo",
+    route: paymentInfoRoutes,
   },
 ];
 
