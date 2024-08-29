@@ -232,8 +232,6 @@ const getAllProductsFromDB = async (
       brand: true,
       user: true,
     },
-    skip,
-    take: limit,
     orderBy:
       options.sortBy && options.sortOrder
         ? {
