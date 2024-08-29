@@ -13,7 +13,11 @@ import { JsonArray } from "@prisma/client/runtime/library";
 import emailSender from "../Autrh/emailSender";
 // import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 
-const createProductIntoDB = async (filesData: any, payload: any) => {
+const createProductIntoDB = async (
+  filesData: any,
+  payload: any,
+  userId: string
+) => {
   const {
     galleryImage,
     interiorImage,
@@ -23,7 +27,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
   } = filesData;
   console.log(filesData);
   let productData: TProducts = JSON.parse(payload);
-
+  productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
     where: {
       productName: productData.productName,
@@ -48,6 +52,21 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
     );
   }
 
+  // checking is seller is exist
+  const isSellerExist = await prisma.user.findUnique({
+    where: {
+      email: productData.sellerEmail,
+    },
+  });
+
+  if (!isSellerExist) {
+    throw new ApiError(
+      400,
+      `seller is not exist you provide ${productData.sellerEmail}`
+    );
+  }
+
+  // creating products
   const result = await prisma.product.create({
     data: {
       productName: productData.productName,
