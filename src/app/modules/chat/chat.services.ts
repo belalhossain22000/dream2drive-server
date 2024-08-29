@@ -1,25 +1,38 @@
 // services/chat.service.ts
 
 import { PrismaClient, UserRole } from "@prisma/client";
+import { IChatroom } from "./chat.interface";
 
 const prisma = new PrismaClient();
 
-const createChatroomIntoDB = async (roomName: string) => {
+const createChatroomIntoDB = async (payload: IChatroom) => {
   const result = await prisma.chatroom.create({
     data: {
-      roomName,
+      roomName: payload.roomName,
+      productId:payload.productId,
+      roomMembers: payload.roomMembers.map((member) => ({ id: member.id })),
     },
   });
   return result;
 };
 
-const getChatroomByIdIntoDB = async (id: string) => {
-  
-  const result = await prisma.chatroom.findUnique({
-    where: { id:id },
-  });
+const getChatAllroomIntoDB = async () => {
+  const result = await prisma.chatroom.findMany();
   return result;
 };
+const getChatroomByUserIdIntoDB = async (id: string) => {
+  console.log(id);
+  const chatrooms = await prisma.chatroom.findMany();
+  
+  const result = chatrooms.filter(chatroom =>
+    chatroom.roomMembers && Array.isArray(chatroom.roomMembers) &&
+    chatroom.roomMembers.some((member: any) => member.id === id)
+  );
+  
+  return result;
+};
+
+
 
 const addMemberToChatroomIntoDB = async (
   chatroomId: string,
@@ -46,12 +59,14 @@ const getChatroomMembersIntoDB = async (chatroomId: string) => {
 const createMessageIntoDB = async (
   chatroomId: string,
   senderId: string,
+  senderName: string,
   content: string
 ) => {
   const result = await prisma.message.create({
     data: {
       chatroomId,
       senderId,
+      senderName,
       content,
     },
   });
@@ -68,9 +83,10 @@ const getMessagesByChatroomIntoDB = async (chatroomId: string) => {
 
 export const chatServices = {
   createChatroomIntoDB,
-  getChatroomByIdIntoDB,
+  getChatroomByUserIdIntoDB,
   addMemberToChatroomIntoDB,
   getChatroomMembersIntoDB,
   createMessageIntoDB,
   getMessagesByChatroomIntoDB,
+  getChatAllroomIntoDB,
 };

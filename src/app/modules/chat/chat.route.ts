@@ -6,6 +6,8 @@ import { chatController } from "./chat.controller";
 const router = Router();
 
 router.post("/", chatController.createChatroom); // Create a new chatroom
+router.get("/", chatController.getAllChatrooms); // Create a new chatroom
+router.get("/:id", chatController.getChatroom); // Create a new chatroom
 router.post("/:id", chatController.createChatroom); // Create a new chatroom
 router.post("/member", chatController.addMember); // Add a member to a chatroom
 router.post("/message", chatController.sendMessage); // Send a message

@@ -27,14 +27,24 @@ async function main() {
 
     socket.on("sendMessage", async (data) => {
       console.log("Message received:", data);
-      const { chatroomId, senderId, content } = data;
+      const { chatroomId, senderId,senderName, content } = data;
       const message = await chatServices.createMessageIntoDB(
         chatroomId,
         senderId,
+        senderName,
         content
       );
       io.to(chatroomId).emit("receiveMessage", message);
     });
+
+    // Handle the "typing" event
+    socket.on("typing", (data) => {
+      const { chatroomId, username } = data;
+  
+      // Broadcast the typing status to everyone in the room except the sender
+      socket.to(chatroomId).emit("typing", { username });
+    });
+  
 
     socket.on("disconnect", () => {
       console.log("User disconnected:", socket.id);

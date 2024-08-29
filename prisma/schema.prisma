@@ -118,9 +118,8 @@ model Product {
   sellerEmail         String
   sellerPhoneNumber   String
   lotNumbers          String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   @@map("products")
 }
@@ -202,22 +201,24 @@ model VehicleSourcing {
 }
 
 model Payment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  amount    Int
-  currency  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount       Int
+  currency     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@map("payments")
 }
 
 // Chatroom model
 model Chatroom {
-  id           String          @id @default(auto()) @map("_id") @db.ObjectId
-  roomName     String
-  messages     Message[]       @relation("ChatroomMessages")
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  productId       String
+  roomName        String
+  roomMembers     Json
+  messages        Message[]        @relation("ChatroomMessages")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   chatroomMembers ChatroomMember[]
 
   @@map("chatrooms")
@@ -225,14 +226,15 @@ model Chatroom {
 
 // Message model
 model Message {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  chatroomId  String   @db.ObjectId
-  chatroom    Chatroom @relation(fields: [chatroomId], references: [id], name: "ChatroomMessages")
-  senderId    String   @db.ObjectId
-  sender      User     @relation(fields: [senderId], references: [id], name: "UserMessages")
-  content     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  chatroomId String   @db.ObjectId
+  chatroom   Chatroom @relation(fields: [chatroomId], references: [id], name: "ChatroomMessages")
+  senderId   String   @db.ObjectId
+  senderName String
+  sender     User     @relation(fields: [senderId], references: [id], name: "UserMessages")
+  content    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@map("messages")
 }

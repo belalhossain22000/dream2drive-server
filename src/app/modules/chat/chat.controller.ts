@@ -7,9 +7,8 @@ import { chatServices } from "./chat.services";
 import sendResponse from "../../../shared/sendResponse";
 
 const createChatroom = catchAsync(async (req: Request, res: Response) => {
-  const { roomName } = req.body;
-  console.log(roomName);
-  const result = await chatServices.createChatroomIntoDB(roomName);
+  
+  const result = await chatServices.createChatroomIntoDB(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -17,9 +16,19 @@ const createChatroom = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getAllChatrooms = catchAsync(async (req: Request, res: Response) => {
+ 
+  const result = await chatServices.getChatAllroomIntoDB();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Chatrooms retrived successfully",
+    data: result,
+  });
+});
 const getChatroom = catchAsync(async (req: Request, res: Response) => {
-  const {id} = req.params;
-  const result = await chatServices.createChatroomIntoDB(id);
+  const {id}:any = req.params;
+  const result = await chatServices.getChatroomByUserIdIntoDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -44,10 +53,11 @@ const addMember = catchAsync(async (req: Request, res: Response) => {
 });
 
 const sendMessage = catchAsync(async (req: Request, res: Response) => {
-  const { chatroomId, senderId, content } = req.body;
+  const { chatroomId, senderId,senderName, content } = req.body;
   const result = await chatServices.createMessageIntoDB(
     chatroomId,
     senderId,
+    senderName,
     content
   );
   sendResponse(res, {
@@ -87,4 +97,5 @@ export const chatController = {
   getMessages,
   getMembers,
   getChatroom,
+  getAllChatrooms
 };
