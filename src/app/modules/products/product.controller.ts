@@ -12,6 +12,8 @@ export interface ICloudinaryResult {
   // Add other properties if needed
 }
 const createProduct = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  // console.log(userId);
   const files = req.files as any;
 
   if (!files || files.length === 0) {
@@ -58,10 +60,12 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     singleImage,
   };
 
+  // req.body.body.userId = userId;
   // console.log(filesData,req.body.body)
   const result = await productServices.createProductIntoDB(
     filesData,
-    req.body.body
+    req.body.body,
+    userId
   );
 
   sendResponse(res, {
@@ -194,7 +198,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
 
 const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
- 
+
   const result = await productServices.updateProductStatus(req.body, id);
   sendResponse(res, {
     statusCode: httpStatus.OK,

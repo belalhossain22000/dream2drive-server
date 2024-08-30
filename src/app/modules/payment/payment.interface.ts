@@ -4,6 +4,6 @@ export interface Item {
   }
   
   export interface CreatePaymentInput {
-    items: Item[];
+    price: number;
   }
   

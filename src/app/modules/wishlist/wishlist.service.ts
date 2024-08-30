@@ -1,12 +1,16 @@
-import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { Wishlist } from "./wishlist.interface";
 
 // create wishlist
-const createWishlistIntoDb = async (payload: Wishlist) => {
+const toggleWishlistInDb = async (userId: string, payload: Wishlist) => {
+ 
+  if (!userId || !payload.productId) {
+    throw new ApiError(400, "User ID and Product ID must be provided.");
+  }
+
   const user = await prisma.user.findFirstOrThrow({
-    where: { id: payload.userId },
+    where: { id: userId },
   });
 
   const product = await prisma.product.findFirstOrThrow({
@@ -22,20 +26,23 @@ const createWishlistIntoDb = async (payload: Wishlist) => {
   });
 
   if (existingWishlistItem) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      "Product is already in the user's wishlist."
-    );
+    // If the product is already in the wishlist, remove it
+    const result = await prisma.wishlist.delete({
+      where: {
+        id: existingWishlistItem.id,
+      },
+    });
+    return { message: "Product removed from wishlist.", result };
+  } else {
+    // If the product is not in the wishlist, add it
+    const result = await prisma.wishlist.create({
+      data: {
+        userId: user.id,
+        productId: product.id,
+      },
+    });
+    return { message: "Product add into  wishlist.", result };
   }
-
-  const wishlistItem = await prisma.wishlist.create({
-    data: {
-      userId: user.id,
-      productId: product.id,
-    },
-  });
-
-  return wishlistItem;
 };
 
 const getWishlistByUserFromDb = async (id: any) => {
@@ -55,29 +62,12 @@ const getWishlistByUserFromDb = async (id: any) => {
       product: true,
     },
   });
-  console.log(result, "from service wishlist ================================");
+  // console.log(result, "from service wishlist ================================");
 
   return result;
 };
-// const getWishByUserFromDB = async (userId: string) => {
-//   // Check if the product exists
-//   const product = await prisma.product.findFirst({
-//     where: { userId: userId },
-//   });
 
-//   if (!product) {
-//     throw new ApiError(httpStatus.NOT_FOUND, "Product not found.");
-//   }
-
-//   // Fetch the wishlist items for the user
-//   const result = await prisma.wishlist.findMany({
-//     where: {
-//       userId: userId,
-//     },
-//   });
-
-//   return result;
-// };
+// delete from wishlist
 const deleteWishlistFromDb = async (payload: {
   userId: string;
   productId: string;
@@ -109,16 +99,16 @@ const deleteWishlistFromDb = async (payload: {
   }
 
   // Delete the wishlist item
-  await prisma.wishlist.delete({
+  const result = await prisma.wishlist.delete({
     where: {
       id: existingWishlistItem.id,
     },
   });
 
-  return { message: "Wishlist item successfully deleted." };
+  return result;
 };
 export const wishlistService = {
-  createWishlistIntoDb,
+  toggleWishlistInDb,
   getWishlistByUserFromDb,
   deleteWishlistFromDb,
 };

@@ -8,8 +8,7 @@ import emailSender from "./emailSender";
 import { UserStatus } from "@prisma/client";
 import httpStatus from "http-status";
 
-
-// user login 
+// user login
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
@@ -53,7 +52,6 @@ const getMyProfile = async (userToken: string) => {
     config.jwt.jwt_secret!
   );
 
-  
   const userProfile = await prisma.user.findUnique({
     where: {
       id: decodedToken.id,
@@ -129,19 +127,25 @@ const forgotPassword = async (payload: { email: string }) => {
     config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`;
   console.log(resetPassLink);
   await emailSender(
+    "Reset Your Password",
     userData.email,
     `
-      <div>
-          <p>Dear User,</p>
-          <p>Your password reset link 
-              <a href=${resetPassLink}>
-                  <button>
-                      Reset Password
-                  </button>
-              </a>
-          </p>
+     <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+          <p>Dear ${userData.firstName},</p>
+          
+          <p>We received a request to reset your password. Click the button below to reset your password:</p>
+          
+          <a href="${resetPassLink}" style="text-decoration: none;">
+            <button style="background-color: #007BFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+              Reset Password
+            </button>
+          </a>
+          
+          <p>If you did not request a password reset, please ignore this email or contact support if you have any concerns.</p>
+          
+          <p>Thank you,<br>Dream 2 Drive</p>
+</div>
 
-      </div>
       `
   );
   return { message: "Reset password link sent via your email successfully" };

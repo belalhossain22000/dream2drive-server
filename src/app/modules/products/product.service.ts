@@ -1,4 +1,5 @@
 import httpStatus from "http-status";
+import cron from "node-cron";
 import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IPaginationOptions } from "../../interfaces/paginations";
@@ -9,9 +10,14 @@ import { TProducts } from "./product.interface";
 import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 import normalizeStatus from "../../../shared/normalizedStatus";
 import { JsonArray } from "@prisma/client/runtime/library";
+import emailSender from "../Autrh/emailSender";
 // import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
 
-const createProductIntoDB = async (filesData: any, payload: any) => {
+const createProductIntoDB = async (
+  filesData: any,
+  payload: any,
+  userId: string
+) => {
   const {
     galleryImage,
     interiorImage,
@@ -21,7 +27,7 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
   } = filesData;
   console.log(filesData);
   let productData: TProducts = JSON.parse(payload);
-
+  productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
     where: {
       productName: productData.productName,
@@ -46,6 +52,21 @@ const createProductIntoDB = async (filesData: any, payload: any) => {
     );
   }
 
+  // checking is seller is exist
+  const isSellerExist = await prisma.user.findUnique({
+    where: {
+      email: productData.sellerEmail,
+    },
+  });
+
+  if (!isSellerExist) {
+    throw new ApiError(
+      400,
+      `seller is not exist you provide ${productData.sellerEmail}`
+    );
+  }
+
+  // creating products
   const result = await prisma.product.create({
     data: {
       productName: productData.productName,
@@ -211,8 +232,6 @@ const getAllProductsFromDB = async (
       brand: true,
       user: true,
     },
-    skip,
-    take: limit,
     orderBy:
       options.sortBy && options.sortOrder
         ? {
@@ -460,6 +479,187 @@ const getProductGroupings = async () => {
   };
 };
 
+// *! send email auction end highest bidder
+
+const checkAuctionEnd = async () => {
+  const now = new Date();
+
+  // Find products where auctionEndDate is less than current date and status is 'live'
+  const endedAuctions = await prisma.product.findMany({
+    where: {
+      auctionEndDate: { lte: now },
+      status: "live",
+    },
+    include: {
+      biddings: {
+        orderBy: {
+          bidPrice: "desc", // Sort by highest bid
+        },
+        take: 1, // Get the highest bidder
+      },
+      user: true, // Include the product's user information
+    },
+  });
+
+  for (const auction of endedAuctions) {
+    const highestBidder = auction.biddings[0];
+
+    if (highestBidder) {
+      const user = await prisma.user.findUniqueOrThrow({
+        where: {
+          id: highestBidder.userId,
+        },
+      });
+      // Using console.dir() with depth: Infinity
+      console.dir(user?.email, { depth: Infinity });
+
+      // Send email to the highest bidder
+      await emailSender(
+        `Congratulations! You've Won the Auction for ${auction?.productName}`,
+        user?.email,
+        `
+        
+        <!DOCTYPE html>
+                  <html lang="en">
+
+                  <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Congratulations! You've Won the Auction</title>
+                      <style>
+                          body {
+                              font-family: Arial, sans-serif;
+                              background-color: #f4f4f4;
+                              color: #333333;
+                              margin: 0;
+                              padding: 0;
+                          }
+
+                          .container {
+                              width: 100%;
+                              max-width: 600px;
+                              margin: 0 auto;
+                              background-color: #ffffff;
+                              padding: 20px;
+                              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                          }
+
+                          .header {
+                              text-align: center;
+                              background-color: #4CAF50;
+                              color: #ffffff;
+                              padding: 20px 0;
+                          }
+
+                          .header h1 {
+                              margin: 0;
+                              font-size: 24px;
+                          }
+
+                          .content {
+                              padding: 20px;
+                          }
+
+                          .content h2 {
+                              color: #4CAF50;
+                              font-size: 20px;
+                          }
+
+                          .content p {
+                              font-size: 16px;
+                              line-height: 1.6;
+                              margin: 10px 0;
+                          }
+
+                          .content .product-details {
+                              margin: 20px 0;
+                              border: 1px solid #dddddd;
+                              padding: 10px;
+                              background-color: #f9f9f9;
+                          }
+
+                          .content .product-details h3 {
+                              margin: 0;
+                              font-size: 18px;
+                          }
+
+                          .content .product-details p {
+                              margin: 5px 0;
+                              font-size: 16px;
+                          }
+
+                          .footer {
+                              text-align: center;
+                              padding: 20px 0;
+                              font-size: 14px;
+                              color: #777777;
+                          }
+
+                          .footer p {
+                              margin: 0;
+                          }
+
+                          .footer a {
+                              color: #4CAF50;
+                              text-decoration: none;
+                          }
+                      </style>
+                  </head>
+
+                  <body>
+                      <div class="container">
+                          <div class="header">
+                              <h1>Congratulations, ${user?.firstName}</h1>
+                          </div>
+                          <div class="content">
+                              <h2>You've Won the Auction!</h2>
+                              <p>Dear ${user?.firstName},</p>
+                              <p>We are thrilled to inform you that you have won the auction for the following product:</p>
+                              <div class="product-details">
+                                  <h3>Product Name: ${auction?.productName}</h3>
+                                  <a href="http://localhost:3001/buy/${auction?.id}">See Your Win car</a></p>
+                                  <p>Final Bid Amount: $${auction?.biddings[0]?.bidPrice}</p>
+                                  <p>Auction End Date: ${auction?.auctionEndDate}</p>
+                                   <img src="${auction.singleImage}" alt="${auction.productName}">
+                              </div>
+                              <p>Thank you for participating in the auction. We will be in touch with you shortly to finalize the purchase process.</p>
+                              <p>If you have any questions or need further assistance, please feel free to contact us.</p>
+                              <p>Best regards,</p>
+                              <p>The Auction Team</p>
+                          </div>
+                          <div class="footer">
+                              <p>© 2024 Auction House. All rights reserved.</p>
+                              <p><a href="http://localhost:3001">Visit our website</a></p>
+                          </div>
+                      </div>
+                  </body>
+
+                  </html>
+
+        
+        `
+      );
+
+      // Update the product status to 'sold'
+      await prisma.product.update({
+        where: { id: auction.id },
+        data: { status: "sold" },
+      });
+    } else {
+      // No bids placed, mark as unsold
+      await prisma.product.update({
+        where: { id: auction.id },
+        data: { status: "unsold" },
+      });
+    }
+  }
+};
+
+// Schedule the cron job to run every minute
+export const scheduleAuctionCheck = () => {
+  cron.schedule("* * * * *", checkAuctionEnd);
+};
+
 export const productServices = {
   createProductIntoDB,
   getAllProductsFromDB,
@@ -470,4 +670,5 @@ export const productServices = {
   getFeaturedProduct,
   getProductGroupings,
   updateProductStatus,
+  checkAuctionEnd,
 };
