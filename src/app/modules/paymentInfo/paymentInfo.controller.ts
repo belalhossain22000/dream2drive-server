@@ -4,7 +4,6 @@ import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 import { paymentInfoService } from "./paymentInfo.services";
 
-
 const createPaymentInfo = catchAsync(async (req: Request, res: Response) => {
   const result = await paymentInfoService.createpaymentInfoIntoDB(req.body);
   sendResponse(res, {
@@ -24,8 +23,21 @@ const getPaymentInfo = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getPaymentInfoByUserId = catchAsync(
+  async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const result = await paymentInfoService.getpaymentInfoByUserIntoDB(id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: " paymentInfo with Id created successfully",
+      data: result,
+    });
+  }
+);
 
 export const paymentInfoController = {
-    createPaymentInfo,
-    getPaymentInfo,
+  createPaymentInfo,
+  getPaymentInfo,
+  getPaymentInfoByUserId,
 };

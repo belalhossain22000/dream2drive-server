@@ -8,4 +8,5 @@ const router = Router();
 router.post("/",paymentControllers.createPaymentIntentController);
 
 
+
 export const paymentRoutes = router;

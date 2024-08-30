@@ -27,12 +27,23 @@ const getAllChatrooms = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getChatroom = catchAsync(async (req: Request, res: Response) => {
-  const {id}:any = req.params;
+  const id = req.params.id;
   const result = await chatServices.getChatroomByUserIdIntoDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Chatroom retrived successfully",
+    data: result,
+  });
+});
+const getSingleChatRoom = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+ 
+  const result = await chatServices.getSingleChatRoomIntoDB(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Chatroomsss retrived successfully",
     data: result,
   });
 });
@@ -97,5 +108,5 @@ export const chatController = {
   getMessages,
   getMembers,
   getChatroom,
-  getAllChatrooms
+  getAllChatrooms,getSingleChatRoom
 };

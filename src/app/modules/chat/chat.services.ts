@@ -31,6 +31,19 @@ const getChatroomByUserIdIntoDB = async (id: string) => {
   
   return result;
 };
+const getSingleChatRoomIntoDB = async (id: string) => {
+  console.log(id);
+  const result = await prisma.chatroom.findUnique(
+    {
+      where:{
+        id:id
+      }
+    }
+  );
+  
+  
+  return result;
+};
 
 
 
@@ -88,5 +101,5 @@ export const chatServices = {
   getChatroomMembersIntoDB,
   createMessageIntoDB,
   getMessagesByChatroomIntoDB,
-  getChatAllroomIntoDB,
+  getChatAllroomIntoDB,getSingleChatRoomIntoDB
 };

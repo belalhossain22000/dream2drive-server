@@ -26,8 +26,21 @@ const getpaymentInfoIntoDB = async () => {
 
   return paymentInfos;
 };
+const getpaymentInfoByUserIntoDB = async (id:string) => {
+  const paymentInfos = await prisma.paymentInfo.findMany({
+    where:{
+      clientId:id
+    },
+    include: {
+      user: true, 
+      product: true,
+    },
+  });
+
+  return paymentInfos;
+};
 
 
 export const paymentInfoService = {
-    getpaymentInfoIntoDB,createpaymentInfoIntoDB
+    getpaymentInfoIntoDB,createpaymentInfoIntoDB,getpaymentInfoByUserIntoDB
 };
