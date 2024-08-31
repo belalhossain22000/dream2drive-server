@@ -58,53 +58,55 @@ const getBiddingsByUser = async (userId: string) => {
     where: {
       userId: userId,
     },
-    include: {
-      product: true,
-    },
+    // include: {
+    //   product: true,
+    // },
     orderBy: {
       createdAt: "desc",
     },
   });
 
   // *! win loss live
-  for (const bid of bids) {
-    const product = bid.product;
+  // for (const bid of bids) {
+  //   const product = bid.product;
 
-    const productInfo = {
-      id: product.id,
-      productName: product.productName,
-      singleImage: product.singleImage,
-      bidPrice: bid.bidPrice,
-    };
+  //   const productInfo = {
+  //     id: product.id,
+  //     productName: product.productName,
+  //     singleImage: product.singleImage,
+  //     bidPrice: bid.bidPrice,
+  //     status:product.status,
+  //   };
 
-    if (product.status === "sold") {
-      // Get the highest bid for this product
-      const highestBid = await prisma.bidding.findFirst({
-        where: { productId: product.id },
-        orderBy: { bidPrice: "desc" },
-      });
+  //   if (product.status === "unsold") {
+  //     // Get the highest bid for this product
+  //     const highestBid = await prisma.bidding.findFirst({
+  //       where: { productId: product.id },
+  //       orderBy: { bidPrice: "desc" },
+  //     });
 
-      if (highestBid && highestBid.userId === bid.userId) {
-        win++;
-        winProducts.push(productInfo);
-      } else {
-        loss++;
-        lossProducts.push(productInfo);
-      }
-    } else if (product.status === "live") {
-      live++;
-      liveProducts.push(productInfo);
-    }
-  }
+  //     if (highestBid && highestBid.userId === bid.userId) {
+  //       win++;
+  //       winProducts.push(productInfo);
+  //     } else {
+  //       loss++;
+  //       lossProducts.push(productInfo);
+  //     }
+  //   } else if (product.status === "live") {
+  //     live++;
+  //     liveProducts.push(productInfo);
+  //   }
+  // }
 
   // Return the result with products
   return {
-    win,
-    loss,
-    live,
-    winProducts,
-    lossProducts,
-    liveProducts,
+    // win,
+    // loss,
+    // live,
+    // winProducts,
+    // lossProducts,
+    // liveProducts,
+    bids,
   };
 };
 

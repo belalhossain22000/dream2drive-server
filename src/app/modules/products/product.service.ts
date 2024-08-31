@@ -511,7 +511,7 @@ const checkAuctionEnd = async () => {
         },
       });
       // Using console.dir() with depth: Infinity
-      console.dir(user?.email, { depth: Infinity });
+      // console.dir(user?.email, { depth: Infinity });
 
       // Send email to the highest bidder
       await emailSender(
@@ -643,7 +643,7 @@ const checkAuctionEnd = async () => {
       // Update the product status to 'sold'
       await prisma.product.update({
         where: { id: auction.id },
-        data: { status: "sold" },
+        data: { status: "unsold" },
       });
     } else {
       // No bids placed, mark as unsold
