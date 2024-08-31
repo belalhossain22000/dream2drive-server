@@ -55,12 +55,12 @@ const uploadToCloudinary = async (
           }
 
           // // Safely remove the file after upload
-          // fs.unlink(file.path, (unlinkError) => {
-          //   if (unlinkError) {
-          //     console.error(`Failed to delete file: ${file.path}`, unlinkError);
-          //     // Log the error but do not reject the Cloudinary upload result
-          //   }
-          // });
+          fs.unlink(file.path, (unlinkError) => {
+            if (unlinkError) {
+              console.error(`Failed to delete file: ${file.path}`, unlinkError);
+              // Log the error but do not reject the Cloudinary upload result
+            }
+          });
 
           resolve(result);
         }

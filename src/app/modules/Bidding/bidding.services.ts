@@ -75,10 +75,10 @@ const getBiddingsByUser = async (userId: string) => {
       productName: product.productName,
       singleImage: product.singleImage,
       bidPrice: bid.bidPrice,
-      status:product.status
+      status: product.status,
     };
 
-    if (product.status === "sold") {
+    if (product.status === "unsold") {
       // Get the highest bid for this product
       const highestBid = await prisma.bidding.findFirst({
         where: { productId: product.id },
