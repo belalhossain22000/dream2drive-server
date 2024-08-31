@@ -14,6 +14,7 @@ export const corsOptions = {
     "https://collecting-cars-font-end.vercel.app",
     "http://localhost:3000",
     "https://dream-2-drive.vercel.app",
+    "https://dream2drive.com.au"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
