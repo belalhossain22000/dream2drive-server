@@ -53,7 +53,7 @@ const getBiddingsByUser = async (userId: string) => {
     lossProducts: any[] = [],
     liveProducts: any[] = [];
 
-  // *! Get all user's bids for products that are currently live or sold
+  // Get all user's highest bids for each product
   const bids = await prisma.bidding.findMany({
     where: {
       userId: userId,
@@ -62,11 +62,12 @@ const getBiddingsByUser = async (userId: string) => {
       product: true,
     },
     orderBy: {
-      createdAt: "desc",
+      bidPrice: "desc", // Order by highest bid first
     },
+    distinct: ["productId"], // Ensure only the highest bid per product is retrieved
   });
 
-  // *! win loss live
+  // Iterate over each bid and classify them
   for (const bid of bids) {
     const product = bid.product;
 
@@ -79,7 +80,7 @@ const getBiddingsByUser = async (userId: string) => {
     };
 
     if (product.status === "unsold") {
-      // Get the highest bid for this product
+      // Get the highest bid for this product (to determine if the user won)
       const highestBid = await prisma.bidding.findFirst({
         where: { productId: product.id },
         orderBy: { bidPrice: "desc" },
