@@ -75,6 +75,7 @@ const getBiddingsByUser = async (userId: string) => {
       productName: product.productName,
       singleImage: product.singleImage,
       bidPrice: bid.bidPrice,
+      status:product.status
     };
 
     if (product.status === "sold") {
