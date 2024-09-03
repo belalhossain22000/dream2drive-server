@@ -14,7 +14,6 @@ router.post(
 );
 router.post(
   "/create-admin",
-  auth(UserRole.ADMIN),
   validateRequest(UserValidation.CreateUserValidationSchema),
   userController.createAdmin
 );
@@ -25,6 +24,6 @@ router.put(
   auth(UserRole.ADMIN, UserRole.USER),
   userController.updateProfile
 );
-router.put("/:id",  auth(UserRole.ADMIN, UserRole.USER), userController.updateUser);
+router.put("/:id", userController.updateUser);
 
 export const userRoutes = router;
