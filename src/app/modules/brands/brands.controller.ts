@@ -4,9 +4,8 @@ import sendResponse from "../../../shared/sendResponse";
 import { Request, Response } from "express";
 import { brandServices } from "./brands.services";
 
-
 const createBrand = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body)
+  console.log(req.body);
   const result = await brandServices.createBrandIntoDB(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,7 +25,32 @@ const getAllBrands = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// *! updateBrand
+const updateBrand = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await brandServices.updateBrandIntoDB(id, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Brands Updated successfully",
+    data: result,
+  });
+});
+// *! delete brand
+const deleteBrand = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await brandServices.deleteBrandIntoDB(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Brands deleted successfully",
+    data: result,
+  });
+});
+
 export const brandController = {
   createBrand,
   getAllBrands,
+  updateBrand,
+  deleteBrand,
 };
