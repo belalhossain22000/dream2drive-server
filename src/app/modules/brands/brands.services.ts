@@ -65,6 +65,19 @@ const deleteBrandIntoDB = async (id: string) => {
       id: id,
     },
   });
+  const productsWithBrandId = await prisma.product.findMany({
+    where: {
+      brandId: id,
+    },
+  });
+  
+  // Check if any products are found
+  if (productsWithBrandId.length > 0) {
+    throw new Error('A product with this brandId already exists.');
+  }
+  
+  // Proceed with your logic if no products are found
+  
 
   if (!existingBrands) {
     throw new ApiError(httpStatus.NOT_FOUND, "Brand not found!");
