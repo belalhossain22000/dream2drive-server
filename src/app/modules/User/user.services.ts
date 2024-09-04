@@ -10,7 +10,6 @@ import { userSearchAbleFields } from "./user.costant";
 
 // Create a new user in the database.
 const createUserIntoDb = async (payload: IUser) => {
-  console.log(payload);
   // Check if user with the same email or username already exists
   const existingUser = await prisma.user.findFirst({
     where: {
