@@ -66,8 +66,18 @@ const getBiddingsByUser = async (userId: string) => {
     },
   });
 
-  // *! win loss live
+  // Track the highest bid for each product
+  const highestBids = new Map<string, typeof bids[0]>();
+
   for (const bid of bids) {
+    const productId = bid.product.id;
+    if (!highestBids.has(productId) || bid.bidPrice > highestBids.get(productId)!.bidPrice) {
+      highestBids.set(productId, bid);
+    }
+  }
+
+  // *! win loss live
+  for (const [productId, bid] of highestBids) {
     const product = bid.product;
 
     const productInfo = {
@@ -75,9 +85,10 @@ const getBiddingsByUser = async (userId: string) => {
       productName: product.productName,
       singleImage: product.singleImage,
       bidPrice: bid.bidPrice,
+      status: product.status,
     };
 
-    if (product.status === "sold") {
+    if (product.status === "unsold") {
       // Get the highest bid for this product
       const highestBid = await prisma.bidding.findFirst({
         where: { productId: product.id },

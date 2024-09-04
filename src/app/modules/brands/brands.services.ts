@@ -32,4 +32,69 @@ const getAllBrandsIntoDB = async () => {
   return results;
 };
 
-export const brandServices = { createBrandIntoDB, getAllBrandsIntoDB };
+// update brand
+
+const updateBrandIntoDB = async (id: string, payload: TBrand) => {
+  const existingBrands = await prisma.brand.findUnique({
+    where: {
+      id: id,
+    },
+  });
+
+  if (!existingBrands) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Brand not found!");
+  }
+
+  const result = await prisma.brand.update({
+    where: {
+      id: id,
+    },
+    data: {
+      brandName: payload.brandName,
+    },
+  });
+
+  return result;
+};
+
+// delete brand
+
+const deleteBrandIntoDB = async (id: string) => {
+  const existingBrands = await prisma.brand.findUnique({
+    where: {
+      id: id,
+    },
+  });
+  const productsWithBrandId = await prisma.product.findMany({
+    where: {
+      brandId: id,
+    },
+  });
+  
+  // Check if any products are found
+  if (productsWithBrandId.length > 0) {
+    throw new Error('A product with this brandId already exists.');
+  }
+  
+  // Proceed with your logic if no products are found
+  
+
+  if (!existingBrands) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Brand not found!");
+  }
+
+  const result = await prisma.brand.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  return result;
+};
+
+export const brandServices = {
+  createBrandIntoDB,
+  getAllBrandsIntoDB,
+  updateBrandIntoDB,
+  deleteBrandIntoDB,
+};
