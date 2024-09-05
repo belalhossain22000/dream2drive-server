@@ -11,12 +11,12 @@ async function main() {
     cors: corsOptions,
   });
   io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id);
+   
 
     socket.on("joinRoom", async (roomId) => {
       try {
         socket.join(roomId);
-        console.log(`Socket ${socket.id} joined room ${roomId}`);
+       
         const messages = await chatServices.getMessagesByChatroomIntoDB(roomId);
         socket.emit("loadMessages", messages);
       } catch (error) {
