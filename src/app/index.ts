@@ -11,6 +11,7 @@ import { vehicleSourcingRoutes } from "./modules/vehicleSourcing/vehicleSourcing
 import { paymentRoutes } from "./modules/payment/payment.route";
 import { chatRoutes } from "./modules/chat/chat.route";
 import { paymentInfoRoutes } from "./modules/paymentInfo/paymentInfo.route";
+import { contactUsRoutes } from "./modules/contactUs/contactUs.route";
 
 
 const router = express.Router();
@@ -63,6 +64,10 @@ const moduleRoutes = [
   {
     path: "/paymentInfo",
     route: paymentInfoRoutes,
+  },
+  {
+    path: "/contact-us",
+    route: contactUsRoutes,
   },
 ];
 
