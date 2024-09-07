@@ -5,6 +5,7 @@ import auth from "../../middlewares/auth";
 const router = express.Router();
 
 router.post("/", auth("USER"), wishlistController.toggleWishlist);
-router.get("/", auth("USER"), wishlistController.getWishlistByUser);
+router.get("/",  wishlistController.getWishlistByUser);
+router.get("/:id", wishlistController.getWishlistByProduct);
 router.delete("/", auth("USER"), wishlistController.deleteWishlist);
 export const wishlistRoute = router;

@@ -4,7 +4,6 @@ import { Wishlist } from "./wishlist.interface";
 
 // create wishlist
 const toggleWishlistInDb = async (userId: string, payload: Wishlist) => {
- 
   if (!userId || !payload.productId) {
     throw new ApiError(400, "User ID and Product ID must be provided.");
   }
@@ -46,10 +45,6 @@ const toggleWishlistInDb = async (userId: string, payload: Wishlist) => {
 };
 
 const getWishlistByUserFromDb = async (id: any) => {
-  if (!id) {
-    throw new ApiError(400, "User ID must be provided.");
-  }
-
   //   // Check if the user exists
   const user = await prisma.user.findFirstOrThrow({
     where: { id: id },
@@ -57,6 +52,26 @@ const getWishlistByUserFromDb = async (id: any) => {
 
   const result = await prisma.wishlist.findMany({
     where: { userId: id },
+    include: {
+      user: true,
+      product: true,
+    },
+  });
+  // console.log(result, "from service wishlist ================================");
+
+  return result;
+};
+const getWishlistByProductFromDb = async (id: any) => {
+  if (!id) {
+    throw new ApiError(400, "Product ID must be provided.");
+  }
+  //   // Check if the user exists
+  const product = await prisma.product.findFirstOrThrow({
+    where: { id: id },
+  });
+
+  const result = await prisma.wishlist.findMany({
+    where: { productId: id },
     include: {
       user: true,
       product: true,
@@ -111,4 +126,5 @@ export const wishlistService = {
   toggleWishlistInDb,
   getWishlistByUserFromDb,
   deleteWishlistFromDb,
+  getWishlistByProductFromDb,
 };
