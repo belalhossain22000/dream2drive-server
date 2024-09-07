@@ -27,33 +27,30 @@ export interface TProducts {
   serviceHistory: string;
   summary: string;
   youtubeVideo: string;
-  galleryImage: any[]; // Json[] in Prisma can be represented as any[] in TypeScript
-  exteriorImage: any[];
-  interiorImage: any[];
-  othersImage: any[];
+  galleryImage: any[];
   auctionStartDate: Date;
   auctionEndDate: Date;
   brandId: string;
-  brand: Brand; // Assuming Brand is another interface defined for the Brand model
+  brand: Brand; 
   speed: number;
   price: number;
   gear: string;
-  drivingSide: DrivingSide; // Assuming DrivingSide is an enum
+  drivingSide: DrivingSide; 
   color: string;
   interior: string;
   engine: string;
-  sellerPhoneNumber:string; // Assuming
-  sellerEmail: string; // Assuming
-  sellerName: string; // Assuming
+  sellerPhoneNumber:string; 
+  sellerEmail: string; 
+  sellerName: string; 
   vin: string;
   country: string;
   lotNumbers: string;
   isDeleted: boolean;
   featured: boolean;
-  status: ProductStatus; // Assuming ProductStatus is an enum
-  wishlist: Wishlist[]; // Assuming Wishlist is another interface defined for the Wishlist model
-  reviews: Review[]; // Assuming Review is another interface defined for the Review model
-  biddings: Bidding[]; // Assuming Bidding is another interface defined for the Bidding model
+  status: ProductStatus; 
+  wishlist: Wishlist[]; 
+  reviews: Review[]; 
+  biddings: Bidding[]; 
   createdAt: Date;
   updatedAt: Date;
 }

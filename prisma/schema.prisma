@@ -89,9 +89,6 @@ model Product {
   summary             String
   youtubeVideo        String
   galleryImage        Json[]
-  exteriorImage       Json[]
-  interiorImage       Json[]
-  othersImage         Json[]
   auctionStartDate    DateTime
   auctionEndDate      DateTime
   brandId             String        @db.ObjectId
@@ -266,16 +263,3 @@ model ChatroomMember {
   @@map("chatroom_members")
 }
 
-// contact us shcema
-
-model ContactForm {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  firstName     String
-  lastName      String
-  email         String   @unique 
-  phoneNumber   String?  
-  subject       String
-  message       String
-  createdAt     DateTime @default(now()) 
-  updatedAt     DateTime @updatedAt 
-}

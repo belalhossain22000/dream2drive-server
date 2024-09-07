@@ -5,7 +5,7 @@ import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 // bidding
-router.post("/",auth(UserRole.ADMIN), BiddingCotroller.createBidding);
+router.post("/",auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.createBidding);
 router.get("/",auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.getAllBidding);
 router.get("/user", auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.getBiddingByUser);
 router.get("/:id", BiddingCotroller.getSingleBidding);

@@ -20,12 +20,12 @@ const createProductIntoDB = async (
 ) => {
   const {
     galleryImage,
-    interiorImage,
-    exteriorImage,
-    othersImage,
+    // interiorImage,
+    // exteriorImage,
+    // othersImage,
     singleImage,
   } = filesData;
-  console.log(filesData);
+  // console.log(filesData);
   let productData: TProducts = JSON.parse(payload);
   productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
@@ -79,9 +79,6 @@ const createProductIntoDB = async (
       summary: productData.summary,
       youtubeVideo: productData.youtubeVideo,
       galleryImage: galleryImage,
-      exteriorImage: exteriorImage,
-      interiorImage: interiorImage,
-      othersImage: othersImage,
       auctionStartDate: productData.auctionStartDate,
       auctionEndDate: productData.auctionEndDate,
       brandId: productData.brandId,
@@ -297,9 +294,6 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       summary: payload.summary ?? existingProduct?.summary,
       youtubeVideo: payload.youtubeVideo ?? existingProduct?.youtubeVideo,
       galleryImage: payload.galleryImage ?? existingProduct?.galleryImage,
-      exteriorImage: payload.exteriorImage ?? existingProduct?.exteriorImage,
-      interiorImage: payload.interiorImage ?? existingProduct?.interiorImage,
-      othersImage: payload.othersImage ?? existingProduct?.othersImage,
       auctionStartDate:
         payload.auctionStartDate ?? existingProduct?.auctionStartDate,
       auctionEndDate: payload.auctionEndDate ?? existingProduct?.auctionEndDate,

@@ -27,10 +27,10 @@ const uploadSingle = upload.single("carImage");
 // upload multiple image
 const uploadMultiple = upload.fields([
   { name: "singleImage", maxCount: 10 },
-  { name: "galleryImage", maxCount: 10 },
-  { name: "interiorImage", maxCount: 10 },
-  { name: "exteriorImage", maxCount: 10 },
-  { name: "othersImage", maxCount: 10 },
+  { name: "galleryImage", maxCount: 100 },
+  // { name: "interiorImage", maxCount: 10 },
+  // { name: "exteriorImage", maxCount: 10 },
+  // { name: "othersImage", maxCount: 10 },
 ]);
 
 const uploadToCloudinary = async (
@@ -54,7 +54,7 @@ const uploadToCloudinary = async (
             return;
           }
 
-          // // Safely remove the file after upload
+          // After successful upload, delete the local file
           fs.unlink(file.path, (unlinkError) => {
             if (unlinkError) {
               console.error(`Failed to delete file: ${file.path}`, unlinkError);
