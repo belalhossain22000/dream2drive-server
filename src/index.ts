@@ -26,7 +26,7 @@ async function main() {
     
 
     socket.on("sendMessage", async (data) => {
-      console.log("Message received:", data);
+     
       const { chatroomId, senderId,senderName, content } = data;
       const message = await chatServices.createMessageIntoDB(
         chatroomId,

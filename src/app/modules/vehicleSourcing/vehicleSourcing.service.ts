@@ -48,7 +48,7 @@ const vehicleSourcingEmailSend = async (payload: VehicleSource) => {
     );
     return result;
   } catch (error) {
-    console.log(error);
+    
   }
 };
 

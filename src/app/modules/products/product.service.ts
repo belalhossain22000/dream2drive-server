@@ -25,7 +25,7 @@ const createProductIntoDB = async (
     othersImage,
     singleImage,
   } = filesData;
-  console.log(filesData);
+ 
   let productData: TProducts = JSON.parse(payload);
   productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
@@ -370,7 +370,7 @@ const deleteProductFromDB = async (id: string) => {
 };
 
 const createFeaturedProduct = async (id: string) => {
-  console.log(id);
+ 
   // Unfeatured the currently featured product
 
   const currentFeatured = await prisma.product.findFirst({

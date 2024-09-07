@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import { BiddingServices } from "./bidding.services";
 
 const createBidding = catchAsync(async (req: Request, res: Response) => {
-  console.log(req.body);
+ 
   const result = await BiddingServices.createBiddingIntoDB(req.body);
 
   sendResponse(res, {

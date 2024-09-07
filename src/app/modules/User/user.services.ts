@@ -86,7 +86,7 @@ const getUsersFromDb = async (
 
   const andCondions: Prisma.UserWhereInput[] = [];
 
-  //console.log(filterData);
+
   if (params.searchTerm) {
     andCondions.push({
       OR: userSearchAbleFields.map((field) => ({
@@ -150,9 +150,8 @@ const getUsersFromDb = async (
 
 // update profile
 const updateProfile = async (user: IUser, payload: IUser) => {
-  console.log(user);
 
-  console.log(payload);
+
   const userInfo = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
@@ -186,7 +185,7 @@ const updateProfile = async (user: IUser, payload: IUser) => {
 };
 
 const updateUserIntoDb = async (payload: IUser, id: string) => {
-  console.log(payload, id, "from user upate role and status");
+ 
 
   // Retrieve the existing user info
   const userInfo = await prisma.user.findUniqueOrThrow({

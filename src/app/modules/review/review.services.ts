@@ -42,7 +42,7 @@ const getReviewsWithUser = async () => {
   return reviews;
 };
 const getSingleProductReviewsWithUser = async (id:any) => {
-console.log(id)
+
   const reviews = await prisma.review.findMany({
     where: {
       productId: id,
