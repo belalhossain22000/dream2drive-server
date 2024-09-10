@@ -7,7 +7,7 @@ import { wishlistService } from "./wishlist.service";
 // create wishlist
 const toggleWishlist = catchAsync(async (req: Request, res: Response) => {
   const id = req?.user?.id;
-  console.log(id, req.body);
+
   const result = await wishlistService.toggleWishlistInDb(id, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,

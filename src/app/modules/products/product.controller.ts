@@ -9,59 +9,63 @@ import pick from "../../../shared/pick";
 import { productsFilterableFields } from "./product.constants";
 export interface ICloudinaryResult {
   secure_url: string;
-  // Add other properties if needed
 }
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
-  // console.log(userId);
   const files = req.files as any;
 
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
   }
 
-  const productSingleImage = files.singleImage || [];
-  const productImageFiles = files.galleryImage;
-  // const interiorImageFiles = files.interiorImage || [];
-  // const exteriorImageFiles = files.exteriorImage || [];
-  // const othersImageFiles = files.othersImage || [];
-  const productImageResults = productImageFiles.map((file: any) =>
-    fileUploader.uploadToCloudinary(file)
-  );
-  // const interiorImageResults = interiorImageFiles.map((file: any) =>
+  // const productSingleImage = files.singleImage || [];
+  // const productImageFiles = files.galleryImage;
+ 
+  // const productImageResults = productImageFiles.map((file: any) =>
   //   fileUploader.uploadToCloudinary(file)
   // );
-  // const exteriorImageResults = exteriorImageFiles.map((file: any) =>
+  
+  // const singleProductImageResults = productSingleImage.map((file: any) =>
   //   fileUploader.uploadToCloudinary(file)
   // );
-  // const othersImageResults = othersImageFiles.map((file: any) =>
-  //   fileUploader.uploadToCloudinary(file)
-  // );
-  const singleProductImageResults = productSingleImage.map((file: any) =>
-    fileUploader.uploadToCloudinary(file)
-  );
 
-  const productData = await Promise.all(productImageResults);
-  // const interiorData = await Promise.all(interiorImageResults);
-  // const exteriorData = await Promise.all(exteriorImageResults);
-  // const othersData = await Promise.all(othersImageResults);
-  const singleImageData = await Promise.all(singleProductImageResults);
-  // *!
-  const singleImage = singleImageData.map((single) => single.secure_url);
-  const galleryImage = productData.map((product) => product.secure_url);
-  // const interiorImage = interiorData.map((interior) => interior.secure_url);
-  // const exteriorImage = exteriorData.map((exterior) => exterior.secure_url);
-  // const othersImage = othersData.map((others) => others.secure_url);
+  // const productData = await Promise.all(productImageResults);
+  
+  // const singleImageData = await Promise.all(singleProductImageResults);
+  // // *!
+  // const singleImage = singleImageData.map((single) => single.secure_url);
+  // const galleryImage = productData.map((product) => product.secure_url);
+ 
+  // const filesData = {
+  //   galleryImage,
+   
+  //   singleImage,
+  // };
+
+
+  // Extract files from the request
+  const productSingleImage = files.singleImage || [];
+  const productImageFiles = files.galleryImage || [];
+
+  // Collect local file paths (since you are now uploading to your VPS)
+  const singleProductImageResults = productSingleImage.map((file: any) => ({
+    fileName: file.filename,
+    url: `/uploads/${file.filename}`, // Assuming the `/uploads` path is used for serving static files
+  }));
+
+  const productImageResults = productImageFiles.map((file: any) => ({
+    fileName: file.filename,
+    url: `/uploads/${file.filename}`,
+  }));
+
+  // Create the files data object with URLs
   const filesData = {
-    galleryImage,
-    // interiorImage,
-    // exteriorImage,
-    // othersImage,
-    singleImage,
+    galleryImage: productImageResults.map((product:any) => product.url),
+    singleImage: singleProductImageResults.map((single:any) => single.url),
   };
 
-  // req.body.body.userId = userId;
-  // console.log(filesData,req.body.body)
+
+  
   const result = await productServices.createProductIntoDB(
     filesData,
     req.body.body,
