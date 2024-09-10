@@ -487,25 +487,24 @@ const checkAuctionEnd = async () => {
     include: {
       biddings: {
         orderBy: {
-          bidPrice: "desc", // Sort by highest bid
+          bidPrice: "desc",
         },
-        take: 1, // Get the highest bidder
+        take: 1,
       },
-      user: true, // Include the product's user information
+      user: true,
     },
   });
 
   for (const auction of endedAuctions) {
+    console.log();
     const highestBidder = auction.biddings[0];
-
-    if (highestBidder) {
+    if (highestBidder && highestBidder.bidPrice >= auction.price) {
+      
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           id: highestBidder.userId,
         },
       });
-      // Using console.dir() with depth: Infinity
-      // console.dir(user?.email, { depth: Infinity });
 
       // Send email to the highest bidder
       await emailSender(

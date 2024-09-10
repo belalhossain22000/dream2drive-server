@@ -20,12 +20,40 @@ const getpaymentInfoIntoDB = async () => {
   const paymentInfos = await prisma.paymentInfo.findMany({
     include: {
       user: true, 
-      product: true,
+      product:true, 
     },
   });
 
-  return paymentInfos;
+  
+  const paymentInfosWithSeller = await Promise.all(
+    paymentInfos.map(async (paymentInfo) => {
+      const sellerEmail = paymentInfo.product.sellerEmail; 
+
+      if (sellerEmail) {
+       
+        const seller = await prisma.user.findUnique({
+          where: { email: sellerEmail },
+          select: {
+            id:true, 
+            username:true,
+          },
+        });
+
+        
+        return {
+          ...paymentInfo,
+          seller,
+        };
+      } else {
+      
+        return paymentInfo;
+      }
+    })
+  );
+
+  return paymentInfosWithSeller;
 };
+
 const getpaymentInfoByUserIntoDB = async (id:string) => {
   const paymentInfos = await prisma.paymentInfo.findMany({
     where:{

@@ -41,6 +41,18 @@ const getUsers = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+// get all user form db
+const getUsersById = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+
+  const result = await userService.getUserByIdFromDb(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users retrieve successfully!",
+    data: result,
+  });
+});
 
 
 // get all user form db
@@ -75,5 +87,6 @@ export const userController = {
   getUsers,
   createAdmin,
   updateProfile,
-  updateUser
+  updateUser,
+  getUsersById
 };

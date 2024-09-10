@@ -1,5 +1,3 @@
-
-
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
@@ -16,6 +14,8 @@ model User {
   firstName          String
   lastName           String
   username           String
+  mobile             String
+  crediteCardStatus  CrediteCardStatus   @default(NOTUPLOADED) 
   password           String
   role               UserRole
   userStatus         UserStatus
@@ -28,7 +28,7 @@ model User {
   Product            Product[]
   chatroomMembers    ChatroomMember[]    @relation("UserChatroomMembers")
   messages           Message[]           @relation("UserMessages")
-  paymentInfos       paymentInfo[]  
+  paymentInfos       paymentInfo[]
 
   @@map("users")
 }
@@ -69,6 +69,13 @@ model UserAccountDetails {
 enum UserStatus {
   ACTIVE
   BLOCKED
+}
+
+// credite card status
+
+enum CrediteCardStatus {
+  UPLOADED
+  NOTUPLOADED
 }
 
 // user role enum
@@ -115,12 +122,13 @@ model Product {
   sellerEmail         String
   sellerPhoneNumber   String
   lotNumbers          String
-  paymentInfos        paymentInfo[] 
+  paymentInfos        paymentInfo[]
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
 
   @@map("products")
 }
+
 model paymentInfo {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   clientId      String   @db.ObjectId
@@ -203,20 +211,20 @@ model VehicleSourcing {
   model         String
   email         String
   manufacturer  String
-  preferredYear String? // Optional field
+  preferredYear String? 
   maximumBudget String
-  message       String? // Optional field
+  message       String? 
   currency      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
 
 model Payment {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  amount       Int
-  currency     String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  amount    Int
+  currency  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("payments")
 }
@@ -262,4 +270,3 @@ model ChatroomMember {
 
   @@map("chatroom_members")
 }
-

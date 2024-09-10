@@ -8,6 +8,7 @@ const CreateUserValidationSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   username: z.string().min(1),
+  mobile: z.string().min(11,"mobile phone number is required 11 DIGIT "), 
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
@@ -27,7 +28,7 @@ const userUpdateSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   username: z.string().optional(),
-  email: z.string().email(),
+  email: z.string().email().optional(),
   // Add other fields if necessary
 });
 
