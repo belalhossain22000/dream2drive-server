@@ -18,12 +18,17 @@ router.post(
   userController.createAdmin
 );
 router.get("/", userController.getUsers);
+router.get("/:id", userController.getUsersById);
 router.put(
   "/profile",
   validateRequest(UserValidation.userUpdateSchema),
   auth(UserRole.ADMIN, UserRole.USER),
   userController.updateProfile
 );
-router.put("/:id", userController.updateUser);
+router.put(
+  "/:id",
+  validateRequest(UserValidation.userUpdateSchema),
+  userController.updateUser
+);
 
 export const userRoutes = router;
