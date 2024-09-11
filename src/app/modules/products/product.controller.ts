@@ -25,12 +25,12 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   // Collect local file paths (since you are now uploading to your VPS)
   const singleProductImageResults = productSingleImage.map((file: any) => ({
     fileName: file.filename,
-    url: `/uploads/${file.originalname}`,
+    url: `/var/www/uploads/${file.originalname}`,
   }));
 
   const productImageResults = productImageFiles.map((file: any) => ({
     fileName: file.filename,
-    url: `/uploads/${file.originalname}`,
+    url: `/var/www/uploads/${file.originalname}`,
   }));
 
   // Create the files data object with URLs
