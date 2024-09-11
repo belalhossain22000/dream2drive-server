@@ -38,7 +38,7 @@ console.log(files)
     galleryImage: productImageResults.map((product: any) => product.url),
     singleImage: singleProductImageResults.map((single: any) => single.url),
   };
-
+console.log(filesData)
   const result = await productServices.createProductIntoDB(
     filesData,
     req.body.body,
@@ -49,7 +49,7 @@ console.log(files)
     statusCode: httpStatus.OK,
     success: true,
     message: "Product Created successfully!",
-    data: null,
+    data: result,
   });
 });
 
