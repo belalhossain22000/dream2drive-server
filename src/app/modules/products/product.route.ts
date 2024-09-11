@@ -17,7 +17,6 @@ router.get("/", productCotroller.getAllProduct);
 router.get("/count-list", productCotroller.getProductGroupings);
 router.get(
   "/featured",
-  auth(UserRole.ADMIN),
   productCotroller.getFeaturedProduct
 );
 router.get("/:id", productCotroller.getSingleProduct);

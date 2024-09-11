@@ -6,28 +6,28 @@ import { VehicleInfoServices } from "./vehicleInfo.services";
 import { fileUploader } from "../../../helpars/fileUploader";
 
 const createVehicleInfo = catchAsync(async (req: Request, res: Response) => {
-  
-  const file=req.file;
-  console.log(req.file)
-  // console.log(file);
-    if(!file){
-      throw new Error("file was not aaded!!");
+  // Extract the single file from req.files
+  const file = req.files as any;
 
-    }
+  if (!file || file.length === 0) {
+    return res.status(400).send({ message: "No file uploaded!" });
+  }
 
-    const vehicleImage=fileUploader.uploadToCloudinary(file as any);
-    const vehicleImageData = await vehicleImage;
-   const vehicleImageLink=vehicleImageData?.secure_url;
+  // Since it's a single file, we do not need to map over an array
+  const carImage = {
+    fileName: file.filename,
+    url: `/uploads/${file.originalname}`,
+  };
+  console.log(carImage);
+  // Assuming you have a VehicleInfo service to handle DB logic
+  // const result = await VehicleInfoServices.createVehicleInfoIntoDB(carImage, req.body);
 
-  //  console.log(req.body)
-
-    const result = await VehicleInfoServices.createVehicleInfoIntoDB(vehicleImageLink,req.body);
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "VehicleInfo created successfully!",
-      data: result,
-    });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Vehicle info created successfully!",
+    data: null,
+  });
 });
 
 //
@@ -42,7 +42,7 @@ const getAllVehicleInfos = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteVehicle = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params
+  const { id } = req.params;
   const result = await VehicleInfoServices.deleteVehicleFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -55,5 +55,5 @@ const deleteVehicle = catchAsync(async (req: Request, res: Response) => {
 export const VehicleInfoController = {
   createVehicleInfo,
   getAllVehicleInfos,
-  deleteVehicle
+  deleteVehicle,
 };
