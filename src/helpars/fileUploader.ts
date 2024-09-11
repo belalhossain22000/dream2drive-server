@@ -28,9 +28,8 @@ const uploadSingle = upload.single("carImage");
 const uploadMultiple = upload.fields([
   { name: "singleImage", maxCount: 10 },
   { name: "galleryImage", maxCount: 10 },
-  // { name: "interiorImage", maxCount: 10 },
-  // { name: "exteriorImage", maxCount: 10 },
-  // { name: "othersImage", maxCount: 10 },
+ 
+ 
 ]);
 
 const uploadToCloudinary = async (
