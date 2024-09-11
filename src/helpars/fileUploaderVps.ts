@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, storagePath); // Save files to the 'uploads' folder
   },
   filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`); // Use timestamp + original filename to avoid name conflicts
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 

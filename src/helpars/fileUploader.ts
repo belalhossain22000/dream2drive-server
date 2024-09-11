@@ -12,7 +12,7 @@ import config from "../config";
 // });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join("/var/www/uploads"));
+    cb(null, path.join( "var/www/uploads"));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -27,7 +27,10 @@ const uploadSingle = upload.single("carImage");
 // upload multiple image
 const uploadMultiple = upload.fields([
   { name: "singleImage", maxCount: 10 },
-  { name: "galleryImage", maxCount: 100 },
+  { name: "galleryImage", maxCount: 10 },
+  // { name: "interiorImage", maxCount: 10 },
+  // { name: "exteriorImage", maxCount: 10 },
+  // { name: "othersImage", maxCount: 10 },
 ]);
 
 const uploadToCloudinary = async (
