@@ -49,7 +49,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "Product Created successfully!",
-    data: null,
+    data: result,
   });
 });
 
