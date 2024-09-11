@@ -12,7 +12,7 @@ import config from "../config";
 // });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "/uploads"));
+    cb(null, path.join(process.cwd(), "/var/www/uploads"));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
