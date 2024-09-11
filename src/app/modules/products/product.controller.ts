@@ -13,6 +13,7 @@ export interface ICloudinaryResult {
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
   const files = req.files as any;
+  console.log(files);
 
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
@@ -20,28 +21,27 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
 
   // const productSingleImage = files.singleImage || [];
   // const productImageFiles = files.galleryImage;
- 
+
   // const productImageResults = productImageFiles.map((file: any) =>
   //   fileUploader.uploadToCloudinary(file)
   // );
-  
+
   // const singleProductImageResults = productSingleImage.map((file: any) =>
   //   fileUploader.uploadToCloudinary(file)
   // );
 
   // const productData = await Promise.all(productImageResults);
-  
+
   // const singleImageData = await Promise.all(singleProductImageResults);
   // // *!
   // const singleImage = singleImageData.map((single) => single.secure_url);
   // const galleryImage = productData.map((product) => product.secure_url);
- 
+
   // const filesData = {
   //   galleryImage,
-   
+
   //   singleImage,
   // };
-
 
   // Extract files from the request
   const productSingleImage = files.singleImage || [];
@@ -50,33 +50,31 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   // Collect local file paths (since you are now uploading to your VPS)
   const singleProductImageResults = productSingleImage.map((file: any) => ({
     fileName: file.filename,
-    url: `/uploads/${file.filename}`, // Assuming the `/uploads` path is used for serving static files
+    url: `/uploads/${file.originalname}`,
   }));
 
   const productImageResults = productImageFiles.map((file: any) => ({
     fileName: file.filename,
-    url: `/uploads/${file.filename}`,
+    url: `/uploads/${file.originalname}`,
   }));
 
   // Create the files data object with URLs
   const filesData = {
-    galleryImage: productImageResults.map((product:any) => product.url),
-    singleImage: singleProductImageResults.map((single:any) => single.url),
+    galleryImage: productImageResults.map((product: any) => product.url),
+    singleImage: singleProductImageResults.map((single: any) => single.url),
   };
-
-
-  
-  const result = await productServices.createProductIntoDB(
-    filesData,
-    req.body.body,
-    userId
-  );
+console.log(filesData)
+  // const result = await productServices.createProductIntoDB(
+  //   filesData,
+  //   req.body.body,
+  //   userId
+  // );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Product Created successfully!",
-    data: result,
+    data: null,
   });
 });
 

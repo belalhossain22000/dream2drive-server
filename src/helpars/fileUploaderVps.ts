@@ -27,7 +27,7 @@ const uploadMultiple = upload.fields([
   { name: 'galleryImage', maxCount: 100 },
 ]);
 
-export const fileUploader = {
+export const fileUploaderVps = {
   uploadSingle,
   uploadMultiple,
 };

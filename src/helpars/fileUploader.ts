@@ -5,14 +5,14 @@ import { v2 as cloudinary } from "cloudinary";
 import { ICloudinaryResponse, IFile } from "../app/interfaces/file";
 import config from "../config";
 
-cloudinary.config({
-  cloud_name: "dse4w3es9",
-  api_key: "799237289977844",
-  api_secret: "KM5tfi0VKxLd5ylCOLx8D-5ERlo",
-});
+// cloudinary.config({
+//   cloud_name: "dse4w3es9",
+//   api_key: "799237289977844",
+//   api_secret: "KM5tfi0VKxLd5ylCOLx8D-5ERlo",
+// });
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "uploads"));
+    cb(null, path.join(process.cwd(), "/var/www/uploads"));
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
@@ -28,9 +28,6 @@ const uploadSingle = upload.single("carImage");
 const uploadMultiple = upload.fields([
   { name: "singleImage", maxCount: 10 },
   { name: "galleryImage", maxCount: 100 },
-  // { name: "interiorImage", maxCount: 10 },
-  // { name: "exteriorImage", maxCount: 10 },
-  // { name: "othersImage", maxCount: 10 },
 ]);
 
 const uploadToCloudinary = async (
@@ -54,7 +51,7 @@ const uploadToCloudinary = async (
             return;
           }
 
-          // After successful upload, delete the local file
+          // // Safely remove the file after upload
           fs.unlink(file.path, (unlinkError) => {
             if (unlinkError) {
               console.error(`Failed to delete file: ${file.path}`, unlinkError);
