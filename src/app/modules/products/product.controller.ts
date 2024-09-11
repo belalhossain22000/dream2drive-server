@@ -38,7 +38,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     galleryImage: productImageResults.map((product: any) => product.url),
     singleImage: singleProductImageResults.map((single: any) => single.url),
   };
-
+console.log(filesData)
   const result = await productServices.createProductIntoDB(
     filesData,
     req.body.body,
