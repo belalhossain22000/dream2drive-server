@@ -9,7 +9,7 @@ const router = express.Router();
 // task 3
 router.post(
   "/",
-  // auth(UserRole.ADMIN),
+  auth(UserRole.ADMIN),
   fileUploader.uploadMultiple,
   productCotroller.createProduct
 );
