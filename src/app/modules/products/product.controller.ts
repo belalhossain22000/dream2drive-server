@@ -18,30 +18,6 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     return res.status(400).send({ message: "No files uploaded" });
   }
 
-  // const productSingleImage = files.singleImage || [];
-  // const productImageFiles = files.galleryImage;
-
-  // const productImageResults = productImageFiles.map((file: any) =>
-  //   fileUploader.uploadToCloudinary(file)
-  // );
-
-  // const singleProductImageResults = productSingleImage.map((file: any) =>
-  //   fileUploader.uploadToCloudinary(file)
-  // );
-
-  // const productData = await Promise.all(productImageResults);
-
-  // const singleImageData = await Promise.all(singleProductImageResults);
-  // // *!
-  // const singleImage = singleImageData.map((single) => single.secure_url);
-  // const galleryImage = productData.map((product) => product.secure_url);
-
-  // const filesData = {
-  //   galleryImage,
-
-  //   singleImage,
-  // };
-
   // Extract files from the request
   const productSingleImage = files.singleImage || [];
   const productImageFiles = files.galleryImage || [];
@@ -62,12 +38,12 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
     galleryImage: productImageResults.map((product: any) => product.url),
     singleImage: singleProductImageResults.map((single: any) => single.url),
   };
-console.log(filesData)
-  // const result = await productServices.createProductIntoDB(
-  //   filesData,
-  //   req.body.body,
-  //   userId
-  // );
+
+  const result = await productServices.createProductIntoDB(
+    filesData,
+    req.body.body,
+    userId
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
