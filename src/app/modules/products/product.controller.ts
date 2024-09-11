@@ -13,7 +13,7 @@ export interface ICloudinaryResult {
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user.id;
   const files = req.files as any;
-console.log(files)
+
   if (!files || files.length === 0) {
     return res.status(400).send({ message: "No files uploaded" });
   }
@@ -39,11 +39,11 @@ console.log(files)
     singleImage: singleProductImageResults.map((single: any) => single.url),
   };
 
-  // const result = await productServices.createProductIntoDB(
-  //   filesData,
-  //   req.body.body,
-  //   userId
-  // );
+  const result = await productServices.createProductIntoDB(
+    filesData,
+    req.body.body,
+    userId
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
