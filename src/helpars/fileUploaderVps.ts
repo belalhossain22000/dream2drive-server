@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, storagePath); // Save files to the 'uploads' folder
   },
   filename: function (req, file, cb) {
-    cb(null, `${Date.now()}-${file.originalname}`); // Use timestamp + original filename to avoid name conflicts
+    cb(null, `${Date.now()}-${file.originalname}`);
   },
 });
 
@@ -27,7 +27,7 @@ const uploadMultiple = upload.fields([
   { name: 'galleryImage', maxCount: 100 },
 ]);
 
-export const fileUploader = {
+export const fileUploaderVps = {
   uploadSingle,
   uploadMultiple,
 };
