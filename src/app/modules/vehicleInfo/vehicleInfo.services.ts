@@ -3,7 +3,7 @@ import { TVehicleInfo } from "./vehicleInfo.interface";
 
 const createVehicleInfoIntoDB = async (files: any, payload: any) => {
   const parseData: TVehicleInfo = JSON.parse(payload?.text);
-  
+ 
   const result = await prisma.vehicleInfo.create({
     data: {
       firstName: parseData.firstName,

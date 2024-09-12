@@ -19,7 +19,7 @@ const getPaymentInfo = catchAsync(async (req: Request, res: Response) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: " paymentInfo created successfully",
+    message: " paymentInfo reterive successfully",
     data: result,
   });
 });

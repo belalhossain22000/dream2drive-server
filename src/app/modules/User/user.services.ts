@@ -29,7 +29,9 @@ const createUserIntoDb = async (payload: IUser) => {
       firstName: payload.firstName,
       lastName: payload.lastName,
       username: payload.username,
+      mobile: payload.mobile,
       password: hashedPassword,
+      crediteCardStatus: payload.crediteCardStatus,
       role: "USER",
       userStatus: "ACTIVE",
       createdAt: payload.createdAt,
@@ -63,6 +65,8 @@ const createAdminIntoDb = async (payload: IUser) => {
       firstName: payload.firstName,
       lastName: payload.lastName,
       username: payload.username,
+      mobile: payload.mobile,
+      crediteCardStatus: payload.crediteCardStatus,
       password: hashedPassword,
       role: "ADMIN",
       userStatus: "ACTIVE",
@@ -84,8 +88,31 @@ const getUsersFromDb = async (
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
 
-  const andCondions: Prisma.UserWhereInput[] = [];
+  // Count how many cars each user has bought from the `paymentInfo` table
+  const carsBoughtCount = await prisma.paymentInfo.groupBy({
+    by: ["clientId"],
+    _count: {
+      carsId: true,
+    },
+  });
 
+  // Count how many cars each user has in their wishlist from the `wishlist` table
+  const wishlistCount = await prisma.wishlist.groupBy({
+    by: ["userId"],
+    _count: {
+      productId: true,
+    },
+  });
+
+  // Count how many vehicles each user has sourced from the `vehicleSourcing` table
+  const vehicleCountByUser = await prisma.vehicleInfo.groupBy({
+    by: ["email"],
+    _count: {
+      id: true,
+    },
+  });
+
+  const andCondions: Prisma.UserWhereInput[] = [];
 
   if (params.searchTerm) {
     andCondions.push({
@@ -109,7 +136,7 @@ const getUsersFromDb = async (
   }
   const whereConditons: Prisma.UserWhereInput = { AND: andCondions };
 
-  const result = await prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: whereConditons,
     orderBy:
       options.sortBy && options.sortOrder
@@ -125,6 +152,8 @@ const getUsersFromDb = async (
       firstName: true,
       lastName: true,
       username: true,
+      crediteCardStatus: true,
+      mobile: true,
       role: true,
       userStatus: true,
       createdAt: true,
@@ -135,7 +164,25 @@ const getUsersFromDb = async (
     where: whereConditons,
   });
 
-  if (!result || result.length === 0) {
+  const result = users.map((user) => {
+    const vehicleCount =
+      vehicleCountByUser.find((vehicle) => vehicle.email === user.email)?._count
+        .id || 0;
+    const boughtCars =
+      carsBoughtCount.find((buy) => buy.clientId === user.id)?._count.carsId ||
+      0;
+    const wishlistCars =
+      wishlistCount.find((wishlist) => wishlist.userId === user.id)?._count
+        .productId || 0;
+    return {
+      ...user,
+      vehicleCount,
+      wishlistCars,
+      boughtCars,
+    };
+  });
+
+  if (!result) {
     throw new ApiError(404, "No active users found");
   }
   return {
@@ -148,14 +195,37 @@ const getUsersFromDb = async (
   };
 };
 
+const getUserByIdFromDb = async (id: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      username: true,
+      mobile: true,
+      crediteCardStatus: true,
+      role: true,
+      userStatus: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return user
+};
+
 // update profile
 const updateProfile = async (user: IUser, payload: IUser) => {
-
-
   const userInfo = await prisma.user.findUniqueOrThrow({
     where: {
-      email: payload.email,
-      id: payload.id,
+      email: user.email,
+      id: user.id,
     },
   });
 
@@ -168,13 +238,16 @@ const updateProfile = async (user: IUser, payload: IUser) => {
       firstName: payload.firstName,
       lastName: payload.lastName,
       username: payload.username,
-      email: payload.email,
+      // crediteCardStatus: payload.crediteCardStatus,
+      mobile: payload.mobile,
     },
     select: {
       id: true,
       firstName: true,
       lastName: true,
       username: true,
+      crediteCardStatus: true,
+      mobile: true,
       email: true,
       role: true,
       userStatus: true,
@@ -185,8 +258,6 @@ const updateProfile = async (user: IUser, payload: IUser) => {
 };
 
 const updateUserIntoDb = async (payload: IUser, id: string) => {
- 
-
   // Retrieve the existing user info
   const userInfo = await prisma.user.findUniqueOrThrow({
     where: {
@@ -200,6 +271,13 @@ const updateUserIntoDb = async (payload: IUser, id: string) => {
       id: userInfo.id,
     },
     data: {
+      email: payload.email || userInfo.email,
+      firstName: payload.firstName || userInfo.firstName,
+      lastName: payload.lastName || userInfo.lastName,
+      username: payload.username || userInfo.username,
+      crediteCardStatus:
+        payload.crediteCardStatus || userInfo.crediteCardStatus,
+      mobile: payload.mobile || userInfo.mobile,
       userStatus: payload.userStatus || userInfo.userStatus,
       role: payload.role || userInfo.role,
       updatedAt: new Date(),
@@ -215,4 +293,5 @@ export const userService = {
   createAdminIntoDb,
   updateProfile,
   updateUserIntoDb,
+  getUserByIdFromDb
 };

@@ -6,7 +6,6 @@ import httpStatus from "http-status";
 import { string } from "zod";
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
-
   const result = await AuthServices.loginUser(req.body);
   res.cookie("token", result.token, { httpOnly: true });
   sendResponse(res, {

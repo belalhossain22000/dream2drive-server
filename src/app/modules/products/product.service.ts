@@ -20,12 +20,12 @@ const createProductIntoDB = async (
 ) => {
   const {
     galleryImage,
-    interiorImage,
-    exteriorImage,
-    othersImage,
+    // interiorImage,
+    // exteriorImage,
+    // othersImage,
     singleImage,
   } = filesData;
- 
+  // console.log(filesData);
   let productData: TProducts = JSON.parse(payload);
   productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
@@ -79,9 +79,6 @@ const createProductIntoDB = async (
       summary: productData.summary,
       youtubeVideo: productData.youtubeVideo,
       galleryImage: galleryImage,
-      exteriorImage: exteriorImage,
-      interiorImage: interiorImage,
-      othersImage: othersImage,
       auctionStartDate: productData.auctionStartDate,
       auctionEndDate: productData.auctionEndDate,
       brandId: productData.brandId,
@@ -114,7 +111,6 @@ const getAllProductsFromDB = async (
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
-  // console.log(filterData,"================================================================================================")
   const andConditions: Prisma.ProductWhereInput[] = [];
 
   // Normalize searchTerm and filterData for case sensitivity
@@ -297,9 +293,6 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       summary: payload.summary ?? existingProduct?.summary,
       youtubeVideo: payload.youtubeVideo ?? existingProduct?.youtubeVideo,
       galleryImage: payload.galleryImage ?? existingProduct?.galleryImage,
-      exteriorImage: payload.exteriorImage ?? existingProduct?.exteriorImage,
-      interiorImage: payload.interiorImage ?? existingProduct?.interiorImage,
-      othersImage: payload.othersImage ?? existingProduct?.othersImage,
       auctionStartDate:
         payload.auctionStartDate ?? existingProduct?.auctionStartDate,
       auctionEndDate: payload.auctionEndDate ?? existingProduct?.auctionEndDate,
@@ -493,25 +486,24 @@ const checkAuctionEnd = async () => {
     include: {
       biddings: {
         orderBy: {
-          bidPrice: "desc", // Sort by highest bid
+          bidPrice: "desc",
         },
-        take: 1, // Get the highest bidder
+        take: 1,
       },
-      user: true, // Include the product's user information
+      user: true,
     },
   });
 
   for (const auction of endedAuctions) {
+    console.log();
     const highestBidder = auction.biddings[0];
-
-    if (highestBidder) {
+    if (highestBidder && highestBidder.bidPrice >= auction.price) {
+      
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           id: highestBidder.userId,
         },
       });
-      // Using console.dir() with depth: Infinity
-      // console.dir(user?.email, { depth: Infinity });
 
       // Send email to the highest bidder
       await emailSender(
