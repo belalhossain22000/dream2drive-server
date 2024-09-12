@@ -111,7 +111,6 @@ const getAllProductsFromDB = async (
 ) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const { searchTerm, ...filterData } = params;
-  // console.log(filterData,"================================================================================================")
   const andConditions: Prisma.ProductWhereInput[] = [];
 
   // Normalize searchTerm and filterData for case sensitivity
