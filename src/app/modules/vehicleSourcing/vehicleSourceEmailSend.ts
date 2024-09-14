@@ -21,7 +21,7 @@ const vehicleEmailSender = async (
     });
 
     const mailOptions = {
-      from: `"Collecting Cars" <${userEmail}>`, 
+      from: `"Collecting Cars" <${config.emailSender.email}>`, 
       to: `${config.emailSender.email}`, 
       subject: "New Vehicle Sourcing Request",
       html: htmlContent, 
@@ -29,7 +29,6 @@ const vehicleEmailSender = async (
     };
 
     const info = await transporter.sendMail(mailOptions);
-
   } catch (error: any) {
     console.error(`Failed to send email: ${error.message}`);
   }
