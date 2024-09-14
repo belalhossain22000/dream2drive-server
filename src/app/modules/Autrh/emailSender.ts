@@ -7,8 +7,8 @@ const emailSender = async (subject: string, email: string, html: string) => {
     port: 465,
     secure: true,
     auth: {
-      user: "info@dream2drive.com.au",
-      pass: "dream2drive123@",
+      user: config.emailSender.email,
+      pass: config.emailSender.app_pass,
     },
     tls: {
       rejectUnauthorized: false,
@@ -21,7 +21,7 @@ const emailSender = async (subject: string, email: string, html: string) => {
       to: email,
       subject: `${subject}`,
       html,
-      replyTo: "info@dream2drive.com.au",
+      replyTo: config.emailSender.email,
     });
 
     console.log("Message sent: %s", info.messageId);
