@@ -9,9 +9,9 @@ const contactUsEmailSender = async (
 ) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, 
+      host: "mail.privateemail.com",
+      port: 465,
+      secure: true, 
       auth: {
         user: config.emailSender.email,
         pass: config.emailSender.app_pass,

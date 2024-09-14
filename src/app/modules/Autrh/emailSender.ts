@@ -24,9 +24,6 @@ const emailSender = async (subject: string, email: string, html: string) => {
       replyTo: config.emailSender.email,
     });
 
-    console.log("Message sent: %s", info.messageId);
-    console.log("Response envelope: ", info.envelope);
-    console.log("Response message: ", info.messageId);
   } catch (error) {
     console.error("Error sending email: ", error);
   }
