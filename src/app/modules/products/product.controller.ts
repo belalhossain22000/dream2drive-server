@@ -69,7 +69,7 @@ const getAllProduct = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // console.log(id);
+ 
   const result = await productServices.getSingleProductFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -79,7 +79,6 @@ const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-// update products
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const files = req?.files as any;
@@ -91,64 +90,35 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
   // Initialize arrays to store existing and new image URLs
   let singleImage: string[] = parsedData.singleImage || [];
   let galleryImage: string[] = parsedData.galleryImage || [];
-  // let interiorImage: string[] = parsedData.interiorImage || [];
-  // let exteriorImage: string[] = parsedData.exteriorImage || [];
-  // let othersImage: string[] = parsedData.othersImage || [];
 
   // Check if any files are uploaded
   if (files && Object.keys(files).length > 0) {
-    // Extract the product images from payload
+    // Extract the product images from the payload
     const productSingleImage = files.singleImage || [];
     const productImageFiles = files.galleryImage || [];
-    // const interiorImageFiles = files.interiorImage || [];
-    // const exteriorImageFiles = files.exteriorImage || [];
-    // const othersImageFiles = files.othersImage || [];
 
-    // Upload product images to Cloudinary
-    const productImageResults = productImageFiles.map((file: any) =>
-      fileUploader.uploadToCloudinary(file)
-    );
-    // const interiorImageResults = interiorImageFiles.map((file: any) =>
-    //   fileUploader.uploadToCloudinary(file)
-    // );
-    // const exteriorImageResults = exteriorImageFiles.map((file: any) =>
-    //   fileUploader.uploadToCloudinary(file)
-    // );
-    // const othersImageResults = othersImageFiles.map((file: any) =>
-    //   fileUploader.uploadToCloudinary(file)
-    // );
-    const singleProductImageResults = productSingleImage.map((file: any) =>
-      fileUploader.uploadToCloudinary(file)
-    );
+    // Collect local file paths (since you are now uploading to your VPS)
+    const singleProductImageResults = productSingleImage.map((file: any) => ({
+      fileName: file.filename,
+      url: `/uploads/${file.originalname}`,
+    }));
 
-    // Await the results from Cloudinary
-    const productData = await Promise.all(productImageResults);
-    // const interiorData = await Promise.all(interiorImageResults);
-    // const exteriorData = await Promise.all(exteriorImageResults);
-    // const othersData = await Promise.all(othersImageResults);
-    const singleImageData = await Promise.all(singleProductImageResults);
+    const productImageResults = productImageFiles.map((file: any) => ({
+      fileName: file.filename,
+      url: `/uploads/${file.originalname}`,
+    }));
 
-    // Extract URLs from Cloudinary responses
-    const existingSingleImage = singleImageData.map(
-      (single) => single.secure_url
+    // Extract URLs from the local file uploads
+    const newSingleImage = singleProductImageResults.map(
+      (single: any) => single.url
     );
-    const existingGalleryImage = productData.map(
-      (product) => product.secure_url
+    const newGalleryImage = productImageResults.map(
+      (product: any) => product.url
     );
-    // const existingInteriorImage = interiorData.map(
-    //   (interior) => interior.secure_url
-    // );
-    // const existingExteriorImage = exteriorData.map(
-    //   (exterior) => exterior.secure_url
-    // );
-    // const existingOthersImage = othersData.map((others) => others.secure_url);
 
     // Merge existing and new images
-    singleImage = [...singleImage, ...existingSingleImage];
-    galleryImage = [...galleryImage, ...existingGalleryImage];
-    // interiorImage = [...interiorImage, ...existingInteriorImage];
-    // exteriorImage = [...exteriorImage, ...existingExteriorImage];
-    // othersImage = [...othersImage, ...existingOthersImage];
+    singleImage = [...singleImage, ...newSingleImage];
+    galleryImage = [...galleryImage, ...newGalleryImage];
   }
 
   // Format the data to send to the database
@@ -156,9 +126,6 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     ...parsedData,
     singleImage,
     galleryImage,
-    // interiorImage,
-    // exteriorImage,
-    // othersImage,
   };
 
   // Update the product in the database
@@ -186,7 +153,7 @@ const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
 });
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(id);
+
   const result = await productServices.deleteProductFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,

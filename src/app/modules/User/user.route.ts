@@ -17,8 +17,8 @@ router.post(
   validateRequest(UserValidation.CreateUserValidationSchema),
   userController.createAdmin
 );
-router.get("/", userController.getUsers);
-router.get("/:id", userController.getUsersById);
+router.get("/", auth(UserRole.ADMIN), userController.getUsers);
+router.get("/:id",auth(UserRole.ADMIN), userController.getUsersById);
 router.put(
   "/profile",
   validateRequest(UserValidation.userUpdateSchema),
@@ -27,6 +27,7 @@ router.put(
 );
 router.put(
   "/:id",
+  auth(UserRole.USER, UserRole.ADMIN),
   validateRequest(UserValidation.userUpdateSchema),
   userController.updateUser
 );

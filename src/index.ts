@@ -26,7 +26,7 @@ async function main() {
     
 
     socket.on("sendMessage", async (data) => {
-      console.log("Message received:", data);
+   
       const { chatroomId, senderId,senderName, content } = data;
       const message = await chatServices.createMessageIntoDB(
         chatroomId,
@@ -53,18 +53,18 @@ async function main() {
   const exitHandler = () => {
     if (server) {
       server.close(() => {
-        console.info("Server closed!");
+       
       });
     }
     process.exit(1);
   };
   process.on("uncaughtException", (error) => {
-    console.log(error);
+  
     exitHandler();
   });
 
   process.on("unhandledRejection", (error) => {
-    console.log(error);
+  
     exitHandler();
   });
 }

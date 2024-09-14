@@ -2,10 +2,9 @@ import vehicleEmailSender from "./vehicleSourceEmailSend";
 import { VehicleSource } from "./vehicleSourcing.interface";
 
 const vehicleSourcingEmailSend = async (payload: VehicleSource) => {
-  try {
-    const result = await vehicleEmailSender(
-      payload.email,
-      `
+  const result = await vehicleEmailSender(
+    payload.email,
+    `
      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
             <h1 style="background-color: #007BFF; color: white; padding: 15px; border-radius: 8px 8px 0 0; text-align: center;">
               Vehicle Sourcing Request
@@ -29,12 +28,16 @@ const vehicleSourcingEmailSend = async (payload: VehicleSource) => {
 
               <p style="margin: 10px 0;">
                 <strong>Preferred Year:</strong> 
-                <span style="color: #555;">${payload.preferredYear ?? "N/A"}</span>
+                <span style="color: #555;">${
+                  payload.preferredYear ?? "N/A"
+                }</span>
               </p>
 
               <p style="margin: 10px 0;">
                 <strong>Maximum Budget:</strong> 
-                <span style="color: #555;">${payload.maximumBudget ?? "N/A"}</span>
+                <span style="color: #555;">${
+                  payload.maximumBudget ?? "N/A"
+                }</span>
               </p>
 
               <p style="margin: 10px 0;">
@@ -45,11 +48,8 @@ const vehicleSourcingEmailSend = async (payload: VehicleSource) => {
 </div>
 
             `
-    );
-    return result;
-  } catch (error) {
-    console.log(error);
-  }
+  );
+  return result;
 };
 
 export const vehicleSourcingService = {

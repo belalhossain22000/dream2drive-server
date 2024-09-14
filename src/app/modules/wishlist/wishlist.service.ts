@@ -62,7 +62,7 @@ const getWishlistByUserFromDb = async (id: any) => {
       product: true,
     },
   });
-  // console.log(result, "from service wishlist ================================");
+ 
 
   return result;
 };
