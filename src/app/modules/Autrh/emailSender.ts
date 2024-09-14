@@ -3,9 +3,9 @@ import config from "../../../config";
 
 const emailSender = async (subject: string, email: string, html: string) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // Use `true` for port 465, `false` for all other ports
+    host: "mail.dream2drive.com.au",
+    port: 465,
+    secure: true, 
     auth: {
       user: config.emailSender.email,
       pass: config.emailSender.app_pass,
@@ -16,14 +16,14 @@ const emailSender = async (subject: string, email: string, html: string) => {
   });
 
   const info = await transporter.sendMail({
-    from: '"collecting cars" <belalhossain22000@gmail.com>', // sender address
-    to: email, // list of receivers
-    subject: `${subject}`, // Subject line
-    //text: "Hello world?", // plain text body
-    html, // html body
+    from:  `"Collecting Cars" <${config.emailSender.email}>`, 
+    to: email,
+    subject: `${subject}`, 
+   
+    html, 
   });
 
-  // console.log("Message sent: %s", info.messageId);
+  console.log("Message sent: %s", info.messageId);
 };
 
 export default emailSender;

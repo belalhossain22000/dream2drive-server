@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import config from "../../../config";
-import ApiError from "../../errors/ApiErrors";
+
 
 const vehicleEmailSender = async (
   userEmail: string, // The email of the user submitting the form
@@ -8,7 +8,7 @@ const vehicleEmailSender = async (
 ) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: "mail.dream2drive.com.au",
       port: 587,
       secure: false, // Use `true` for port 465, `false` for all other ports
       auth: {
@@ -21,11 +21,11 @@ const vehicleEmailSender = async (
     });
 
     const mailOptions = {
-      from: `"Collecting Cars" <${userEmail}>`, // sender address (website owner)
-      to: `belalhossain22000@gmail.com`, // receiver address (website owner)
-      subject: "New Vehicle Sourcing Request", // Subject line
-      html: htmlContent, // HTML body content
-      replyTo: userEmail, // Set the user's email as the reply-to address
+      from: `"Collecting Cars" <${userEmail}>`, 
+      to: `${config.emailSender.email}`, 
+      subject: "New Vehicle Sourcing Request",
+      html: htmlContent, 
+      replyTo: userEmail, 
     };
 
     const info = await transporter.sendMail(mailOptions);
