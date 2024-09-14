@@ -11,7 +11,7 @@ const app: Application = express();
 export const corsOptions = {
   origin: [
     "http://localhost:3001",
-    "https://collecting-cars-font-end.vercel.app",
+    "https://dream2drive.vercel.app",
     "http://localhost:3000",
     "https://dream-2-drive.vercel.app",
     "https://dream2drive.com.au",
