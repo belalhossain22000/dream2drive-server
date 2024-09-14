@@ -17,13 +17,12 @@ const emailSender = async (subject: string, email: string, html: string) => {
 
   try {
     const info = await transporter.sendMail({
-      from: `"Collecting Cars" <${config.emailSender.email}>`,
+      from: `"Dream2Drive" <${config.emailSender.email}>`,
       to: email,
       subject: `${subject}`,
       html,
-      // replyTo: config.emailSender.email,
+      replyTo: email,
     });
-
   } catch (error) {
     console.error("Error sending email: ", error);
   }

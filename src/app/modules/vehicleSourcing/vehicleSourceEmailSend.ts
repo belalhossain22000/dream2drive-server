@@ -1,11 +1,7 @@
 import nodemailer from "nodemailer";
 import config from "../../../config";
 
-
-const vehicleEmailSender = async (
-  userEmail: string, 
-  htmlContent: string
-) => {
+const vehicleEmailSender = async (userEmail: string, htmlContent: string) => {
   try {
     const transporter = nodemailer.createTransport({
       host: "mail.privateemail.com",
@@ -21,11 +17,11 @@ const vehicleEmailSender = async (
     });
 
     const mailOptions = {
-      from: `"Collecting Cars" <${config.emailSender.email}>`, 
-      to: `${config.emailSender.email}`, 
+      from: `"Dream2Drive" <${config.emailSender.email}>`,
+      to: `${config.emailSender.email}`,
       subject: "New Vehicle Sourcing Request",
-      html: htmlContent, 
-      replyTo: userEmail, 
+      html: htmlContent,
+      replyTo: userEmail,
     };
 
     const info = await transporter.sendMail(mailOptions);

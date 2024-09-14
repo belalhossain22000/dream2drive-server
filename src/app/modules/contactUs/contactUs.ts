@@ -21,7 +21,7 @@ const contactUsEmailSender = async (
     });
 
     const mailOptions = {
-      from: `"Collecting Cars" <${config.emailSender.email}>`,
+      from: `"Dream2Drive" <${config.emailSender.email}>`,
       to: config.emailSender.email,
       subject: subject,
       html: htmlContent,
@@ -29,7 +29,6 @@ const contactUsEmailSender = async (
     };
 
     const info = await transporter.sendMail(mailOptions);
-    
   } catch (error: any) {
     console.error(`Failed to send email: ${error.message}`);
   }
