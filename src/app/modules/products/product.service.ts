@@ -25,7 +25,7 @@ const createProductIntoDB = async (
     // othersImage,
     singleImage,
   } = filesData;
-  // console.log(filesData);
+
   let productData: TProducts = JSON.parse(payload);
   productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
@@ -363,7 +363,7 @@ const deleteProductFromDB = async (id: string) => {
 };
 
 const createFeaturedProduct = async (id: string) => {
-  console.log(id);
+
   // Unfeatured the currently featured product
 
   const currentFeatured = await prisma.product.findFirst({
@@ -387,8 +387,7 @@ const createFeaturedProduct = async (id: string) => {
 };
 
 const getFeaturedProduct = async () => {
-  // Unfeatured the currently featured product
-  // console.log("featured product");
+ 
 
   const currentFeatured = await prisma.product.findFirstOrThrow({
     where: { featured: true },
@@ -401,7 +400,7 @@ const getProductGroupings = async () => {
   // Fetch all products from the database with related brand data
   const products = await prisma.product.findMany({
     include: {
-      brand: true, // Include the brand information
+      brand: true, 
     },
   });
 
@@ -495,7 +494,7 @@ const checkAuctionEnd = async () => {
   });
 
   for (const auction of endedAuctions) {
-    console.log();
+
     const highestBidder = auction.biddings[0];
     if (highestBidder && highestBidder.bidPrice >= auction.price) {
       

@@ -69,7 +69,7 @@ const getAllProduct = catchAsync(async (req: Request, res: Response) => {
 
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // console.log(id);
+ 
   const result = await productServices.getSingleProductFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -153,7 +153,7 @@ const updateProductStatus = catchAsync(async (req: Request, res: Response) => {
 });
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  console.log(id);
+
   const result = await productServices.deleteProductFromDB(id);
   sendResponse(res, {
     statusCode: httpStatus.OK,

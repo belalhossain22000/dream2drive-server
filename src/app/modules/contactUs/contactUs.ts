@@ -30,7 +30,7 @@ const contactUsEmailSender = async (
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log(`Message sent: ${info.messageId}`);
+   
   } catch (error: any) {
     console.error(`Failed to send email: ${error.message}`);
   }
