@@ -20,8 +20,8 @@ const emailSender = async (subject: string, email: string, html: string) => {
       from: `"Collecting Cars" <${config.emailSender.email}>`,
       to: email,
       subject: `${subject}`,
-
       html,
+      replyTo: "info@dream2drive.com.au",
     });
 
     console.log("Message sent: %s", info.messageId);
