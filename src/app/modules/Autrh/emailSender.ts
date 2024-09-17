@@ -21,8 +21,9 @@ const emailSender = async (subject: string, email: string, html: string) => {
       to: email,
       subject: `${subject}`,
       html,
-      replyTo: email,
+      replyTo: config.emailSender.email,
     });
+    console.log("Email sent: ", info.messageId);
   } catch (error) {
     console.error("Error sending email: ", error);
   }
