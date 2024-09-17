@@ -21,7 +21,7 @@ export const productValidationSchema = z.object({
     auction: z.boolean(),
     price: z.number().positive(),
     brandId: z.string(),
-    drivingPosition: z.string(),
+   
     keyFacts: z.string(),
     equipmentAndFeature: z.string(),
     condition: z.string(),

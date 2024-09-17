@@ -19,12 +19,11 @@ const emailSender = async (subject: string, email: string, html: string) => {
     const info = await transporter.sendMail({
       from: `"Dream2Drive" <${config.emailSender.email}>`,
       to: email,
-      subject: subject,
-      html: html,
-      // Remove or set a valid Reply-To
+      subject: `${subject}`,
+      html,
+      replyTo: config.emailSender.email,
     });
-
-    console.log("Email sent: ", info.messageId); // Useful for tracking the email
+    console.log("Email sent: ", info.messageId);
   } catch (error) {
     console.error("Error sending email: ", error);
   }
