@@ -62,8 +62,6 @@ const getMyProfile = async (userToken: string) => {
       email: true,
       firstName: true,
       lastName: true,
-      mobile:true,
-      crediteCardStatus:true,
       userStatus: true,
       role: true,
       createdAt: true,
