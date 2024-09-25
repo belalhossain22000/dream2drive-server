@@ -4,14 +4,14 @@ import prisma from "../../../shared/prisma";
 import ApiError from "../../errors/ApiErrors";
 import { IPaginationOptions } from "../../interfaces/paginations";
 import { paginationHelper } from "../../../helpars/paginationHelper";
-import { DrivingSide, Prisma, ProductStatus } from "@prisma/client";
+import { Prisma, ProductStatus } from "@prisma/client";
 import { productsSearchAbleFields } from "./product.constants";
 import { TProducts } from "./product.interface";
-import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
+
 import normalizeStatus from "../../../shared/normalizedStatus";
 import { JsonArray } from "@prisma/client/runtime/library";
 import emailSender from "../Autrh/emailSender";
-// import normalizeDrivingSide from "../../../shared/normalizedDrivingSide";
+
 
 const createProductIntoDB = async (
   filesData: any,
@@ -25,7 +25,7 @@ const createProductIntoDB = async (
     // othersImage,
     singleImage,
   } = filesData;
-  // console.log(filesData);
+
   let productData: TProducts = JSON.parse(payload);
   productData.userId = userId;
   const existingProduct = await prisma.product.findFirst({
@@ -85,7 +85,6 @@ const createProductIntoDB = async (
       speed: productData.speed,
       price: productData.price,
       gear: productData.gear,
-      drivingSide: productData.drivingSide,
       color: productData.color,
       interior: productData.interior,
       engine: productData.engine,
@@ -98,6 +97,7 @@ const createProductIntoDB = async (
       sellerEmail: productData.sellerEmail,
       sellerPhoneNumber: productData.sellerPhoneNumber,
       sellerName: productData.sellerName,
+      sellerUserName: productData.sellerUserName,
       region: productData.region,
     },
   });
@@ -129,24 +129,14 @@ const getAllProductsFromDB = async (
               },
             },
           };
-        } else if (field === "drivingSide") {
-          const normalizedDrivingSide =
-            normalizeDrivingSide(normalizedSearchTerm);
-          if (normalizedDrivingSide) {
-            return {
-              drivingSide: normalizedDrivingSide,
-            };
-          } else {
-            return {}; // Skip if searchTerm is not valid for enum
-          }
-        } else if (field === "status") {
+        }  else if (field === "status") {
           const normalizedStatus = normalizeStatus(normalizedSearchTerm);
           if (normalizedStatus) {
             return {
               status: normalizedStatus,
             };
           } else {
-            return {}; // Skip if searchTerm is not valid for enum
+            return {}; 
           }
         }
         return {
@@ -177,21 +167,10 @@ const getAllProductsFromDB = async (
               status: normalizedStatus,
             };
           } else {
-            return {}; // Skip if value is not valid for enum
+            return {}; 
           }
         }
 
-        // Special handling for drivingSide enum
-        if (key === "drivingSide") {
-          const normalizedDrivingSide = normalizeDrivingSide(value);
-          if (normalizedDrivingSide) {
-            return {
-              drivingSide: normalizedDrivingSide,
-            };
-          } else {
-            return {}; // Skip if value is not valid for enum
-          }
-        }
 
         // Special handling for brand filtering
         if (key === "brand") {
@@ -211,7 +190,7 @@ const getAllProductsFromDB = async (
             mode: "insensitive",
           },
         };
-      }) as Prisma.ProductWhereInput[], // Cast the result as Prisma.ProductWhereInput[]
+      }) as Prisma.ProductWhereInput[], 
     });
   }
 
@@ -300,7 +279,6 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       speed: payload.speed ?? existingProduct?.speed,
       price: payload.price ?? existingProduct?.price,
       gear: payload.gear ?? existingProduct?.gear,
-      drivingSide: payload.drivingSide ?? existingProduct?.drivingSide,
       color: payload.color ?? existingProduct?.color,
       interior: payload.interior ?? existingProduct?.interior,
       engine: payload.engine ?? existingProduct?.engine,
@@ -320,6 +298,7 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       sellerPhoneNumber:
         payload.sellerPhoneNumber ?? existingProduct?.sellerPhoneNumber,
       sellerName: payload.sellerName ?? existingProduct?.sellerName,
+      sellerUserName:payload.sellerUserName ?? existingProduct?.sellerUserName,
       lotNumbers: payload.lotNumbers ?? existingProduct?.lotNumbers,
     },
   });
@@ -363,7 +342,6 @@ const deleteProductFromDB = async (id: string) => {
 };
 
 const createFeaturedProduct = async (id: string) => {
- 
   // Unfeatured the currently featured product
 
   const currentFeatured = await prisma.product.findFirst({
@@ -387,9 +365,6 @@ const createFeaturedProduct = async (id: string) => {
 };
 
 const getFeaturedProduct = async () => {
-  // Unfeatured the currently featured product
-  // console.log("featured product");
-
   const currentFeatured = await prisma.product.findFirstOrThrow({
     where: { featured: true },
   });
@@ -401,17 +376,17 @@ const getProductGroupings = async () => {
   // Fetch all products from the database with related brand data
   const products = await prisma.product.findMany({
     include: {
-      brand: true, // Include the brand information
+      brand: true,
     },
   });
 
   // Initialize grouping objects
   const regionGroup: Record<string, number> = {};
   const countryGroup: Record<string, number> = {};
-  const drivingSideGroup: Record<string, number> = {};
+
   const brandGroup: Record<string, number> = {};
 
-  // Group and count products by region, country, drivingSide, and brandName
+  // Group and count products by region, country, and brandName
   products.forEach((product) => {
     // Group by region
     if (product.region) {
@@ -429,13 +404,6 @@ const getProductGroupings = async () => {
       countryGroup[product.country]++;
     }
 
-    // Group by drivingSide
-    if (product.drivingSide) {
-      if (!drivingSideGroup[product.drivingSide]) {
-        drivingSideGroup[product.drivingSide] = 0;
-      }
-      drivingSideGroup[product.drivingSide]++;
-    }
 
     // Group by brandName
     if (product.brand?.brandName) {
@@ -455,9 +423,6 @@ const getProductGroupings = async () => {
     ([country, count]) => `${country} (${count})`
   );
 
-  const drivingSideList = Object.entries(drivingSideGroup).map(
-    ([drivingSide, count]) => `${drivingSide} (${count})`
-  );
 
   const brandList = Object.entries(brandGroup).map(
     ([brandName, count]) => `${brandName} (${count})`
@@ -467,7 +432,6 @@ const getProductGroupings = async () => {
   return {
     region: regionList,
     country: countryList,
-    drivingSide: drivingSideList,
     brand: brandList,
   };
 };
@@ -495,10 +459,8 @@ const checkAuctionEnd = async () => {
   });
 
   for (const auction of endedAuctions) {
-    console.log();
     const highestBidder = auction.biddings[0];
     if (highestBidder && highestBidder.bidPrice >= auction.price) {
-      
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           id: highestBidder.userId,

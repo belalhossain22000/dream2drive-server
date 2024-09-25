@@ -32,7 +32,7 @@ const getChatroomByUserIdIntoDB = async (id: string) => {
   return result;
 };
 const getSingleChatRoomIntoDB = async (id: string) => {
-  
+
   const result = await prisma.chatroom.findUnique(
     {
       where:{
