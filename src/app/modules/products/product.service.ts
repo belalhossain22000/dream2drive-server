@@ -12,7 +12,6 @@ import normalizeStatus from "../../../shared/normalizedStatus";
 import { JsonArray } from "@prisma/client/runtime/library";
 import emailSender from "../Autrh/emailSender";
 
-
 const createProductIntoDB = async (
   filesData: any,
   payload: any,
@@ -129,14 +128,14 @@ const getAllProductsFromDB = async (
               },
             },
           };
-        }  else if (field === "status") {
+        } else if (field === "status") {
           const normalizedStatus = normalizeStatus(normalizedSearchTerm);
           if (normalizedStatus) {
             return {
               status: normalizedStatus,
             };
           } else {
-            return {}; 
+            return {};
           }
         }
         return {
@@ -167,10 +166,9 @@ const getAllProductsFromDB = async (
               status: normalizedStatus,
             };
           } else {
-            return {}; 
+            return {};
           }
         }
-
 
         // Special handling for brand filtering
         if (key === "brand") {
@@ -190,7 +188,7 @@ const getAllProductsFromDB = async (
             mode: "insensitive",
           },
         };
-      }) as Prisma.ProductWhereInput[], 
+      }) as Prisma.ProductWhereInput[],
     });
   }
 
@@ -201,11 +199,11 @@ const getAllProductsFromDB = async (
 
   const whereConditions: Prisma.ProductWhereInput = { AND: andConditions };
 
+  // Fetch products with maximum bid price
   const result = await prisma.product.findMany({
     where: whereConditions,
     include: {
       brand: true,
-      user: true,
     },
     orderBy:
       options.sortBy && options.sortOrder
@@ -217,6 +215,23 @@ const getAllProductsFromDB = async (
           },
   });
 
+  // Calculate maximum bid price for each product
+  const productsWithMaxBid = await Promise.all(result.map(async (product) => {
+    const maxBid = await prisma.bidding.aggregate({
+      _max: {
+        bidPrice: true,
+      },
+      where: {
+        productId: product.id,
+      },
+    });
+
+    return {
+      ...product,
+      maxBidPrice: maxBid._max.bidPrice || 0, // Default to 0 if no bids
+    };
+  }));
+
   const total = await prisma.product.count({
     where: whereConditions,
   });
@@ -227,9 +242,10 @@ const getAllProductsFromDB = async (
       limit,
       total,
     },
-    data: result,
+    data: productsWithMaxBid,
   };
 };
+
 
 //
 const getSingleProductFromDB = async (id: string) => {
@@ -298,7 +314,7 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       sellerPhoneNumber:
         payload.sellerPhoneNumber ?? existingProduct?.sellerPhoneNumber,
       sellerName: payload.sellerName ?? existingProduct?.sellerName,
-      sellerUserName:payload.sellerUserName ?? existingProduct?.sellerUserName,
+      sellerUserName: payload.sellerUserName ?? existingProduct?.sellerUserName,
       lotNumbers: payload.lotNumbers ?? existingProduct?.lotNumbers,
     },
   });
@@ -404,7 +420,6 @@ const getProductGroupings = async () => {
       countryGroup[product.country]++;
     }
 
-
     // Group by brandName
     if (product.brand?.brandName) {
       if (!brandGroup[product.brand.brandName]) {
@@ -422,7 +437,6 @@ const getProductGroupings = async () => {
   const countryList = Object.entries(countryGroup).map(
     ([country, count]) => `${country} (${count})`
   );
-
 
   const brandList = Object.entries(brandGroup).map(
     ([brandName, count]) => `${brandName} (${count})`
