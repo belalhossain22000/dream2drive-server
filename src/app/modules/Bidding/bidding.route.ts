@@ -8,6 +8,6 @@ const router = express.Router();
 router.post("/",auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.createBidding);
 router.get("/",auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.getAllBidding);
 router.get("/user", auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.getBiddingByUser);
-router.get("/:id", BiddingCotroller.getSingleBidding);
+router.get("/:id",auth(UserRole.ADMIN,UserRole.USER), BiddingCotroller.getSingleBidding);
 
 export const biddingRoutes = router;

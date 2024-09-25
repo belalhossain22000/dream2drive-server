@@ -15,6 +15,9 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email: payload.email,
     },
   });
+  if (userData.userStatus === UserStatus.BLOCKED) {
+    throw new Error("Your account is blocked.");
+  }
 
   if (userData?.userStatus === UserStatus.BLOCKED) {
     throw new ApiError(httpStatus.FORBIDDEN, "User is suspended.");
@@ -66,8 +69,8 @@ const getMyProfile = async (userToken: string) => {
       email: true,
       firstName: true,
       lastName: true,
-      mobile:true,
-      crediteCardStatus:true,
+      mobile: true,
+      crediteCardStatus: true,
       userStatus: true,
       role: true,
       createdAt: true,
@@ -118,11 +121,14 @@ const changePassword = async (
 };
 
 const forgotPassword = async (payload: { email: string }) => {
-  const userData = await prisma.user.findUniqueOrThrow({
+  const userData = await prisma.user.findUnique({
     where: {
       email: payload.email,
     },
   });
+  if (!userData) {
+    throw new ApiError(404, "User not found");
+  }
 
   const resetPassToken = jwtHelpers.generateToken(
     { email: userData.email, role: userData.role },
@@ -132,7 +138,7 @@ const forgotPassword = async (payload: { email: string }) => {
 
   const resetPassLink =
     config.reset_pass_link + `?userId=${userData.id}&token=${resetPassToken}`;
-  console.log(resetPassLink);
+
   await emailSender(
     "Reset Your Password",
     userData.email,

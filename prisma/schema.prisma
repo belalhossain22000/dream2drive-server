@@ -15,7 +15,7 @@ model User {
   lastName           String
   username           String
   mobile             String
-  crediteCardStatus  CrediteCardStatus   @default(NOTUPLOADED) 
+  crediteCardStatus  CrediteCardStatus   @default(NOTUPLOADED)
   password           String
   role               UserRole
   userStatus         UserStatus
@@ -103,7 +103,6 @@ model Product {
   speed               Float
   price               Float
   gear                String
-  drivingSide         DrivingSide
   color               String
   interior            String
   engine              String
@@ -121,6 +120,7 @@ model Product {
   sellerName          String
   sellerEmail         String
   sellerPhoneNumber   String
+  sellerUserName      String
   lotNumbers          String
   paymentInfos        paymentInfo[]
   createdAt           DateTime      @default(now())
@@ -143,10 +143,6 @@ model paymentInfo {
   @@map("payment_info")
 }
 
-enum DrivingSide {
-  LHD
-  RHD
-}
 
 enum ProductStatus {
   commingSoon
@@ -211,9 +207,9 @@ model VehicleSourcing {
   model         String
   email         String
   manufacturer  String
-  preferredYear String? 
+  preferredYear String?
   maximumBudget String
-  message       String? 
+  message       String?
   currency      String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

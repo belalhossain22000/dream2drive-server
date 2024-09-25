@@ -47,7 +47,7 @@ const contactUsEmailSend = async (payload: ContactForm) => {
       );
       return result;
     } catch (error) {
-      console.log(error);
+   
       throw new Error('Failed to send email');
     }
   };

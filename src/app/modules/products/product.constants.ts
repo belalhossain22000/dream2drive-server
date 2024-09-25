@@ -1,6 +1,5 @@
 export const productsFilterableFields = [
   "searchTerm",
-  "drivingSide",
   "status",
   "country",
   "brand",
@@ -16,6 +15,5 @@ export const productsSearchAbleFields = [
   "condition",
   "gear",
   "brand.brandName",
-  "drivingSide",
   "region"
 ];

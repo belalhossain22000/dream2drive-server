@@ -21,7 +21,7 @@ const getChatAllroomIntoDB = async () => {
   return result;
 };
 const getChatroomByUserIdIntoDB = async (id: string) => {
-  console.log(id);
+
   const chatrooms = await prisma.chatroom.findMany();
   
   const result = chatrooms.filter(chatroom =>
@@ -32,7 +32,7 @@ const getChatroomByUserIdIntoDB = async (id: string) => {
   return result;
 };
 const getSingleChatRoomIntoDB = async (id: string) => {
-  console.log(id);
+
   const result = await prisma.chatroom.findUnique(
     {
       where:{

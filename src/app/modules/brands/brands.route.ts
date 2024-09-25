@@ -9,16 +9,16 @@ const router = express.Router();
 
 // crate a brands
 router.post(
-  "/",auth("ADMIN"),
+  "/",auth(UserRole.ADMIN),
   validateRequest(brandValidation.BrandValidationSchema),
   brandController.createBrand
 );
 
 // get all brands
-router.get("/", brandController.getAllBrands);
+router.get("/",auth(UserRole.ADMIN,UserRole.USER), brandController.getAllBrands);
 // update brand
-router.put("/:id",auth(UserRole.ADMIN,UserRole.USER), brandController.updateBrand);
+router.put("/:id",auth(UserRole.ADMIN), brandController.updateBrand);
 // delete brand
-router.delete("/:id",auth(UserRole.ADMIN,UserRole.USER), brandController.deleteBrand);
+router.delete("/:id",auth(UserRole.ADMIN), brandController.deleteBrand);
 
 export const brandRoutes = router;
