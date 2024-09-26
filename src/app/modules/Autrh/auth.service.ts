@@ -15,9 +15,9 @@ const loginUser = async (payload: { email: string; password: string }) => {
       email: payload.email,
     },
   });
-  if (userData.userStatus === UserStatus.BLOCKED) {
-    throw new Error("Your account is blocked.");
-  }
+  // if (userData.userStatus === UserStatus.BLOCKED) {
+  //   throw new Error("Your account is blocked.");
+  // }
 
   if (userData?.userStatus === UserStatus.BLOCKED) {
     throw new ApiError(httpStatus.FORBIDDEN, "User is suspended.");
