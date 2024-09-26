@@ -19,6 +19,10 @@ const loginUser = async (payload: { email: string; password: string }) => {
     throw new Error("Your account is blocked.");
   }
 
+  if (userData?.userStatus === UserStatus.BLOCKED) {
+    throw new ApiError(httpStatus.FORBIDDEN, "User is suspended.");
+  }
+
   const isCorrectPassword: boolean = await bcrypt.compare(
     payload.password,
     userData.password
