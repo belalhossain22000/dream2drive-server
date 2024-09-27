@@ -28,6 +28,16 @@ const getWishlistByUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getWishlistByProduct = catchAsync(async (req: Request, res: Response) => {
+  const id = req?.params?.id;
+  const result = await wishlistService.getWishlistByProductFromDb(id);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "wishlist product reterive successfully!",
+    data: result,
+  });
+});
 
 const deleteWishlist = catchAsync(async (req: Request, res: Response) => {
   const userId = req?.user?.id;
@@ -47,4 +57,5 @@ export const wishlistController = {
   toggleWishlist,
   getWishlistByUser,
   deleteWishlist,
+  getWishlistByProduct
 };
