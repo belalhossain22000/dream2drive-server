@@ -1,6 +1,5 @@
 import express from "express";
 import { productRoutes } from "./modules/products/product.route";
-import { brandRoutes } from "./modules/brands/brands.route";
 import { userRoutes } from "./modules/User/user.route";
 import { biddingRoutes } from "./modules/Bidding/bidding.route";
 import { AuthRoutes } from "./modules/Autrh/auth.routes";
@@ -13,7 +12,6 @@ import { chatRoutes } from "./modules/chat/chat.route";
 import { paymentInfoRoutes } from "./modules/paymentInfo/paymentInfo.route";
 import { contactUsRoutes } from "./modules/contactUs/contactUs.route";
 
-
 const router = express.Router();
 
 const moduleRoutes = [
@@ -21,10 +19,7 @@ const moduleRoutes = [
     path: "/products",
     route: productRoutes,
   },
-  {
-    path: "/brands",
-    route: brandRoutes,
-  },
+
   {
     path: "/biddings",
     route: biddingRoutes,

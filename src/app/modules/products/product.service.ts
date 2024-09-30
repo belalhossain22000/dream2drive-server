@@ -38,18 +38,6 @@ const createProductIntoDB = async (
       `product already exist by this name ${productData.productName}`
     );
   }
-  const isBrandExist = await prisma.brand.findFirst({
-    where: {
-      id: productData.brandId,
-    },
-  });
-
-  if (!isBrandExist) {
-    throw new ApiError(
-      400,
-      `brand is not exist you provide ${productData.brandId}`
-    );
-  }
 
   // checking is seller is exist
   const isSellerExist = await prisma.user.findUnique({
@@ -80,7 +68,6 @@ const createProductIntoDB = async (
       galleryImage: galleryImage,
       auctionStartDate: productData.auctionStartDate,
       auctionEndDate: productData.auctionEndDate,
-      brandId: productData.brandId,
       speed: productData.speed,
       price: productData.price,
       gear: productData.gear,
@@ -202,9 +189,7 @@ const getAllProductsFromDB = async (
   // Fetch products with maximum bid price
   const result = await prisma.product.findMany({
     where: whereConditions,
-    include: {
-      brand: true,
-    },
+    include: {},
     orderBy:
       options.sortBy && options.sortOrder
         ? {
@@ -216,21 +201,23 @@ const getAllProductsFromDB = async (
   });
 
   // Calculate maximum bid price for each product
-  const productsWithMaxBid = await Promise.all(result.map(async (product) => {
-    const maxBid = await prisma.bidding.aggregate({
-      _max: {
-        bidPrice: true,
-      },
-      where: {
-        productId: product.id,
-      },
-    });
+  const productsWithMaxBid = await Promise.all(
+    result.map(async (product) => {
+      const maxBid = await prisma.bidding.aggregate({
+        _max: {
+          bidPrice: true,
+        },
+        where: {
+          productId: product.id,
+        },
+      });
 
-    return {
-      ...product,
-      maxBidPrice: maxBid._max.bidPrice || 0, // Default to 0 if no bids
-    };
-  }));
+      return {
+        ...product,
+        maxBidPrice: maxBid._max.bidPrice || 0, // Default to 0 if no bids
+      };
+    })
+  );
 
   const total = await prisma.product.count({
     where: whereConditions,
@@ -246,7 +233,6 @@ const getAllProductsFromDB = async (
   };
 };
 
-
 //
 const getSingleProductFromDB = async (id: string) => {
   const result = await prisma.product.findUnique({
@@ -254,7 +240,6 @@ const getSingleProductFromDB = async (id: string) => {
       id: id,
     },
     include: {
-      brand: true,
       reviews: true,
     },
   });
@@ -291,7 +276,6 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
       auctionStartDate:
         payload.auctionStartDate ?? existingProduct?.auctionStartDate,
       auctionEndDate: payload.auctionEndDate ?? existingProduct?.auctionEndDate,
-      brandId: payload.brandId ?? existingProduct?.brandId,
       speed: payload.speed ?? existingProduct?.speed,
       price: payload.price ?? existingProduct?.price,
       gear: payload.gear ?? existingProduct?.gear,
@@ -391,9 +375,7 @@ const getFeaturedProduct = async () => {
 const getProductGroupings = async () => {
   // Fetch all products from the database with related brand data
   const products = await prisma.product.findMany({
-    include: {
-      brand: true,
-    },
+    include: {},
   });
 
   // Initialize grouping objects
@@ -418,14 +400,6 @@ const getProductGroupings = async () => {
         countryGroup[product.country] = 0;
       }
       countryGroup[product.country]++;
-    }
-
-    // Group by brandName
-    if (product.brand?.brandName) {
-      if (!brandGroup[product.brand.brandName]) {
-        brandGroup[product.brand.brandName] = 0;
-      }
-      brandGroup[product.brand.brandName]++;
     }
   });
 
@@ -597,7 +571,7 @@ const checkAuctionEnd = async () => {
                           </div>
                           <div class="footer">
                               <p>© 2024 Auction House. All rights reserved.</p>
-                              <p><a href="http://localhost:3001">Visit our website</a></p>
+                              <p><a href="https://dream2drive.com.au" target="_blank">Visit our website</a></p>
                           </div>
                       </div>
                   </body>

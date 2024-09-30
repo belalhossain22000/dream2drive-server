@@ -89,17 +89,15 @@ model Product {
   id                  String        @id @default(auto()) @map("_id") @db.ObjectId
   productName         String
   singleImage         Json
-  keyFacts            String
-  equepmentAndFeature String
-  condition           String
-  serviceHistory      String
-  summary             String
-  youtubeVideo        String
+  keyFacts            String?
+  equepmentAndFeature String?
+  condition           String?
+  serviceHistory      String?
+  summary             String?
+  youtubeVideo        String?
   galleryImage        Json[]
   auctionStartDate    DateTime
   auctionEndDate      DateTime
-  brandId             String        @db.ObjectId
-  brand               Brand?        @relation(fields: [brandId], references: [id])
   speed               Float
   price               Float
   gear                String
@@ -109,7 +107,7 @@ model Product {
   vin                 String
   userId              String        @db.ObjectId
   user                User?         @relation(fields: [userId], references: [id])
-  country             String
+  country             String        @default("Australia")
   isDeleted           Boolean       @default(false)
   featured            Boolean       @default(false)
   status              ProductStatus
@@ -143,7 +141,6 @@ model paymentInfo {
   @@map("payment_info")
 }
 
-
 enum ProductStatus {
   commingSoon
   live
@@ -167,9 +164,8 @@ model Review {
 
 // brand model
 model Brand {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  brandName String    @unique
-  Products  Product[]
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  brandName String @unique
 
   @@map("brands")
 }
@@ -266,3 +262,5 @@ model ChatroomMember {
 
   @@map("chatroom_members")
 }
+
+

@@ -10,7 +10,7 @@ const createPaymentIntentController = catchAsync(async (req: Request, res: Respo
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: " Review created successfully",
+    message: " Payment intent created successfully",
     data: clientSecret,
   });
 });
