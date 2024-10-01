@@ -25,7 +25,21 @@ const getUserCardDetails = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getUserCardDetailsByUserId = catchAsync(
+  async (req: Request, res: Response) => {
+    const userId = req.params.id;
+    const result = await UserCardSErvice.getUserCardDetailsByUserId(userId);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User card details reterive successfully",
+      data: result,
+    });
+  }
+);
+
 export const UserCardDetailsController = {
   createUserCardDetails,
   getUserCardDetails,
+  getUserCardDetailsByUserId,
 };
