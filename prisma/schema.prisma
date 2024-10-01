@@ -29,6 +29,7 @@ model User {
   chatroomMembers    ChatroomMember[]    @relation("UserChatroomMembers")
   messages           Message[]           @relation("UserMessages")
   paymentInfos       paymentInfo[]
+  userCardDetails    UserCardDetails[]
 
   @@map("users")
 }
@@ -263,4 +264,13 @@ model ChatroomMember {
   @@map("chatroom_members")
 }
 
-
+model UserCardDetails {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String @db.ObjectId
+  user       User   @relation(fields: [userId], references: [id])
+  cardNumber String
+  month      String
+  year       String
+  cvc        String
+  zip        String
+}

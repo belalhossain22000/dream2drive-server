@@ -11,6 +11,7 @@ import { paymentRoutes } from "./modules/payment/payment.route";
 import { chatRoutes } from "./modules/chat/chat.route";
 import { paymentInfoRoutes } from "./modules/paymentInfo/paymentInfo.route";
 import { contactUsRoutes } from "./modules/contactUs/contactUs.route";
+import { userCardDetailsRouter } from "./modules/userCardDetails/userCardDetails.route";
 
 const router = express.Router();
 
@@ -63,6 +64,10 @@ const moduleRoutes = [
   {
     path: "/contact-us",
     route: contactUsRoutes,
+  },
+  {
+    path: "/card-details",
+    route: userCardDetailsRouter,
   },
 ];
 

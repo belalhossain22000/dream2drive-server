@@ -307,6 +307,7 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
 };
 
 const updateProductStatus = async (payload: any, id: string) => {
+
   const isProductExist = await prisma.product.findUniqueOrThrow({
     where: { id: id },
   });
