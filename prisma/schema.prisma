@@ -30,6 +30,7 @@ model User {
   messages           Message[]           @relation("UserMessages")
   paymentInfos       paymentInfo[]
   userCardDetails    UserCardDetails[]
+  Payment            Payment[]
 
   @@map("users")
 }
@@ -213,13 +214,35 @@ model VehicleSourcing {
 }
 
 model Payment {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  amount    Int
-  currency  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  amount          Int
+  currency        String
+  paymentMethodId String
+  paymentIntentId String
+  userId          String        @db.ObjectId
+  paymentStatus   PaymentStatus
+  user            User          @relation(fields: [userId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@map("payments")
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+model FuturePaymentInfo {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String
+  paymentMethodId String
+  carsId          String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("future_payment_infos")
 }
 
 // Chatroom model
