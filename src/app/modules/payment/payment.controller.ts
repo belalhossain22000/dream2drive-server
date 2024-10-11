@@ -16,6 +16,7 @@ const createPaymentIntentController = catchAsync(
     });
   }
 );
+
 const updatePaymentIntentController = catchAsync(
   async (req: Request, res: Response) => {
     const id = req.params.id;
@@ -31,4 +32,5 @@ const updatePaymentIntentController = catchAsync(
 export const paymentControllers = {
   createPaymentIntentController,
   updatePaymentIntentController,
+  
 };

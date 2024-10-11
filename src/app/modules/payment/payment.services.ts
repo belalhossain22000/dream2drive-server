@@ -7,6 +7,8 @@ import config from "../../../config";
 import prisma from "../../../shared/prisma";
 
 const stripe = new Stripe(config.stripe_key as string);
+
+// create payment intent
 export const createPaymentIntent = async (paymentData: CreatePaymentInput) => {
   const { price } = paymentData;
 
@@ -44,6 +46,8 @@ export const createPaymentIntent = async (paymentData: CreatePaymentInput) => {
 
   return paymentIntent.client_secret;
 };
+
+// update payment intent
 const updatePaymentIntent = async (
   id: string, // Payment record ID from your database
   payload: any
@@ -92,7 +96,9 @@ const updatePaymentIntent = async (
   return updatedPaymentIntent;
 };
 
+
 export const paymentService = {
   createPaymentIntent,
   updatePaymentIntent,
+
 };

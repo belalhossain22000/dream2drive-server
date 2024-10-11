@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import router from ".";
 import GlobalErrorHandler from "./middlewares/globalErrorHandler";
 import { scheduleAuctionCheck } from "./modules/products/product.service";
-import path from 'path';
+import path from "path";
 const app: Application = express();
 export const corsOptions = {
   origin: [
@@ -16,7 +16,7 @@ export const corsOptions = {
     "https://dream-2-drive.vercel.app",
     "https://dream2drive.com.au",
     "dream2drive.com.au",
-    "https://dream2drive.vercel.app"
+    "https://dream2drive.vercel.app",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -33,7 +33,9 @@ app.use(express.static("public"));
 // Route handler for root endpoint
 app.get("/", (req: Request, res: Response) => {
   res.send({
-    Message: "Collecting car server..",
+    success: true,
+    status: httpStatus.OK,
+    Message: "Dream2drive car server is running..",
   });
 });
 

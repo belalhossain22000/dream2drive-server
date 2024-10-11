@@ -15,6 +15,7 @@ import { CalculateThePrice } from "../../../helpars/priceCalculate";
 import stripe from "../../../helpars/stripe";
 import { chatServices } from "../chat/chat.services";
 import { userService } from "../User/user.services";
+import { paymentInfoService } from "../paymentInfo/paymentInfo.services";
 
 const createProductIntoDB = async (
   filesData: any,
@@ -401,10 +402,6 @@ const getProductGroupings = async () => {
   };
 };
 
-
-
-
-
 // *! send email auction end highest bidder
 
 const checkAuctionEnd = async () => {
@@ -439,6 +436,7 @@ const checkAuctionEnd = async () => {
       const paymentDetails = await prisma.payment.findFirst({
         where: {
           userId: user.id,
+          paymentStatus: "PENDING",
         },
       });
 
@@ -452,7 +450,7 @@ const checkAuctionEnd = async () => {
 
       // Calculate the amount to be paid
       const payToDreamToDrive = await CalculateThePrice(highestBidder.bidPrice);
-      const paymentAmountInCents = Math.round(payToDreamToDrive * 100); 
+      const paymentAmountInCents = Math.round(payToDreamToDrive * 100);
       try {
         // Update the payment intent with the new amount if necessary
         const updateAmount = await stripe.paymentIntents.update(
@@ -473,19 +471,33 @@ const checkAuctionEnd = async () => {
           // Update the payment record to mark it as paid
           await prisma.payment.update({
             where: {
-              id: paymentDetails.id, // Use the unique ID of the payment record
+              id: paymentDetails.id,
+              paymentStatus: "PENDING", 
             },
             data: {
-              amount: payToDreamToDrive, // Store the amount paid
-              paymentStatus: "PAID", // Mark as paid
+              amount: payToDreamToDrive, 
+              paymentStatus: "PAID", 
             },
           });
+
+          await paymentInfoService.createpaymentInfoIntoDB({
+            clientId: user.id,
+            carsId: auction.id,
+            transactionId: paymentConfirmation.id,
+            amount: paymentAmountInCents,
+          });
+
+          // await prisma.payment.delete({
+          //   where: {
+          //     id: paymentDetails.id,
+          //   },
+          // });
 
           // Send email to the highest bidder
           await emailSender(
             `Congratulations! You've Won the Auction for ${auction?.productName}`,
             user?.email,
-            `<html>Your payment has completed Successfully!!!</html>` // Simplified email content
+            `<html>Your payment has completed Successfully!!!</html>`
           );
           // Update the product status to 'sold'
           await prisma.product.update({
@@ -502,14 +514,13 @@ const checkAuctionEnd = async () => {
             roomMembers: [
               { id: (await getSeller).id },
               { id: user.id },
-              ...getAdmin.map((admin) => ({ id: admin.id })), 
+              ...getAdmin.map((admin) => ({ id: admin.id })),
             ],
           };
 
           const createChat = await chatServices.createChatroomIntoDB(
             payload as any
           );
-        
         } else {
         }
       } catch (error) {

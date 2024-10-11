@@ -3,7 +3,7 @@ import ApiError from "../../errors/ApiErrors";
 import { TPaymentInfo } from "./paymentInfo.interface";
 
 const createpaymentInfoIntoDB = async (payload: TPaymentInfo) => {
-  // Create the paymentInfo in the database
+  
   const result = await prisma.paymentInfo.create({
     data: {
       clientId: payload.clientId,
