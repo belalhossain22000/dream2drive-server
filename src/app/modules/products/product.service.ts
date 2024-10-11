@@ -11,6 +11,10 @@ import { TProducts } from "./product.interface";
 import normalizeStatus from "../../../shared/normalizedStatus";
 import { JsonArray } from "@prisma/client/runtime/library";
 import emailSender from "../Autrh/emailSender";
+import { CalculateThePrice } from "../../../helpars/priceCalculate";
+import stripe from "../../../helpars/stripe";
+import { chatServices } from "../chat/chat.services";
+import { userService } from "../User/user.services";
 
 const createProductIntoDB = async (
   filesData: any,
@@ -56,35 +60,8 @@ const createProductIntoDB = async (
   // creating products
   const result = await prisma.product.create({
     data: {
-      productName: productData.productName,
-      singleImage: singleImage,
-      keyFacts: productData.keyFacts,
-      userId: productData.userId,
-      equepmentAndFeature: productData.equepmentAndFeature,
-      condition: productData.condition,
-      serviceHistory: productData.serviceHistory,
-      summary: productData.summary,
-      youtubeVideo: productData.youtubeVideo,
-      galleryImage: galleryImage,
-      auctionStartDate: productData.auctionStartDate,
-      auctionEndDate: productData.auctionEndDate,
-      speed: productData.speed,
-      price: productData.price,
-      gear: productData.gear,
-      color: productData.color,
-      interior: productData.interior,
-      engine: productData.engine,
-      vin: productData.vin,
-      country: productData.country,
-      lotNumbers: productData.lotNumbers,
-      isDeleted: false,
-      featured: false,
-      status: productData.status,
-      sellerEmail: productData.sellerEmail,
-      sellerPhoneNumber: productData.sellerPhoneNumber,
-      sellerName: productData.sellerName,
-      sellerUserName: productData.sellerUserName,
-      region: productData.region,
+      ...filesData,
+      ...productData,
     },
   });
   return result;
@@ -307,7 +284,6 @@ const updateProductInDB = async (id: string, payload: Partial<TProducts>) => {
 };
 
 const updateProductStatus = async (payload: any, id: string) => {
-
   const isProductExist = await prisma.product.findUniqueOrThrow({
     where: { id: id },
   });
@@ -425,6 +401,10 @@ const getProductGroupings = async () => {
   };
 };
 
+
+
+
+
 // *! send email auction end highest bidder
 
 const checkAuctionEnd = async () => {
@@ -456,138 +436,97 @@ const checkAuctionEnd = async () => {
         },
       });
 
-      // Send email to the highest bidder
-      await emailSender(
-        `Congratulations! You've Won the Auction for ${auction?.productName}`,
-        user?.email,
-        `
-        
-        <!DOCTYPE html>
-                  <html lang="en">
-
-                  <head>
-                      <meta charset="UTF-8">
-                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                      <title>Congratulations! You've Won the Auction</title>
-                      <style>
-                          body {
-                              font-family: Arial, sans-serif;
-                              background-color: #f4f4f4;
-                              color: #333333;
-                              margin: 0;
-                              padding: 0;
-                          }
-
-                          .container {
-                              width: 100%;
-                              max-width: 600px;
-                              margin: 0 auto;
-                              background-color: #ffffff;
-                              padding: 20px;
-                              box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                          }
-
-                          .header {
-                              text-align: center;
-                              background-color: #4CAF50;
-                              color: #ffffff;
-                              padding: 20px 0;
-                          }
-
-                          .header h1 {
-                              margin: 0;
-                              font-size: 24px;
-                          }
-
-                          .content {
-                              padding: 20px;
-                          }
-
-                          .content h2 {
-                              color: #4CAF50;
-                              font-size: 20px;
-                          }
-
-                          .content p {
-                              font-size: 16px;
-                              line-height: 1.6;
-                              margin: 10px 0;
-                          }
-
-                          .content .product-details {
-                              margin: 20px 0;
-                              border: 1px solid #dddddd;
-                              padding: 10px;
-                              background-color: #f9f9f9;
-                          }
-
-                          .content .product-details h3 {
-                              margin: 0;
-                              font-size: 18px;
-                          }
-
-                          .content .product-details p {
-                              margin: 5px 0;
-                              font-size: 16px;
-                          }
-
-                          .footer {
-                              text-align: center;
-                              padding: 20px 0;
-                              font-size: 14px;
-                              color: #777777;
-                          }
-
-                          .footer p {
-                              margin: 0;
-                          }
-
-                          .footer a {
-                              color: #4CAF50;
-                              text-decoration: none;
-                          }
-                      </style>
-                  </head>
-
-                  <body>
-                      <div class="container">
-                          <div class="header">
-                              <h1>Congratulations, ${user?.firstName}</h1>
-                          </div>
-                          <div class="content">
-                              <h2>You've Won the Auction!</h2>
-                              <p>Dear ${user?.firstName},</p>
-                              <p>We are thrilled to inform you that you have won the auction for the following product:</p>
-                              <div class="product-details">
-                                  <h3>Product Name: ${auction?.productName}</h3>
-                                  <a href="http://localhost:3001/buy/${auction?.id}">See Your Win car</a></p>
-                                  <p>Final Bid Amount: $${auction?.biddings[0]?.bidPrice}</p>
-                                  <p>Auction End Date: ${auction?.auctionEndDate}</p>
-                                   <img src="${auction.singleImage}" alt="${auction.productName}">
-                              </div>
-                              <p>Thank you for participating in the auction. We will be in touch with you shortly to finalize the purchase process.</p>
-                              <p>If you have any questions or need further assistance, please feel free to contact us.</p>
-                              <p>Best regards,</p>
-                              <p>The Auction Team</p>
-                          </div>
-                          <div class="footer">
-                              <p>© 2024 Auction House. All rights reserved.</p>
-                              <p><a href="https://dream2drive.com.au" target="_blank">Visit our website</a></p>
-                          </div>
-                      </div>
-                  </body>
-
-                  </html>
-
-        
-        `
-      );
-
-      // Update the product status to 'sold'
-      await prisma.product.update({
-        where: { id: auction.id },
-        data: { status: "unsold" },
+      const paymentDetails = await prisma.payment.findFirst({
+        where: {
+          userId: user.id,
+        },
       });
+
+      if (
+        !paymentDetails ||
+        !paymentDetails.paymentIntentId ||
+        !paymentDetails.paymentMethodId
+      ) {
+        throw new Error("Payment details or payment intent ID not found.");
+      }
+
+      // Calculate the amount to be paid
+      const payToDreamToDrive = await CalculateThePrice(highestBidder.bidPrice);
+      const paymentAmountInCents = Math.round(payToDreamToDrive * 100); 
+      try {
+        // Update the payment intent with the new amount if necessary
+        const updateAmount = await stripe.paymentIntents.update(
+          paymentDetails.paymentIntentId,
+          {
+            amount: paymentAmountInCents,
+          }
+        );
+        // Confirm the payment on Stripe using the payment method
+        const paymentConfirmation = await stripe.paymentIntents.confirm(
+          paymentDetails.paymentIntentId,
+          {
+            payment_method: paymentDetails.paymentMethodId,
+          }
+        );
+
+        if (paymentConfirmation.status === "succeeded") {
+          // Update the payment record to mark it as paid
+          await prisma.payment.update({
+            where: {
+              id: paymentDetails.id, // Use the unique ID of the payment record
+            },
+            data: {
+              amount: payToDreamToDrive, // Store the amount paid
+              paymentStatus: "PAID", // Mark as paid
+            },
+          });
+
+          // Send email to the highest bidder
+          await emailSender(
+            `Congratulations! You've Won the Auction for ${auction?.productName}`,
+            user?.email,
+            `<html>Your payment has completed Successfully!!!</html>` // Simplified email content
+          );
+          // Update the product status to 'sold'
+          await prisma.product.update({
+            where: { id: auction.id },
+            data: { status: "sold" },
+          });
+          const getSeller = userService.getUserByEmailFromDb(
+            auction?.sellerEmail
+          );
+          const getAdmin = await userService.getAdminFromDB();
+          const payload = {
+            roomName: auction.productName,
+            productId: auction.id,
+            roomMembers: [
+              { id: (await getSeller).id },
+              { id: user.id },
+              ...getAdmin.map((admin) => ({ id: admin.id })), 
+            ],
+          };
+
+          const createChat = await chatServices.createChatroomIntoDB(
+            payload as any
+          );
+        
+        } else {
+        }
+      } catch (error) {
+        await prisma.product.update({
+          where: { id: auction.id },
+          data: { status: "unsold" },
+        });
+        // Optionally update the payment status to 'FAILED' in your database
+        await prisma.payment.update({
+          where: {
+            id: paymentDetails.id,
+          },
+          data: {
+            paymentStatus: "FAILED",
+          },
+        });
+      }
     } else {
       // No bids placed, mark as unsold
       await prisma.product.update({
@@ -597,7 +536,6 @@ const checkAuctionEnd = async () => {
     }
   }
 };
-
 // Schedule the cron job to run every minute
 export const scheduleAuctionCheck = () => {
   cron.schedule("* * * * *", checkAuctionEnd);

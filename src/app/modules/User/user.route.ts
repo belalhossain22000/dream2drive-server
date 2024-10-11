@@ -17,8 +17,10 @@ router.post(
   validateRequest(UserValidation.CreateUserValidationSchema),
   userController.createAdmin
 );
-router.get("/", auth(UserRole.ADMIN), userController.getUsers);
-router.get("/:id",auth(UserRole.ADMIN), userController.getUsersById);
+router.get("/",  userController.getUsers);
+router.get("/admin",  userController.getAdmin);
+router.get("/:id", userController.getUsersById);
+router.get("/email/:email", userController.getUsersByEmail);
 router.put(
   "/profile",
   validateRequest(UserValidation.userUpdateSchema),

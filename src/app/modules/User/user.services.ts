@@ -138,6 +138,7 @@ const getUsersFromDb = async (
 
   const users = await prisma.user.findMany({
     where: whereConditons,
+
     orderBy:
       options.sortBy && options.sortOrder
         ? {
@@ -158,6 +159,8 @@ const getUsersFromDb = async (
       userStatus: true,
       createdAt: true,
       updatedAt: true,
+      userCardDetails: true,
+      Payment: true,
     },
   });
   const total = await prisma.user.count({
@@ -195,6 +198,40 @@ const getUsersFromDb = async (
   };
 };
 
+const getUserByEmailFromDb = async (email: string) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: email,
+    },
+    select: {
+      id: true,
+      email: true,
+      firstName: true,
+      lastName: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return user;
+};
+const getAdminFromDB = async () => {
+  const user = await prisma.user.findMany({
+    where: {
+      role: "ADMIN",
+    },
+    select: {
+      id: true,
+      email: true,
+    },
+  });
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+  return user;
+};
 const getUserByIdFromDb = async (id: string) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -212,14 +249,15 @@ const getUserByIdFromDb = async (id: string) => {
       userStatus: true,
       createdAt: true,
       updatedAt: true,
+      userCardDetails: true,
+      Payment: true,
     },
   });
   if (!user) {
     throw new ApiError(404, "User not found");
   }
-  return user
+  return user;
 };
-
 // update profile
 const updateProfile = async (user: IUser, payload: IUser) => {
   const userInfo = await prisma.user.findUniqueOrThrow({
@@ -293,5 +331,7 @@ export const userService = {
   createAdminIntoDb,
   updateProfile,
   updateUserIntoDb,
-  getUserByIdFromDb
+  getUserByIdFromDb,
+  getUserByEmailFromDb,
+  getAdminFromDB
 };
