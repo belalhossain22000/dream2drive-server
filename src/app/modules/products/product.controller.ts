@@ -25,12 +25,12 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   // Collect local file paths (since you are now uploading to your VPS)
   const singleProductImageResults = productSingleImage.map((file: any) => ({
     fileName: file.filename,
-    url: `/uploads/${file.originalname}`,
+    url: `https://api.dream2drive.com.au/uploads/${file.originalname}`,
   }));
 
   const productImageResults = productImageFiles.map((file: any) => ({
     fileName: file.filename,
-    url: `/uploads/${file.originalname}`,
+    url: `https://api.dream2drive.com.au/uploads/${file.originalname}`,
   }));
 
   // Create the files data object with URLs
@@ -100,12 +100,12 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
     // Collect local file paths (since you are now uploading to your VPS)
     const singleProductImageResults = productSingleImage.map((file: any) => ({
       fileName: file.filename,
-      url: `/uploads/${file.originalname}`,
+      url: `https://api.dream2drive.com.au/uploads/${file.originalname}`,
     }));
 
     const productImageResults = productImageFiles.map((file: any) => ({
       fileName: file.filename,
-      url: `/uploads/${file.originalname}`,
+      url: `https://api.dream2drive.com.au/uploads/${file.originalname}`,
     }));
 
     // Extract URLs from the local file uploads
