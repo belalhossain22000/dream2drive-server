@@ -16,7 +16,8 @@ export const corsOptions = {
     "https://dream-2-drive.vercel.app",
     "https://dream2drive.com.au",
     "dream2drive.com.au",
-    "https://dream2drive.vercel.app"
+    "https://dream2drive.vercel.app",
+    "https://dream2drive-mocha.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
