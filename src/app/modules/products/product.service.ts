@@ -15,6 +15,7 @@ import { CalculateThePrice } from "../../../helpars/priceCalculate";
 import stripe from "../../../helpars/stripe";
 import { chatServices } from "../chat/chat.services";
 import { userService } from "../User/user.services";
+import { paymentService } from "../payment/payment.services";
 
 const createProductIntoDB = async (
   filesData: any,
@@ -401,10 +402,6 @@ const getProductGroupings = async () => {
   };
 };
 
-
-
-
-
 // *! send email auction end highest bidder
 
 const checkAuctionEnd = async () => {
@@ -452,7 +449,7 @@ const checkAuctionEnd = async () => {
 
       // Calculate the amount to be paid
       const payToDreamToDrive = await CalculateThePrice(highestBidder.bidPrice);
-      const paymentAmountInCents = Math.round(payToDreamToDrive * 100); 
+      const paymentAmountInCents = Math.round(payToDreamToDrive * 100);
       try {
         // Update the payment intent with the new amount if necessary
         const updateAmount = await stripe.paymentIntents.update(
@@ -480,12 +477,21 @@ const checkAuctionEnd = async () => {
               paymentStatus: "PAID", // Mark as paid
             },
           });
-
+          await paymentService.deletePaymentDataFromDB(paymentDetails.id);
+          const transactionId = paymentDetails.paymentIntentId; // Use the paymentIntentId as transaction ID
+          const paymentAmount = payToDreamToDrive;
           // Send email to the highest bidder
           await emailSender(
             `Congratulations! You've Won the Auction for ${auction?.productName}`,
             user?.email,
-            `<html>Your payment has completed Successfully!!!</html>` // Simplified email content
+            `<html>
+              <p>Dear ${user?.email},</p>
+              <p>Congratulations! You've won the auction for ${auction?.productName}.</p>
+              <p>Your payment has been completed successfully.</p>
+              <p><strong>Transaction ID:</strong> ${transactionId}</p>
+              <p><strong>Payment Amount:</strong> $${paymentAmount}</p>
+              <p>Thank you for your purchase!</p>
+            </html>` // Simplified email content
           );
           // Update the product status to 'sold'
           await prisma.product.update({
@@ -502,14 +508,13 @@ const checkAuctionEnd = async () => {
             roomMembers: [
               { id: (await getSeller).id },
               { id: user.id },
-              ...getAdmin.map((admin) => ({ id: admin.id })), 
+              ...getAdmin.map((admin) => ({ id: admin.id })),
             ],
           };
 
           const createChat = await chatServices.createChatroomIntoDB(
             payload as any
           );
-        
         } else {
         }
       } catch (error) {

@@ -36,6 +36,7 @@ export const createPaymentIntent = async (paymentData: CreatePaymentInput) => {
       currency: "aud",
       paymentMethodId: paymentData.paymentMethodId,
       userId: paymentData.userId,
+      carsId: paymentData.carsId,
       paymentStatus: "PENDING",
       amount: amount / 100,
       paymentIntentId: paymentIntent.id,
@@ -91,8 +92,45 @@ const updatePaymentIntent = async (
 
   return updatedPaymentIntent;
 };
+const getAllPaymentDataIntoDB = async () => {
+  const existingPayment = await prisma.payment.findMany();
+  if (!existingPayment) {
+    throw new Error("No existing payments found.");
+  }
+  const result = await prisma.payment.findMany();
+  return result;
+};
+const deletePaymentDataFromDB= async (id: string) => {
+  // Check if the payment record exists
+  const payment = await prisma.payment.findUnique({
+    where: { id },  // Ensure this is using the correct identifier field
+  });
+
+  if (!payment) {
+    throw new Error(`Payment with id ${id} not found.`);
+  }
+
+  // Optionally, delete the payment intent from Stripe if required
+  if (payment.paymentIntentId) {
+    try {
+      await stripe.paymentIntents.cancel(payment.paymentIntentId);
+    } catch (error) {
+      console.error(`Failed to cancel Stripe PaymentIntent with id ${payment.paymentIntentId}:`, error);
+    }
+  }
+
+  // Delete the payment record from the database
+  const result = await prisma.payment.delete({
+    where: { id },  // Ensure the correct field and value are provided here
+  });
+
+  return { message: `Payment with id ${id} has been deleted successfully.` };
+};
+
 
 export const paymentService = {
   createPaymentIntent,
   updatePaymentIntent,
+  getAllPaymentDataIntoDB,
+  deletePaymentDataFromDB,
 };
