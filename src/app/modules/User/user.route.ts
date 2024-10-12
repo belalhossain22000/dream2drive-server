@@ -29,7 +29,6 @@ router.put(
 );
 router.put(
   "/:id",
-  auth(UserRole.USER, UserRole.ADMIN),
   validateRequest(UserValidation.userUpdateSchema),
   userController.updateUser
 );
