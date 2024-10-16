@@ -15,7 +15,7 @@ import { CalculateThePrice } from "../../../helpars/priceCalculate";
 import stripe from "../../../helpars/stripe";
 import { chatServices } from "../chat/chat.services";
 import { userService } from "../User/user.services";
-import { paymentInfoService } from "../paymentInfo/paymentInfo.services";
+import { paymentService } from "../payment/payment.services";
 
 const createProductIntoDB = async (
   filesData: any,
@@ -479,25 +479,21 @@ const checkAuctionEnd = async () => {
               paymentStatus: "PAID", 
             },
           });
-
-          await paymentInfoService.createpaymentInfoIntoDB({
-            clientId: user.id,
-            carsId: auction.id,
-            transactionId: paymentConfirmation.id,
-            amount: paymentAmountInCents,
-          });
-
-          // await prisma.payment.delete({
-          //   where: {
-          //     id: paymentDetails.id,
-          //   },
-          // });
-
+          await paymentService.deletePaymentDataFromDB(paymentDetails.id);
+          const transactionId = paymentDetails.paymentIntentId; // Use the paymentIntentId as transaction ID
+          const paymentAmount = payToDreamToDrive;
           // Send email to the highest bidder
           await emailSender(
             `Congratulations! You've Won the Auction for ${auction?.productName}`,
             user?.email,
-            `<html>Your payment has completed Successfully!!!</html>`
+            `<html>
+              <p>Dear ${user?.email},</p>
+              <p>Congratulations! You've won the auction for ${auction?.productName}.</p>
+              <p>Your payment has been completed successfully.</p>
+              <p><strong>Transaction ID:</strong> ${transactionId}</p>
+              <p><strong>Payment Amount:</strong> $${paymentAmount}</p>
+              <p>Thank you for your purchase!</p>
+            </html>` // Simplified email content
           );
           // Update the product status to 'sold'
           await prisma.product.update({

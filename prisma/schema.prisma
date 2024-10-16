@@ -220,6 +220,7 @@ model Payment {
   paymentMethodId String
   paymentIntentId String
   userId          String        @db.ObjectId
+  carsId          String        @db.ObjectId
   paymentStatus   PaymentStatus
   user            User          @relation(fields: [userId], references: [id])
   createdAt       DateTime      @default(now())
