@@ -13,7 +13,7 @@ const createVehicleInfo = catchAsync(async (req: Request, res: Response) => {
   }
 
   const result = await VehicleInfoServices.createVehicleInfoIntoDB(
-    `/uploads/${file.originalname}`,
+    `https://api.dream2drive.com.au/uploads/${file.originalname}`,
     req.body
   );
   sendResponse(res, {
