@@ -88,9 +88,9 @@ enum UserRole {
 
 // product model
 model Product {
-  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
-  productName         String
-  singleImage         Json
+  id                  String         @id @default(auto()) @map("_id") @db.ObjectId
+  productName         String?
+  singleImage         Json?
   keyFacts            String?
   equepmentAndFeature String?
   condition           String?
@@ -98,33 +98,33 @@ model Product {
   summary             String?
   youtubeVideo        String?
   galleryImage        Json[]
-  auctionStartDate    DateTime
-  auctionEndDate      DateTime
-  speed               Float
-  price               Float
-  gear                String
-  color               String
-  interior            String
-  engine              String
-  vin                 String
-  userId              String        @db.ObjectId
-  user                User?         @relation(fields: [userId], references: [id])
-  country             String        @default("Australia")
-  isDeleted           Boolean       @default(false)
-  featured            Boolean       @default(false)
-  status              ProductStatus
+  auctionStartDate    DateTime?
+  auctionEndDate      DateTime?
+  speed               Float?
+  price               Float?
+  gear                String?
+  color               String?
+  interior            String?
+  engine              String?
+  vin                 String?
+  userId              String?        @db.ObjectId
+  user                User?          @relation(fields: [userId], references: [id])
+  country             String?        @default("Australia")
+  isDeleted           Boolean?       @default(false)
+  featured            Boolean?       @default(false)
+  status              ProductStatus?
   wishlist            Wishlist[]
   reviews             Review[]
   biddings            Bidding[]
-  region              String
-  sellerName          String
-  sellerEmail         String
-  sellerPhoneNumber   String
-  sellerUserName      String
-  lotNumbers          String
+  region              String?
+  sellerName          String?
+  sellerEmail         String?
+  sellerPhoneNumber   String?
+  sellerUserName      String?
+  lotNumbers          String?
   paymentInfos        paymentInfo[]
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   @@map("products")
 }
