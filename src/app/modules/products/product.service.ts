@@ -425,8 +425,12 @@ const checkAuctionEnd = async () => {
   });
 
   for (const auction of endedAuctions) {
+    if (!auction?.price) {
+      throw new ApiError(httpStatus.NOT_FOUND, "Auction Price not found ");
+    }
+
     const highestBidder = auction.biddings[0];
-    if (highestBidder && highestBidder.bidPrice >= auction.price) {
+    if (highestBidder && highestBidder?.bidPrice >= auction?.price) {
       const user = await prisma.user.findUniqueOrThrow({
         where: {
           id: highestBidder.userId,
@@ -472,11 +476,11 @@ const checkAuctionEnd = async () => {
           await prisma.payment.update({
             where: {
               id: paymentDetails.id,
-              paymentStatus: "PENDING", 
+              paymentStatus: "PENDING",
             },
             data: {
-              amount: payToDreamToDrive, 
-              paymentStatus: "PAID", 
+              amount: payToDreamToDrive,
+              paymentStatus: "PAID",
             },
           });
           await paymentService.deletePaymentDataFromDB(paymentDetails.id);
@@ -501,7 +505,7 @@ const checkAuctionEnd = async () => {
             data: { status: "sold" },
           });
           const getSeller = userService.getUserByEmailFromDb(
-            auction?.sellerEmail
+            auction?.sellerEmail as string
           );
           const getAdmin = await userService.getAdminFromDB();
           const payload = {
