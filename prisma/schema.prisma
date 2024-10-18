@@ -101,7 +101,7 @@ model Product {
   auctionStartDate    DateTime?
   auctionEndDate      DateTime?
   speed               Float?
-  price               Float?
+  price               Float
   gear                String?
   color               String?
   interior            String?
