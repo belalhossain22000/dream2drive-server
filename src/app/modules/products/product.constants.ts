@@ -3,7 +3,6 @@ export const productsFilterableFields = [
   "productName",
   "status",
   "country",
-  "brand",
   "region",
 ];
 
@@ -15,6 +14,5 @@ export const productsSearchAbleFields = [
   "interior",
   "condition",
   "gear",
-  "brand.brandName",
   "region",
 ];
