@@ -147,6 +147,7 @@ const getUsersFromDb = async (
         : {
             createdAt: "desc",
           },
+   
     select: {
       id: true,
       email: true,
@@ -333,5 +334,5 @@ export const userService = {
   updateUserIntoDb,
   getUserByIdFromDb,
   getUserByEmailFromDb,
-  getAdminFromDB
+  getAdminFromDB,
 };

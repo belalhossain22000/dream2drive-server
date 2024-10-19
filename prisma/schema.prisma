@@ -144,7 +144,7 @@ model paymentInfo {
 }
 
 enum ProductStatus {
-  commingSoon
+  Coming_Soon
   live
   sold
   unsold

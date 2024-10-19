@@ -526,7 +526,7 @@ const checkAuctionEnd = async () => {
       } catch (error) {
         await prisma.product.update({
           where: { id: auction.id },
-          data: { status: "unsold" },
+          data: { isDeleted: true, status: "unsold" },
         });
         // Optionally update the payment status to 'FAILED' in your database
         await prisma.payment.update({
@@ -542,7 +542,7 @@ const checkAuctionEnd = async () => {
       // No bids placed, mark as unsold
       await prisma.product.update({
         where: { id: auction.id },
-        data: { status: "unsold" },
+        data: { isDeleted: true, status: "unsold" },
       });
     }
   }
