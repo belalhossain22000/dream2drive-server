@@ -157,6 +157,13 @@ const getAllProductsFromDB = async (
     });
   }
 
+  // Exclude products with status "unsold"
+  andConditions.push({
+    status: {
+      not: "unsold",
+    },
+  });
+
   // Always exclude deleted products
   andConditions.push({
     isDeleted: false,
