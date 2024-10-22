@@ -31,6 +31,7 @@ model User {
   paymentInfos       paymentInfo[]
   userCardDetails    UserCardDetails[]
   Payment            Payment[]
+  VehicleInfo        VehicleInfo[]
 
   @@map("users")
 }
@@ -187,10 +188,8 @@ model Bidding {
 
 model VehicleInfo {
   id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName  String
-  lastName   String
-  email      String
-  mobileNo   String
+  userId     String  @db.ObjectId
+  user       User    @relation(fields: [userId], references: [id])
   carMake    String
   carDetails String
   carImage   String?
