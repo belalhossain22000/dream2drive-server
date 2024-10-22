@@ -1,4 +1,6 @@
+import httpStatus from "http-status";
 import prisma from "../../../shared/prisma";
+import ApiError from "../../errors/ApiErrors";
 import { TVehicleInfo } from "./vehicleInfo.interface";
 
 const createVehicleInfoIntoDB = async (
@@ -26,6 +28,7 @@ const createVehicleInfoIntoDB = async (
 
 const getAllVehicleInfoFromDB = async () => {
   try {
+   
     const result = await prisma.vehicleInfo.findMany({
       include: {
         user: true,
@@ -54,4 +57,5 @@ export const VehicleInfoServices = {
   createVehicleInfoIntoDB,
   getAllVehicleInfoFromDB,
   deleteVehicleFromDB,
+ 
 };

@@ -33,6 +33,7 @@ model User {
   Payment            Payment[]
   VehicleInfo        VehicleInfo[]
 
+
   @@map("users")
 }
 
