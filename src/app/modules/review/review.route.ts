@@ -7,7 +7,7 @@ import { UserRole } from "@prisma/client";
 const router = Router();
 
 router.post("/",auth(UserRole.ADMIN,UserRole.USER), reviewController.createReview);
-router.get("/",auth(UserRole.ADMIN,UserRole.USER), reviewController.getReview);
-router.get("/:id",auth(UserRole.ADMIN,UserRole.USER), reviewController.getSingleReview);
+router.get("/", reviewController.getReview);
+router.get("/:id", reviewController.getSingleReview);
 
 export const reviewRoutes = router;
