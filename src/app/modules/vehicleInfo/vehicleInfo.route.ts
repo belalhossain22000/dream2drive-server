@@ -11,6 +11,7 @@ const router = express.Router();
 // *? create vehicle
 router.post(
   "/",
+  auth(),
   fileUploader.uploadSingle,
   VehicleInfoController.createVehicleInfo
 );

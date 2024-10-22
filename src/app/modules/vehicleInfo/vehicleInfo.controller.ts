@@ -7,6 +7,7 @@ import { fileUploader } from "../../../helpars/fileUploader";
 
 const createVehicleInfo = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
+  const user = req.user as any;
 
   if (!file) {
     throw new Error("file was not aaded!!");
@@ -14,7 +15,8 @@ const createVehicleInfo = catchAsync(async (req: Request, res: Response) => {
 
   const result = await VehicleInfoServices.createVehicleInfoIntoDB(
     `https://api.dream2drive.com.au/uploads/${file.originalname}`,
-    req.body
+    req.body,
+    user.id
   );
   sendResponse(res, {
     statusCode: httpStatus.OK,
